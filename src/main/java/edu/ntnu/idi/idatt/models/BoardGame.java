@@ -26,8 +26,6 @@ public class BoardGame {
     currentPlayer = player;
   }
 
-
-
   public void addPlayer(Player player) {
     players.add(player);
   }
