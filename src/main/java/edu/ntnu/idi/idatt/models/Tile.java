@@ -3,10 +3,15 @@ package edu.ntnu.idi.idatt.models;
 public class Tile {
   private Tile nextTile;
   private int tileId;
-  private TileAction landAction;
+  private TileAction tileAction;
 
   public Tile(int tileId) {
     this.tileId = tileId;
+  }
+
+  public Tile(int tileId, TileAction action) {
+    this.tileId = tileId;
+    this.tileAction = action;
   }
 
   public int getTileId() {
