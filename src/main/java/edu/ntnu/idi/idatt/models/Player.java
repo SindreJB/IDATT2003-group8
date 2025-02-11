@@ -13,8 +13,12 @@ public class Player {
     return name;
   }
 
-  public int getCurrentTile() {
+  public Integer getCurrentTile() {
     return currentTile;
+  }
+
+  public void setCurrentTile(int tile) {
+      currentTile = tile;
   }
 
   public void move(int roll) {
