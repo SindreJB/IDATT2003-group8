@@ -19,11 +19,10 @@ public class Board {
 
   private void linkTiles() {
     tiles.values().forEach(currentTile -> {
-      int tileId = currentTile.getTileId();
+      int tileId = currentTile.getTile();
       java.util.stream.IntStream.rangeClosed(1, 12)
           .filter(j -> tileId + j <= 90)
           .forEach(j -> currentTile.setNextTile(tiles.get(tileId + j)));
     });
   }
-
 }
