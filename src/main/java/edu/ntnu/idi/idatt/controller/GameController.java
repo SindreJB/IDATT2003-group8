@@ -1,20 +1,22 @@
 package edu.ntnu.idi.idatt.controller;
 
-import edu.ntnu.idi.idatt.models.*;
 import java.util.List;
 import java.util.Scanner;
+
+import edu.ntnu.idi.idatt.models.BoardGame;
+import edu.ntnu.idi.idatt.models.LadderAction;
+import edu.ntnu.idi.idatt.models.Player;
+import edu.ntnu.idi.idatt.models.Tile;
 
 public class GameController {
 
   private final BoardGame boardGame;
   private static Player currentPlayer;
-  private boolean finished;
 
   public GameController() {
     boardGame = new BoardGame();
     boardGame.createBoard();
     boardGame.createDice();
-    finished = false;
   }
 
   private void switchPlayer() {
@@ -24,9 +26,7 @@ public class GameController {
   }
 
   public void playLadderGame() {
-    AddPlayers();
-    initializeLadderGame();
-    while (!finished) {
+    while (!checkVictoryConditions()) {
       displayCurrentPlayerInfo();
       playCurrentPlayer();
       performTileAction();
@@ -44,8 +44,9 @@ public class GameController {
   }
 
   private void AddPlayers() {
+    int maxPlayers = 4;
     Scanner sc = new Scanner(System.in);
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= maxPlayers; i++) {
       System.out.println("Enter the name of player " + i + ": ");
       System.out.println("If you don't want to add more players, press enter");
       String playerName = sc.nextLine();
@@ -60,7 +61,8 @@ public class GameController {
     }
   }
 
-  private void initializeLadderGame() {
+  public void initializeLadderGame() {
+    AddPlayers();
     boardGame.createBoard();
     boardGame.createDice();
     boardGame.setLadderTiles();
@@ -72,20 +74,26 @@ public class GameController {
     System.out.println(currentPlayer.getName() + " rolled a " + roll);
     currentPlayer.move(roll);
     System.out.println(currentPlayer.getName() + " is now on tile " + currentPlayer.getCurrentTile());
+    movePlayerToTile(currentPlayer);
+  }
 
-    Tile currentTile = boardGame.getTile(currentPlayer.getCurrentTile());
+  private void movePlayerToTile(Player player) {
+    Tile currentTile = boardGame.getTile(player.getCurrentTile());
     if (currentTile != null && currentTile.getLandAction() != null) {
-      int oldPosition = currentPlayer.getCurrentTile();
+      int oldPosition = player.getCurrentTile();
       currentTile.landPlayer(currentPlayer);
-      System.out.println(currentPlayer.getName() + " encountered a " +
+      System.out.println(player.getName() + " encountered a " +
           (currentTile.getLandAction() instanceof LadderAction ? "ladder" : "snake") +
-          " and moved from " + oldPosition + " to " + currentPlayer.getCurrentTile());
+          " and moved from " + oldPosition + " to " + player.getCurrentTile());
     }
+  }
 
+  private Boolean checkVictoryConditions() {
     if (currentPlayer.getCurrentTile() >= 90) {
       System.out.println(currentPlayer.getName() + " wins!");
-      finished = true;
+      return true;
     }
+    return false;
   }
 
   private void performTileAction() {
