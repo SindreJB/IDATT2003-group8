@@ -12,7 +12,6 @@ public class GameController {
 
   private final BoardGame boardGame;
   private static Player currentPlayer;
-  private boolean finished;
 
   public GameController() {
     boardGame = new BoardGame();
