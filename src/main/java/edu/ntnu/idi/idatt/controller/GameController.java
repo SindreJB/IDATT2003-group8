@@ -35,7 +35,7 @@ public class GameController {
 
   private static void displayCurrentPlayerInfo() {
     System.out.println("It's " + currentPlayer.getName() + "'s turn");
-    System.out.println(currentPlayer.getName() + " is on tile " + currentPlayer.getCurrentTileId());
+    System.out.println(currentPlayer.getName() + " is on tile " + currentPlayer.getTileId());
     System.out.println("Press enter to roll the dice");
     Scanner sc = new Scanner(System.in);
     sc.nextLine();
@@ -53,7 +53,7 @@ public class GameController {
       if (playerName.isEmpty()) {
         break;
       }
-      Player player = new Player(playerName, boardGame.getTile(1));
+      Player player = new Player(playerName, 1);
       createPlayers.add(player);
       if (currentPlayer == null) {
         currentPlayer = player;
@@ -63,13 +63,13 @@ public class GameController {
   }
 
   private void playCurrentPlayer() {
-    System.out.println(currentPlayer.getName() + " has landed on " + boardGame.movePlayer(currentPlayer).getTileId());
+    System.out.println(currentPlayer.getName() + " has landed on " + boardGame.movePlayer(currentPlayer));
 
   }
 
 
   private Boolean checkVictoryConditions() {
-    if (currentPlayer.getCurrentTileId() == 90) {
+    if (currentPlayer.getTileId() == 90) {
       System.out.println(currentPlayer.getName() + " wins!");
       return true;
     }

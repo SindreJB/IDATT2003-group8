@@ -2,26 +2,23 @@ package edu.ntnu.idi.idatt.models;
 
 public class Player {
   private final String name;
-  private Tile currentTile;
+  private int tileId;
 
-  public Player(String name, Tile tile) {
+  public Player(String name, int tileId) {
     this.name = name;
-    this.currentTile = tile; // Assuming players start at tile 1
+    this.tileId = tileId; 
   }
 
   public String getName() {
     return name;
   }
 
-  public Integer getCurrentTileId() {
-    return currentTile.getTileId();
+  public Integer getTileId() {
+    return this.tileId;
   }
 
-  public Tile getCurrentTile() {
-    return this.currentTile;
-  }
 
-  public void setCurrentTile(Tile tile) {
-      currentTile = tile;
+  public void setTileId(int tileId) {
+      this.tileId = tileId;
   }
 }

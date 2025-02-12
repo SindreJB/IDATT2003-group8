@@ -21,51 +21,53 @@ public class BoardGame {
     setSnakeTiles();
   }
 
+
   public void setLadderTiles() {
-    board.get(8).setAction(new LadderAction(board.get(22)));
-    board.get(27).setAction(new LadderAction(board.get(55)));
-    board.get(40).setAction(new LadderAction(board.get(77)));
-    board.get(60).setAction(new LadderAction(board.get(82)));
+    getBoardTile(8).setAction(new LadderAction(getBoardTile(22)));
+    getBoardTile(27).setAction(new LadderAction(getBoardTile(55)));
+    getBoardTile(40).setAction(new LadderAction(getBoardTile(77)));
+    getBoardTile(60).setAction(new LadderAction(getBoardTile(82)));
   }
 
   public void setSnakeTiles() {
-    board.get(16).setAction(new SnakeAction(board.get(6)));
-    board.get(49).setAction(new SnakeAction(board.get(11)));
-    board.get(64).setAction(new SnakeAction(board.get(60)));
-    board.get(73).setAction(new SnakeAction(board.get(67)));
-    board.get(89).setAction(new SnakeAction(board.get(68)));
-    board.get(89).setAction(new SnakeAction(board.get(78)));
+    getBoardTile(16).setAction(new SnakeAction(getBoardTile(6)));
+    getBoardTile(49).setAction(new SnakeAction(getBoardTile(11)));
+    getBoardTile(64).setAction(new SnakeAction(getBoardTile(60)));
+    getBoardTile(73).setAction(new SnakeAction(getBoardTile(67)));
+    getBoardTile(89).setAction(new SnakeAction(getBoardTile(68)));
+    getBoardTile(89).setAction(new SnakeAction(getBoardTile(78)));
 
   }
 
-  public Tile movePlayer(Player player) {
+  public int movePlayer(Player player) {
+    int playerTile = player.getTileId();
     int toMove = dice.rollDice();
     System.out.println(toMove);
-    setPlayerTile(player, toMove);
-    return player.getCurrentTile();
+    player.setTileId((setPlayerTile(playerTile, toMove)));
+    return player.getTileId();
   }
 
-  public Tile setPlayerTile(Player player, int toMove) {
-    if (player.getCurrentTileId()+toMove > 90) {
-      player.setCurrentTile(board.get(2*90-(player.getCurrentTileId() + toMove)));
+  public int setPlayerTile(int playerTile, int toMove) {
+    int tileOut;
+    if (playerTile+toMove > 90) {
+      tileOut =  (2*90-(playerTile  + toMove));
     } else {
-    player.setCurrentTile(board.get(player.getCurrentTileId() + toMove));
+    tileOut =  playerTile + toMove;
     }
-    if (player.getCurrentTile().hasAction()) {
-      player.setCurrentTile(preformTileAction(player.getCurrentTile()));
+    if (getBoardTile(playerTile).hasAction()) {
+      tileOut =  preformTileAction(playerTile);
     }
-    return player.getCurrentTile();
+    return tileOut;
   }
 
-  public Tile preformTileAction(Tile tile) {
+  public int preformTileAction(int tileId) {
     System.out.println("action");
-    return tile.getLandAction().tileActionResult();
+    return getBoardTile(tileId).getLandAction().tileActionResult().getTileId();
   }
 
 
-  public Tile getTile(int tileId) {
+  public Tile getBoardTile(int tileId) {
     return board.get(tileId);
   }
   
-
 }
