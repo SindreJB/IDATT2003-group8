@@ -27,16 +27,20 @@ public class GameController {
     AddPlayers();
     initializeLadderGame();
     while (!finished) {
-      System.out.println("It's " + currentPlayer.getName() + "'s turn");
-      System.out.println(currentPlayer.getName() + " is on tile " + currentPlayer.getCurrentTile());
-      System.out.println("Press enter to roll the dice");
-      Scanner sc = new Scanner(System.in);
-      sc.nextLine();
+      displayCurrentPlayerInfo();
       playCurrentPlayer();
       performTileAction();
       switchPlayer();
       System.out.println(" ");
     }
+  }
+
+  private static void displayCurrentPlayerInfo() {
+    System.out.println("It's " + currentPlayer.getName() + "'s turn");
+    System.out.println(currentPlayer.getName() + " is on tile " + currentPlayer.getCurrentTile());
+    System.out.println("Press enter to roll the dice");
+    Scanner sc = new Scanner(System.in);
+    sc.nextLine();
   }
 
   private void AddPlayers() {
