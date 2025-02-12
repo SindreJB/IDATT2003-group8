@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class Die {
 
-  private int lastRolledValue;
   private final Random random;
 
   public Die() {
@@ -12,7 +11,6 @@ public class Die {
   }
 
   public int roll() {
-    lastRolledValue = random.nextInt(6) + 1;
-    return lastRolledValue;
+    return random.nextInt(6) + 1;
   }
 }
