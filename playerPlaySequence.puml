@@ -9,16 +9,19 @@ participant TileAction
 
 
 Player -> GameController: throws dice
-GameController -> BoardGame: throw dice
-BoardGame -> Dice: rollDice()
-Dice -> Die: getDie()
-Dice <- Die: result()
-BoardGame <- Dice: diceResult()
-BoardGame -> Tile: movePlayer()
-Tile -> TileAction: getAction()
-Tile <- TileAction: LadderAction()
-Tile <- TileAction: SnakeAction()
-BoardGame <- Tile: movePlayer()
+GameController -> BoardGame: boardGame.moveplayer(player)
+BoardGame -> Dice: dice.rollDice()
+Dice -> Die: die.roll()
+Dice -> Die: die.roll()
+Dice <- Die: random(1 - 6)
+Dice <- Die: random(1 - 6)
+BoardGame <- Dice: random(1 - 12)
+BoardGame -> Tile: getBoardTile(playerTile).hasAction()
+BoardGame <- Tile: getBoardTile(playerTile).!hasAction()
+Tile -> TileAction: tileActionResult()
+Tile <- TileAction: LadderAction().tileActionResult()
+Tile <- TileAction: SnakeAction().tileActionResult()
+BoardGame <- Tile: int endTile.tileId
 GameController <- BoardGame: player moved
 Player <- GameController: player moved
 @enduml

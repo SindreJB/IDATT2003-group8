@@ -23,19 +23,19 @@ public class BoardGame {
 
 
   public void setLadderTiles() {
-    getBoardTile(8).setAction(new LadderAction(getBoardTile(22)));
-    getBoardTile(27).setAction(new LadderAction(getBoardTile(55)));
-    getBoardTile(40).setAction(new LadderAction(getBoardTile(77)));
-    getBoardTile(60).setAction(new LadderAction(getBoardTile(82)));
+    getBoardTile(8).setAction(new LadderAction(22));
+    getBoardTile(27).setAction(new LadderAction(55));
+    getBoardTile(40).setAction(new LadderAction(77));
+    getBoardTile(60).setAction(new LadderAction(82));
   }
 
   public void setSnakeTiles() {
-    getBoardTile(16).setAction(new SnakeAction(getBoardTile(6)));
-    getBoardTile(49).setAction(new SnakeAction(getBoardTile(11)));
-    getBoardTile(64).setAction(new SnakeAction(getBoardTile(60)));
-    getBoardTile(73).setAction(new SnakeAction(getBoardTile(67)));
-    getBoardTile(89).setAction(new SnakeAction(getBoardTile(68)));
-    getBoardTile(89).setAction(new SnakeAction(getBoardTile(78)));
+    getBoardTile(16).setAction(new SnakeAction(6));
+    getBoardTile(49).setAction(new SnakeAction(11));
+    getBoardTile(64).setAction(new SnakeAction(60));
+    getBoardTile(73).setAction(new SnakeAction(67));
+    getBoardTile(89).setAction(new SnakeAction(68));
+    getBoardTile(89).setAction(new SnakeAction(78));
 
   }
 
@@ -62,7 +62,7 @@ public class BoardGame {
 
   public int preformTileAction(int tileId) {
     System.out.println("action");
-    return getBoardTile(tileId).getLandAction().tileActionResult().getTileId();
+    return getBoardTile(tileId).getLandAction().tileActionResult();
   }
 
 
