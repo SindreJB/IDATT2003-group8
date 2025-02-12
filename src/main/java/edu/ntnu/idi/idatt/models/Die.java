@@ -5,7 +5,7 @@ import java.util.Random;
 public class Die {
 
   private int lastRolledValue;
-  private Random random;
+  private final Random random;
 
   public Die() {
     this.random = new Random();

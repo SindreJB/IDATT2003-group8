@@ -1,15 +1,15 @@
 package edu.ntnu.idi.idatt.models;
 
 public class SnakeAction implements TileAction {
-  private final int endTile;
+  private final Tile endTile;
 
-  public SnakeAction(int endTile) {
-    this.endTile = endTile;
+  public SnakeAction(Tile endTile) {
+      this.endTile = endTile;
   }
 
   @Override
-  public void applyAction(Player player) {
-    player.setCurrentTile(endTile);
+  public Tile tileActionResult() {
+      return this.endTile;
   }
 
 }

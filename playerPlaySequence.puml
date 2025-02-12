@@ -1,26 +1,24 @@
 @startuml Sequence Diagram
 actor Player
 participant GameController
+participant BoardGame
 participant Dice
 participant Die
-participant BoardGame
-participant Board
 participant Tile
 participant TileAction
 
 
-Player -> GameController: throwDice()
-GameController -> Dice: throw()
+Player -> GameController: throws dice
+GameController -> BoardGame: throw dice
+BoardGame -> Dice: rollDice()
 Dice -> Die: getDie()
 Dice <- Die: result()
-GameController <- Dice: amountToMove()
-GameController -> BoardGame: movePlayer()
-BoardGame -> Board: getNextTile()
-Board -> Tile: getTileAction()
+BoardGame <- Dice: diceResult()
+BoardGame -> Tile: movePlayer()
 Tile -> TileAction: getAction()
 Tile <- TileAction: LadderAction()
-Board <- Tile: LadderAction()
-BoardGame <- Board: tileResult()
-GameController <- BoardGame: movePlayerTo()
-Player <- GameController: MovePlayerToTile()
+Tile <- TileAction: SnakeAction()
+BoardGame <- Tile: movePlayer()
+GameController <- BoardGame: player moved
+Player <- GameController: player moved
 @enduml

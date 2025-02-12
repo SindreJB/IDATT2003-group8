@@ -1,34 +1,33 @@
 package edu.ntnu.idi.idatt.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import edu.ntnu.idi.idatt.models.BoardGame;
-import edu.ntnu.idi.idatt.models.LadderAction;
 import edu.ntnu.idi.idatt.models.Player;
-import edu.ntnu.idi.idatt.models.Tile;
 
 public class GameController {
 
   private final BoardGame boardGame;
   private static Player currentPlayer;
+  private List<Player> players = new ArrayList<>();
 
   public GameController() {
     boardGame = new BoardGame();
-    boardGame.createDice();
+    AddPlayers();
   }
+  
 
   private void switchPlayer() {
-    List<Player> players = boardGame.getPlayers();
     int currentIndex = players.indexOf(currentPlayer);
     currentPlayer = players.get((currentIndex + 1) % players.size());
   }
 
   public void playLadderGame() {
     while (!checkVictoryConditions()) {
-      displayCurrentPlayerInfo();
       playCurrentPlayer();
-      performTileAction();
+      displayCurrentPlayerInfo();
       switchPlayer();
       System.out.println(" ");
     }
@@ -36,7 +35,7 @@ public class GameController {
 
   private static void displayCurrentPlayerInfo() {
     System.out.println("It's " + currentPlayer.getName() + "'s turn");
-    System.out.println(currentPlayer.getName() + " is on tile " + currentPlayer.getCurrentTile());
+    System.out.println(currentPlayer.getName() + " is on tile " + currentPlayer.getCurrentTileId());
     System.out.println("Press enter to roll the dice");
     Scanner sc = new Scanner(System.in);
     sc.nextLine();
@@ -44,6 +43,8 @@ public class GameController {
 
   private void AddPlayers() {
     int maxPlayers = 4;
+    List<Player> createPlayers = new ArrayList<>();
+
     Scanner sc = new Scanner(System.in);
     for (int i = 1; i <= maxPlayers; i++) {
       System.out.println("Enter the name of player " + i + ": ");
@@ -52,57 +53,26 @@ public class GameController {
       if (playerName.isEmpty()) {
         break;
       }
-      Player player = new Player(playerName);
-      boardGame.addPlayer(player);
+      Player player = new Player(playerName, boardGame.getTile(1));
+      createPlayers.add(player);
       if (currentPlayer == null) {
         currentPlayer = player;
       }
     }
-  }
-
-  public void initializeLadderGame() {
-    AddPlayers();
-    boardGame.createDice();
-    boardGame.setLadderTiles();
-    boardGame.setSnakeTiles();
+    this.players = createPlayers;
   }
 
   private void playCurrentPlayer() {
-    int roll = boardGame.getDice().rollDice();
-    System.out.println(currentPlayer.getName() + " rolled a " + roll);
-    currentPlayer.move(roll);
-    System.out.println(currentPlayer.getName() + " is now on tile " + currentPlayer.getCurrentTile());
-    movePlayerToTile(currentPlayer);
+    System.out.println(currentPlayer.getName() + " has landed on " + boardGame.movePlayer(currentPlayer).getTileId());
+
   }
 
-  private void movePlayerToTile(Player player) {
-    Tile currentTile = boardGame.getTile(player.getCurrentTile());
-    if (currentTile != null && currentTile.getLandAction() != null) {
-      int oldPosition = player.getCurrentTile();
-      currentTile.landPlayer(currentPlayer);
-      System.out.println(player.getName() + " encountered a " +
-          (currentTile.getLandAction() instanceof LadderAction ? "ladder" : "snake") +
-          " and moved from " + oldPosition + " to " + player.getCurrentTile());
-    }
-  }
 
   private Boolean checkVictoryConditions() {
-    if (currentPlayer.getCurrentTile() >= 90) {
+    if (currentPlayer.getCurrentTileId() == 90) {
       System.out.println(currentPlayer.getName() + " wins!");
       return true;
     }
     return false;
-  }
-
-  private void performTileAction() {
-    Tile currentTile = boardGame.getTile(currentPlayer.getCurrentTile());
-    if (currentTile != null && currentTile.getLandAction() != null) {
-      currentTile.landPlayer(currentPlayer);
-    }
-  }
-
-  private void printActionTiles() {
-    System.out.println("Tiles with actions: ");
-    boardGame.getTilesWithAction().forEach((key, value) -> System.out.println(key));
   }
 }
