@@ -1,8 +1,12 @@
 package edu.ntnu.idi.idatt.controller;
 
-import edu.ntnu.idi.idatt.models.*;
 import java.util.List;
 import java.util.Scanner;
+
+import edu.ntnu.idi.idatt.models.BoardGame;
+import edu.ntnu.idi.idatt.models.LadderAction;
+import edu.ntnu.idi.idatt.models.Player;
+import edu.ntnu.idi.idatt.models.Tile;
 
 public class GameController {
 
@@ -14,7 +18,6 @@ public class GameController {
     boardGame = new BoardGame();
     boardGame.createBoard();
     boardGame.createDice();
-    finished = false;
   }
 
   private void switchPlayer() {
@@ -26,7 +29,7 @@ public class GameController {
   public void playLadderGame() {
     AddPlayers();
     initializeLadderGame();
-    while (!finished) {
+    while (!checkVictoryConditions()) {
       displayCurrentPlayerInfo();
       playCurrentPlayer();
       performTileAction();
@@ -44,8 +47,9 @@ public class GameController {
   }
 
   private void AddPlayers() {
+    int maxPlayers = 4;
     Scanner sc = new Scanner(System.in);
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= maxPlayers; i++) {
       System.out.println("Enter the name of player " + i + ": ");
       System.out.println("If you don't want to add more players, press enter");
       String playerName = sc.nextLine();
@@ -81,11 +85,14 @@ public class GameController {
           (currentTile.getLandAction() instanceof LadderAction ? "ladder" : "snake") +
           " and moved from " + oldPosition + " to " + currentPlayer.getCurrentTile());
     }
+  }
 
+  private Boolean checkVictoryConditions() {
     if (currentPlayer.getCurrentTile() >= 90) {
       System.out.println(currentPlayer.getName() + " wins!");
-      finished = true;
+      return true;
     }
+    return false;
   }
 
   private void performTileAction() {
