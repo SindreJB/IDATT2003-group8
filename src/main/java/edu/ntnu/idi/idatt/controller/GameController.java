@@ -27,8 +27,6 @@ public class GameController {
   }
 
   public void playLadderGame() {
-    AddPlayers();
-    initializeLadderGame();
     while (!checkVictoryConditions()) {
       displayCurrentPlayerInfo();
       playCurrentPlayer();
@@ -64,7 +62,8 @@ public class GameController {
     }
   }
 
-  private void initializeLadderGame() {
+  public void initializeLadderGame() {
+    AddPlayers();
     boardGame.createBoard();
     boardGame.createDice();
     boardGame.setLadderTiles();
@@ -76,14 +75,17 @@ public class GameController {
     System.out.println(currentPlayer.getName() + " rolled a " + roll);
     currentPlayer.move(roll);
     System.out.println(currentPlayer.getName() + " is now on tile " + currentPlayer.getCurrentTile());
+    movePlayerToTile(currentPlayer);
+  }
 
-    Tile currentTile = boardGame.getTile(currentPlayer.getCurrentTile());
+  private void movePlayerToTile(Player player) {
+    Tile currentTile = boardGame.getTile(player.getCurrentTile());
     if (currentTile != null && currentTile.getLandAction() != null) {
-      int oldPosition = currentPlayer.getCurrentTile();
+      int oldPosition = player.getCurrentTile();
       currentTile.landPlayer(currentPlayer);
-      System.out.println(currentPlayer.getName() + " encountered a " +
+      System.out.println(player.getName() + " encountered a " +
           (currentTile.getLandAction() instanceof LadderAction ? "ladder" : "snake") +
-          " and moved from " + oldPosition + " to " + currentPlayer.getCurrentTile());
+          " and moved from " + oldPosition + " to " + player.getCurrentTile());
     }
   }
 
