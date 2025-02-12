@@ -15,7 +15,6 @@ public class GameController {
 
   public GameController() {
     boardGame = new BoardGame();
-    boardGame.createBoard();
     boardGame.createDice();
   }
 
@@ -63,7 +62,6 @@ public class GameController {
 
   public void initializeLadderGame() {
     AddPlayers();
-    boardGame.createBoard();
     boardGame.createDice();
     boardGame.setLadderTiles();
     boardGame.setSnakeTiles();

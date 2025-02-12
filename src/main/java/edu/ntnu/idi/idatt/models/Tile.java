@@ -1,8 +1,7 @@
 package edu.ntnu.idi.idatt.models;
 
 public class Tile {
-  private Tile nextTile;
-  private int tileId;
+  private final int tileId;
   private TileAction landAction;
 
   public Tile(int tileId) {
@@ -28,8 +27,4 @@ public class Tile {
   }
 
   public void leavePlayer(Player player) {}
-
-  public void setNextTile(Tile nextTile) {
-    this.nextTile = nextTile;
-  }
 }

@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 public class BoardGame {
-  private final Board board;
   private Player currentPlayer;
   private final List<Player> players = new ArrayList<>();
   private final Map<Integer, Tile> tileHasAction = new HashMap<>();
   private Dice dice;
 
   public BoardGame() {
-    this.board = new Board();
     this.dice = new Dice();
   }
 
@@ -37,9 +35,6 @@ public class BoardGame {
     players.add(player);
   }
 
-  public void createBoard() {
-    board.initializeBoard();
-  }
   public void createDice() {
     dice = new Dice();
   }
