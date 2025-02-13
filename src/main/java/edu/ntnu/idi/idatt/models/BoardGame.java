@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardGame {
-  private final Dice dice;
   private final List<Tile> board = new ArrayList<>();
 
   public BoardGame() {
-    this.dice = new Dice();
     initializeBoard();
   }
 
@@ -40,10 +38,15 @@ public class BoardGame {
   }
 
   public int movePlayer(Player player) {
+    Dice dice = new Dice();
     int playerTile = player.getTileId();
-    int toMove = dice.rollDice();
+    int toMove = dice.getSum();
     System.out.println(toMove);
-    player.setTileId((setPlayerTile(playerTile, toMove)));
+    if(!player.getJailed()) {
+      player.setTileId((setPlayerTile(playerTile, toMove)));
+    } else if (dice.getEquals()){
+      player.setJailed(false);
+    }
     return player.getTileId();
   }
 
