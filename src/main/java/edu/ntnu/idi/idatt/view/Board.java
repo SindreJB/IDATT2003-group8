@@ -1,5 +1,6 @@
 package edu.ntnu.idi.idatt.view;
 
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -36,25 +37,6 @@ public class Board extends Application {
     primaryStage.show();
   }
 
-//  private GridPane createGameBoard() {
-//    GridPane gridPane = new GridPane();
-//    gridPane.setAlignment(Pos.CENTER);
-//    gridPane.setHgap(2);
-//    gridPane.setVgap(2);
-//
-//    // Create tiles numbered from 90 down to 1
-//    int tileNumber = 90;
-//    for (int row = 0; row < GRID_ROWS; row++) {
-//      for (int col = 0; col < GRID_COLS; col++) {
-//        StackPane tile = createTile(tileNumber);
-//        gridPane.add(tile, col, row);
-//        tileNumber--;
-//      }
-//    }
-//
-//    return gridPane;
-//  }
-
   private GridPane createGameBoard() {
     GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER);
@@ -62,22 +44,27 @@ public class Board extends Application {
     gridPane.setVgap(2);
 
     // Create tiles in a snake-like pattern
-    int tileNumber = 1;
-    for (int row = GRID_ROWS - 1; row >= 0; row--) {
-      if (row % 2 == 0) {
-        for (int col = GRID_COLS - 1; col >= 0; col--) {
-          StackPane tile = createTile(tileNumber);
-          gridPane.add(tile, col, row);
-          tileNumber++;
+    int[] tileNumber = {1};
+    IntStream.rangeClosed(0, GRID_ROWS - 1)
+      .map(i -> GRID_ROWS - 1 - i)
+      .forEach(row -> {
+        if (row % 2 == 0) {
+          IntStream.rangeClosed(0, GRID_COLS - 1)
+            .map(i -> GRID_COLS - 1 - i)
+            .forEach(col -> {
+              StackPane tile = createTile(tileNumber[0]);
+              gridPane.add(tile, col, row);
+              tileNumber[0]++;
+            });
+        } else {
+          IntStream.range(0, GRID_COLS)
+            .forEach(col -> {
+              StackPane tile = createTile(tileNumber[0]);
+              gridPane.add(tile, col, row);
+              tileNumber[0]++;
+            });
         }
-      } else {
-        for (int col = 0; col < GRID_COLS; col++) {
-          StackPane tile = createTile(tileNumber);
-          gridPane.add(tile, col, row);
-          tileNumber++;
-        }
-      }
-    }
+      });
 
     return gridPane;
   }
