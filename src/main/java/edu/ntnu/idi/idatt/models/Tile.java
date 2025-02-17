@@ -2,7 +2,7 @@ package edu.ntnu.idi.idatt.models;
 
 public class Tile {
   private final int tileId;
-  private TileAction landAction;
+  private TileAction action;
   private boolean hasAction;
 
   public Tile(int tileId) {
@@ -11,7 +11,7 @@ public class Tile {
 
   public Tile(int tileId, TileAction action) {
     this.tileId = tileId;
-    this.landAction = action;
+    this.action = action;
     this.hasAction = false;
   }
 
@@ -20,7 +20,7 @@ public class Tile {
   }
   
   public void setAction(TileAction action) {
-    this.landAction = action;
+    this.action = action;
     this.hasAction = true;
   }
 
@@ -28,8 +28,8 @@ public class Tile {
     return this.hasAction;
   }
 
-  public TileAction getLandAction() {
-    return landAction;
+  public TileAction getAction() {
+    return action;
   }
 
 }

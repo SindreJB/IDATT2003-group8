@@ -65,7 +65,7 @@ public class BoardGame {
 
   public int preformTileAction(int tileId) {
     System.out.println("action");
-    return getBoardTile(tileId).getLandAction().tileActionResult();
+    return getBoardTile(tileId).getAction().tileActionResult();
   }
 
 

@@ -1,0 +1,37 @@
+@startuml Diagram Jail sequence
+actor player
+participant GameController
+participant BoardGame
+participant Player
+participant Dice
+participant Die
+participant Tile
+
+
+player -> GameController: throws dice
+GameController -> BoardGame: boardGame.moveplayer(player)
+BoardGame -> Player: getJailed()
+BoardGame <- Player: false
+BoardGame -> Dice: dice.getResult()
+Dice -> Die: die.roll()
+Dice -> Die: die.roll()
+Dice <- Die: random(1 - 6)
+Dice <- Die: random(1 - 6)
+BoardGame <- Dice: random(1 - 12)
+BoardGame -> Tile: tile.hasAction()
+BoardGame <- Tile: true
+BoardGame -> Tile: tile.getAction()
+BoardGame <- Tile: JailAction()
+BoardGame -> Player: setJailed(true)
+BoardGame -> Player: movePlayer(jailTile)
+GameController <- BoardGame: player moved
+player <- GameController: player moved
+player -> GameController: throws dice
+GameController -> BoardGame: boardGame.moveplayer(player)
+BoardGame -> Player: getJailed()
+BoardGame <- Player: true
+BoardGame -> Player: setJailed(false)
+BoardGame -> Player: movePlayer(justVisitingTile)
+GameController <- BoardGame: player moved
+player <- GameController: player moved
+@enduml
