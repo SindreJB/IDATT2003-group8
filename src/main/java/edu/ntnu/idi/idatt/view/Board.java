@@ -74,6 +74,7 @@ public class Board extends Application {
 
     private StackPane createTile(int number) {
         StackPane tile = new StackPane();
+        tile.setPrefSize(TILE_SIZE, TILE_SIZE);
 
         // Create tile background
         // Rectangle background = new Rectangle(TILE_SIZE, TILE_SIZE);
