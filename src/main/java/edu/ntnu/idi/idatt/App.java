@@ -1,15 +1,17 @@
 package edu.ntnu.idi.idatt;
 
-import edu.ntnu.idi.idatt.controller.GameController;
+import edu.ntnu.idi.idatt.view.Board;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args ) {
-        GameController gameController = new GameController();
-        gameController.playLadderGame();
+public class App extends Application {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Board board = new Board();
+        board.start(primaryStage);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

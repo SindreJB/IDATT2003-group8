@@ -1,0 +1,23 @@
+.styled-tile {
+  -fx-background-color: #0f172a; /* slate/900 */
+  -fx-padding: 10px 16px;
+  -fx-background-radius: 6px;
+  -fx-border-radius: 6px;
+  -fx-width: 60;
+  -fx-height: 60;
+  -fx-alignment: center;
+
+  -fx-text-fill: #ffffff;
+  -fx-font-family: "Inter";
+  -fx-font-size: 14px;
+  -fx-font-weight: 500;
+  -fx-line-height: 24px;
+}
+
+.styled-text {
+  -fx-text-fill: #ffffff;
+  -fx-font-family: "Inter";
+  -fx-font-size: 14px;
+  -fx-font-weight: 500;
+  -fx-line-height: 24px;
+}
