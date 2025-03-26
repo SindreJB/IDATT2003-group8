@@ -178,23 +178,29 @@ public class Board extends Application {
             ImageView player1Piece = new ImageView(player1Image);
             ImageView player2Piece = new ImageView(player2Image);
 
-            // Scale images appropriately
-            player1Piece.setFitHeight(TILE_SIZE * 0.6);
-            player1Piece.setFitWidth(TILE_SIZE * 0.6);
+            // Scale images appropriately - make them smaller
+            player1Piece.setFitHeight(TILE_SIZE * 0.4);
+            player1Piece.setFitWidth(TILE_SIZE * 0.4);
             player1Piece.setPreserveRatio(true);
 
-            player2Piece.setFitHeight(TILE_SIZE * 0.6);
-            player2Piece.setFitWidth(TILE_SIZE * 0.6);
+            player2Piece.setFitHeight(TILE_SIZE * 0.4);
+            player2Piece.setFitWidth(TILE_SIZE * 0.4);
             player2Piece.setPreserveRatio(true);
 
             // Both players start at position 1
             StackPane startTile = tilesMap.get(1);
 
-            // Position pieces side by side in the starting tile
-            HBox playerContainer = new HBox(5);
-            playerContainer.setAlignment(Pos.CENTER);
-            playerContainer.getChildren().addAll(player1Piece, player2Piece);
+            // Use StackPane instead of HBox to overlap player pieces slightly
+            StackPane playerContainer = new StackPane();
 
+            // Add padding around the pieces to offset them slightly
+            StackPane.setMargin(player1Piece, new Insets(0, 10, 0, 0));  // Right padding
+            StackPane.setMargin(player2Piece, new Insets(0, 0, 0, 10));  // Left padding
+
+            playerContainer.getChildren().addAll(player1Piece, player2Piece);
+            playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);  // Limit the container size
+
+            // Add to the existing tile without stretching it
             startTile.getChildren().add(playerContainer);
 
         } catch (Exception e) {
@@ -208,12 +214,12 @@ public class Board extends Application {
 
     private void createFallbackPlayerPieces() {
         // Create colored circles as fallback pieces
-        Circle player1Piece = new Circle(TILE_SIZE * 0.2);
+        Circle player1Piece = new Circle(TILE_SIZE * 0.15);
         player1Piece.setFill(Color.RED);
         player1Piece.setStroke(Color.BLACK);
         player1Piece.setStrokeWidth(1);
 
-        Circle player2Piece = new Circle(TILE_SIZE * 0.2);
+        Circle player2Piece = new Circle(TILE_SIZE * 0.15);
         player2Piece.setFill(Color.BLUE);
         player2Piece.setStroke(Color.BLACK);
         player2Piece.setStrokeWidth(1);
@@ -221,11 +227,17 @@ public class Board extends Application {
         // Both players start at position 1
         StackPane startTile = tilesMap.get(1);
 
-        // Position pieces side by side in the starting tile
-        HBox playerContainer = new HBox(5);
-        playerContainer.setAlignment(Pos.CENTER);
-        playerContainer.getChildren().addAll(player1Piece, player2Piece);
+        // Use StackPane instead of HBox to overlap player pieces slightly
+        StackPane playerContainer = new StackPane();
 
+        // Add padding around the pieces to offset them slightly
+        StackPane.setMargin(player1Piece, new Insets(0, 10, 0, 0));  // Right padding
+        StackPane.setMargin(player2Piece, new Insets(0, 0, 0, 10));  // Left padding
+
+        playerContainer.getChildren().addAll(player1Piece, player2Piece);
+        playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);  // Limit the container size
+
+        // Add to the existing tile without stretching it
         startTile.getChildren().add(playerContainer);
     }
 
