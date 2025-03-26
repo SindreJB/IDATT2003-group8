@@ -41,6 +41,8 @@ public class Board extends Application {
     private Player currentPlayer;
     private int currentPlayerIndex = 0;
     private Label statusLabel;
+    private HBox diceContainer;
+    private Label gameInfoLabel;
 
     /**
      * Starts the application by setting up the primary stage.
@@ -85,7 +87,10 @@ public class Board extends Application {
     }
 
     private VBox createControlPanel() {
-        VBox panel = new VBox(10);
+        this.diceContainer = diceContainer;
+        this.gameInfoLabel = gameInfoLabel;
+
+        VBox panel = new VBox(15);
         panel.setPadding(new Insets(20));
         panel.setAlignment(Pos.TOP_CENTER);
 
@@ -93,9 +98,23 @@ public class Board extends Application {
         statusLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         Button rollButton = new Button("Roll Dice");
-     //   rollButton.setOnAction(e -> rollDice()); TODO: Implement rollDice method
+        // rollButton.setOnAction(e -> rollDice()); TODO: Implement rollDice method
 
-        panel.getChildren().addAll(statusLabel, rollButton);
+        // Create a space for displaying dice
+        HBox diceContainer = new HBox(10);
+        diceContainer.setAlignment(Pos.CENTER);
+        diceContainer.setPrefHeight(60);
+        diceContainer.setPrefWidth(100);
+        diceContainer.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f8f8f8;");
+
+        // Create a text area for game info
+        Label gameInfoLabel = new Label("Game information will appear here");
+        gameInfoLabel.setWrapText(true);
+        gameInfoLabel.setPrefWidth(200);
+        gameInfoLabel.setPrefHeight(100);
+        gameInfoLabel.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 5; -fx-background-color: #f8f8f8;");
+
+        panel.getChildren().addAll(statusLabel, rollButton, diceContainer, gameInfoLabel);
         return panel;
     }
 
@@ -179,12 +198,12 @@ public class Board extends Application {
             ImageView player2Piece = new ImageView(player2Image);
 
             // Scale images appropriately - make them smaller
-            player1Piece.setFitHeight(TILE_SIZE * 0.4);
-            player1Piece.setFitWidth(TILE_SIZE * 0.4);
+            player1Piece.setFitHeight(TILE_SIZE * 0.35);
+            player1Piece.setFitWidth(TILE_SIZE * 0.35);
             player1Piece.setPreserveRatio(true);
 
-            player2Piece.setFitHeight(TILE_SIZE * 0.4);
-            player2Piece.setFitWidth(TILE_SIZE * 0.4);
+            player2Piece.setFitHeight(TILE_SIZE * 0.35);
+            player2Piece.setFitWidth(TILE_SIZE * 0.35);
             player2Piece.setPreserveRatio(true);
 
             // Both players start at position 1
@@ -194,8 +213,8 @@ public class Board extends Application {
             StackPane playerContainer = new StackPane();
 
             // Add padding around the pieces to offset them slightly
-            StackPane.setMargin(player1Piece, new Insets(0, 10, 0, 0));  // Right padding
-            StackPane.setMargin(player2Piece, new Insets(0, 0, 0, 10));  // Left padding
+            StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5));  // Right padding
+            StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5));  // Left padding
 
             playerContainer.getChildren().addAll(player1Piece, player2Piece);
             playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);  // Limit the container size
@@ -214,12 +233,12 @@ public class Board extends Application {
 
     private void createFallbackPlayerPieces() {
         // Create colored circles as fallback pieces
-        Circle player1Piece = new Circle(TILE_SIZE * 0.15);
+        Circle player1Piece = new Circle(TILE_SIZE * 0.12);
         player1Piece.setFill(Color.RED);
         player1Piece.setStroke(Color.BLACK);
         player1Piece.setStrokeWidth(1);
 
-        Circle player2Piece = new Circle(TILE_SIZE * 0.15);
+        Circle player2Piece = new Circle(TILE_SIZE * 0.12);
         player2Piece.setFill(Color.BLUE);
         player2Piece.setStroke(Color.BLACK);
         player2Piece.setStrokeWidth(1);
@@ -231,8 +250,8 @@ public class Board extends Application {
         StackPane playerContainer = new StackPane();
 
         // Add padding around the pieces to offset them slightly
-        StackPane.setMargin(player1Piece, new Insets(0, 10, 0, 0));  // Right padding
-        StackPane.setMargin(player2Piece, new Insets(0, 0, 0, 10));  // Left padding
+        StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5));  // Right padding
+        StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5));  // Left padding
 
         playerContainer.getChildren().addAll(player1Piece, player2Piece);
         playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);  // Limit the container size
