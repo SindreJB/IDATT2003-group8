@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import javafx.animation.TranslateTransition;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -24,6 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * The Board class represents the main application for the Snakes and Ladders
@@ -87,9 +91,6 @@ public class Board extends Application {
     }
 
     private VBox createControlPanel() {
-        this.diceContainer = diceContainer;
-        this.gameInfoLabel = gameInfoLabel;
-
         VBox panel = new VBox(15);
         panel.setPadding(new Insets(20));
         panel.setAlignment(Pos.TOP_CENTER);
@@ -98,17 +99,17 @@ public class Board extends Application {
         statusLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         Button rollButton = new Button("Roll Dice");
-        // rollButton.setOnAction(e -> rollDice()); TODO: Implement rollDice method
+        rollButton.setOnAction(e -> moveOneTile(currentPlayer));
 
         // Create a space for displaying dice
-        HBox diceContainer = new HBox(10);
+        diceContainer = new HBox(10);  // Use the class field directly
         diceContainer.setAlignment(Pos.CENTER);
         diceContainer.setPrefHeight(60);
         diceContainer.setPrefWidth(100);
         diceContainer.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f8f8f8;");
 
         // Create a text area for game info
-        Label gameInfoLabel = new Label("Game information will appear here");
+        gameInfoLabel = new Label("Game information will appear here");  // Use the class field directly
         gameInfoLabel.setWrapText(true);
         gameInfoLabel.setPrefWidth(200);
         gameInfoLabel.setPrefHeight(100);
@@ -174,19 +175,21 @@ public class Board extends Application {
         StackPane tile = new StackPane();
         tile.setPrefSize(TILE_SIZE, TILE_SIZE);
 
-        // Create tile background
-        // Rectangle background = new Rectangle(TILE_SIZE, TILE_SIZE);
         // Create tile number
         Label text = new Label(String.valueOf(number));
         text.getStyleClass().add("styled-text");
 
         // Add background and number to tile
         tile.getChildren().addAll(text);
-        // tile.getStyleClass().add("styled-tile");
 
         return tile;
     }
 
+    /**
+     * Sets up player pieces on the game board.
+     * The player pieces are represented by images of the players.
+     * If the images are not available, colored circles are used as fallback.
+     */
     private void setupPlayerPieces() {
         try {
             // Get images for player pieces
@@ -231,6 +234,11 @@ public class Board extends Application {
         }
     }
 
+    /**
+     * Creates colored circles as fallback player pieces.
+     * The circles are added to the start tile on the game board
+     * if the player images are not available.
+     */
     private void createFallbackPlayerPieces() {
         // Create colored circles as fallback pieces
         Circle player1Piece = new Circle(TILE_SIZE * 0.12);
@@ -260,18 +268,242 @@ public class Board extends Application {
         startTile.getChildren().add(playerContainer);
     }
 
-    private void updatePlayerPosition(Player player, int oldPosition, int newPosition) {
-        // Remove player piece from old position if it exists
-        if (tilesMap.containsKey(oldPosition)) {
-            // Find and remove only this player's piece
-            // In a more complete implementation, you would need to identify each player's piece uniquely
+    /**
+     * Removes the player pieces from the given tile.
+     * The player pieces are removed from the tile to prepare for the next move.
+     *
+     * @param player the player whose piece is to be removed
+     * @param tile   the tile from which the player piece is to be removed
+     */
+    private void removePlayerFromTile(Player player, StackPane tile) {
+        // Instead of trying to find specific player pieces, collect all elements to preserve
+        List<Node> toKeep = new ArrayList<>();
+
+        // Keep only label (tile number)
+        for (Node node : tile.getChildren()) {
+            if (node instanceof Label) {
+                toKeep.add(node);
+            }
         }
 
-        // Add player piece to new position
-        if (tilesMap.containsKey(newPosition)) {
-            // Similar to setupPlayerPieces, but for a specific player
-            // This would be implemented when you're ready for the roll function
+        // Clear tile and add back only the preserved nodes
+        tile.getChildren().clear();
+        tile.getChildren().addAll(toKeep);
+    }
+
+    /**
+     * Adds the player pieces to the given tile.
+     * The player pieces are added to the tile to reflect the current position of
+     * the players.
+     *
+     * @param player   the player whose piece is to be added
+     * @param position the position of the tile to which the player piece is to be
+     *                 added
+     */
+    private void addPlayerToTile(Player player, int position) {
+        int playerIndex = players.indexOf(player);
+        Player otherPlayer = players.get(1 - playerIndex);
+        StackPane tile = tilesMap.get(position);
+
+        // Preserve labels first
+        List<Label> labels = new ArrayList<>();
+        for (Node node : tile.getChildren()) {
+            if (node instanceof Label) {
+                labels.add((Label) node);
+            }
         }
+
+        // Clear tile completely
+        tile.getChildren().clear();
+
+        // Add back labels
+        tile.getChildren().addAll(labels);
+
+        // Check if both players on same tile
+        boolean bothPlayersOnTile = (otherPlayer.getTileId() == position);
+
+        // Create container for player pieces
+        StackPane playerContainer = new StackPane();
+        playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);
+
+        try {
+            // Add current player
+            String imagePath = playerIndex == 0 ? "/boardPieces/SindreImage.png" : "/boardPieces/StianImage.png";
+            Image playerImage = new Image(getClass().getResourceAsStream(imagePath));
+            ImageView playerPiece = new ImageView(playerImage);
+            playerPiece.setFitHeight(TILE_SIZE * 0.35);
+            playerPiece.setFitWidth(TILE_SIZE * 0.35);
+            playerPiece.setPreserveRatio(true);
+
+            // Offset position if both on same tile
+            if (bothPlayersOnTile) {
+                StackPane.setMargin(playerPiece, new Insets(0,
+                        playerIndex == 0 ? 10 : -10, 0, playerIndex == 0 ? -10 : 10));
+            }
+
+            playerContainer.getChildren().add(playerPiece);
+
+            // Add other player if they're on same tile
+            if (bothPlayersOnTile) {
+                String otherImagePath = (1 - playerIndex) == 0 ? "/boardPieces/SindreImage.png" : "/boardPieces/StianImage.png";
+                Image otherImage = new Image(getClass().getResourceAsStream(otherImagePath));
+                ImageView otherPiece = new ImageView(otherImage);
+                otherPiece.setFitHeight(TILE_SIZE * 0.35);
+                otherPiece.setFitWidth(TILE_SIZE * 0.35);
+                otherPiece.setPreserveRatio(true);
+
+                StackPane.setMargin(otherPiece, new Insets(0,
+                        (1 - playerIndex) == 0 ? 10 : -10, 0, (1 - playerIndex) == 0 ? -10 : 10));
+
+                playerContainer.getChildren().add(otherPiece);
+            }
+
+            // Add container to tile
+            tile.getChildren().add(playerContainer);
+        } catch (Exception e) {
+            System.err.println("Error loading player images: " + e.getMessage());
+            e.printStackTrace();
+
+            // Fallback to circles
+            if (bothPlayersOnTile) {
+                // Create circles for both players
+                Circle player1Circle = new Circle(TILE_SIZE * 0.12);
+                player1Circle.setFill(Color.RED);
+                player1Circle.setStroke(Color.BLACK);
+                player1Circle.setStrokeWidth(1);
+
+                Circle player2Circle = new Circle(TILE_SIZE * 0.12);
+                player2Circle.setFill(Color.BLUE);
+                player2Circle.setStroke(Color.BLACK);
+                player2Circle.setStrokeWidth(1);
+
+                StackPane.setMargin(player1Circle, new Insets(0, 10, 0, -10));
+                StackPane.setMargin(player2Circle, new Insets(0, -10, 0, 10));
+
+                playerContainer.getChildren().addAll(player1Circle, player2Circle);
+            } else {
+                // Just create circle for current player
+                Circle playerCircle = new Circle(TILE_SIZE * 0.12);
+                playerCircle.setFill(playerIndex == 0 ? Color.RED : Color.BLUE);
+                playerCircle.setStroke(Color.BLACK);
+                playerCircle.setStrokeWidth(1);
+
+                playerContainer.getChildren().add(playerCircle);
+            }
+
+            tile.getChildren().add(playerContainer);
+        }
+    }
+
+    /**
+     * Animates the player movement from one tile to another.
+     * The player piece is moved from the old position to the new position with an
+     * animation.
+     *
+     * @param player        the player whose piece is to be moved
+     * @param fromPosition  the old position of the player piece
+     * @param toPosition    the new position of the player piece
+     */
+    private void animatePlayerMove(Player player, int fromPosition, int toPosition) {
+        int playerIndex = players.indexOf(player);
+        Player otherPlayer = players.get(1 - playerIndex);
+
+        // Get tiles for animation
+        StackPane fromTile = tilesMap.get(fromPosition);
+        StackPane toTile = tilesMap.get(toPosition);
+
+        // Remove player from old position
+        removePlayerFromTile(player, fromTile);
+
+        // If other player was on the same tile, add them back
+        if (otherPlayer.getTileId() == fromPosition) {
+            addPlayerToTile(otherPlayer, fromPosition);
+        }
+
+        // Create animating piece
+        ImageView playerPiece;
+        try {
+            String imagePath = playerIndex == 0 ? "/boardPieces/SindreImage.png" : "/boardPieces/StianImage.png";
+            Image playerImage = new Image(getClass().getResourceAsStream(imagePath));
+            playerPiece = new ImageView(playerImage);
+            playerPiece.setFitHeight(TILE_SIZE * 0.35);
+            playerPiece.setFitWidth(TILE_SIZE * 0.35);
+            playerPiece.setPreserveRatio(true);
+        } catch (Exception e) {
+            System.err.println("Error loading player image: " + e.getMessage());
+            e.printStackTrace();
+
+            // Skip animation and update directly
+            addPlayerToTile(player, toPosition);
+
+            // Update game info
+            gameInfoLabel.setText(player.getName() + " moved from tile " + fromPosition + " to tile " + toPosition);
+
+            // Switch to next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            currentPlayer = players.get(currentPlayerIndex);
+            statusLabel.setText(currentPlayer.getName() + "'s turn");
+            return;
+        }
+
+        // Create animation container
+        StackPane animationPane = new StackPane(playerPiece);
+
+        // Get coordinates
+        Bounds fromBounds = fromTile.localToScene(fromTile.getBoundsInLocal());
+        Bounds toBounds = toTile.localToScene(toTile.getBoundsInLocal());
+
+        // Add to scene
+        BorderPane root = (BorderPane) fromTile.getScene().getRoot();
+        root.getChildren().add(animationPane);
+
+        // Set start position
+        double startX = fromBounds.getMinX() + (fromBounds.getWidth() - playerPiece.getFitWidth()) / 2;
+        double startY = fromBounds.getMinY() + (fromBounds.getHeight() - playerPiece.getFitHeight()) / 2;
+        animationPane.setTranslateX(startX);
+        animationPane.setTranslateY(startY);
+
+        // Set end position
+        double endX = toBounds.getMinX() + (toBounds.getWidth() - playerPiece.getFitWidth()) / 2;
+        double endY = toBounds.getMinY() + (toBounds.getHeight() - playerPiece.getFitHeight()) / 2;
+
+        // Create animation
+        TranslateTransition transition = new TranslateTransition(Duration.millis(500), animationPane);
+        transition.setToX(endX);
+        transition.setToY(endY);
+
+        // When animation completes
+        transition.setOnFinished(e -> {
+            root.getChildren().remove(animationPane);
+
+            // Add player to new position
+            addPlayerToTile(player, toPosition);
+
+            // Update game info
+            gameInfoLabel.setText(player.getName() + " moved from tile " + fromPosition + " to tile " + toPosition);
+
+            // Switch to next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            currentPlayer = players.get(currentPlayerIndex);
+            statusLabel.setText(currentPlayer.getName() + "'s turn");
+        });
+
+        transition.play();
+    }
+
+    /**
+     * Moves the player one tile forward on the game board.
+     * The player piece is moved one tile forward on the game board.
+     *
+     * @param player the player whose piece is to be moved
+     */
+    private void moveOneTile(Player player) {
+        int oldPosition = player.getTileId();
+        int newPosition = oldPosition + 1;
+        player.setTileId(newPosition);
+
+        // Animate the player movement
+        animatePlayerMove(player, oldPosition, newPosition);
     }
 
     /**
