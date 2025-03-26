@@ -1,12 +1,18 @@
 package edu.ntnu.idi.idatt.view;
 
+import edu.ntnu.idi.idatt.models.Player;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import edu.ntnu.idi.idatt.models.Player;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -67,6 +73,9 @@ public class Board extends Application {
         VBox controlPanel = createControlPanel();
         root.setRight(controlPanel);
 
+        // Setup player pieces on the board
+        setupPlayerPieces();
+
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
@@ -116,6 +125,7 @@ public class Board extends Application {
                                     StackPane tile = createTile(tileNumber[0]);
                                     tile.getStyleClass().add("styled-tile");
                                     gridPane.add(tile, col, row);
+                                    tilesMap.put(tileNumber[0], tile); // Store tile reference
                                     tileNumber[0]++;
                                 });
                     } else {
@@ -124,6 +134,7 @@ public class Board extends Application {
                                     StackPane tile = createTile(tileNumber[0]);
                                     tile.getStyleClass().add("styled-tile");
                                     gridPane.add(tile, col, row);
+                                    tilesMap.put(tileNumber[0], tile); // Store tile reference
                                     tileNumber[0]++;
                                 });
                     }
@@ -155,6 +166,81 @@ public class Board extends Application {
         // tile.getStyleClass().add("styled-tile");
 
         return tile;
+    }
+
+    private void setupPlayerPieces() {
+        try {
+            // Get images for player pieces
+            Image player1Image = new Image(getClass().getResourceAsStream("/boardPieces/player1.png"));
+            Image player2Image = new Image(getClass().getResourceAsStream("/boardPieces/player2.png"));
+
+            // Create ImageViews for player pieces
+            ImageView player1Piece = new ImageView(player1Image);
+            ImageView player2Piece = new ImageView(player2Image);
+
+            // Scale images appropriately
+            player1Piece.setFitHeight(TILE_SIZE * 0.6);
+            player1Piece.setFitWidth(TILE_SIZE * 0.6);
+            player1Piece.setPreserveRatio(true);
+
+            player2Piece.setFitHeight(TILE_SIZE * 0.6);
+            player2Piece.setFitWidth(TILE_SIZE * 0.6);
+            player2Piece.setPreserveRatio(true);
+
+            // Both players start at position 1
+            StackPane startTile = tilesMap.get(1);
+
+            // Position pieces side by side in the starting tile
+            HBox playerContainer = new HBox(5);
+            playerContainer.setAlignment(Pos.CENTER);
+            playerContainer.getChildren().addAll(player1Piece, player2Piece);
+
+            startTile.getChildren().add(playerContainer);
+
+        } catch (Exception e) {
+            System.err.println("Error loading player pieces: " + e.getMessage());
+            e.printStackTrace();
+
+            // Fallback to colored circles if images aren't available
+            createFallbackPlayerPieces();
+        }
+    }
+
+    private void createFallbackPlayerPieces() {
+        // Create colored circles as fallback pieces
+        Circle player1Piece = new Circle(TILE_SIZE * 0.2);
+        player1Piece.setFill(Color.RED);
+        player1Piece.setStroke(Color.BLACK);
+        player1Piece.setStrokeWidth(1);
+
+        Circle player2Piece = new Circle(TILE_SIZE * 0.2);
+        player2Piece.setFill(Color.BLUE);
+        player2Piece.setStroke(Color.BLACK);
+        player2Piece.setStrokeWidth(1);
+
+        // Both players start at position 1
+        StackPane startTile = tilesMap.get(1);
+
+        // Position pieces side by side in the starting tile
+        HBox playerContainer = new HBox(5);
+        playerContainer.setAlignment(Pos.CENTER);
+        playerContainer.getChildren().addAll(player1Piece, player2Piece);
+
+        startTile.getChildren().add(playerContainer);
+    }
+
+    private void updatePlayerPosition(Player player, int oldPosition, int newPosition) {
+        // Remove player piece from old position if it exists
+        if (tilesMap.containsKey(oldPosition)) {
+            // Find and remove only this player's piece
+            // In a more complete implementation, you would need to identify each player's piece uniquely
+        }
+
+        // Add player piece to new position
+        if (tilesMap.containsKey(newPosition)) {
+            // Similar to setupPlayerPieces, but for a specific player
+            // This would be implemented when you're ready for the roll function
+        }
     }
 
     /**
