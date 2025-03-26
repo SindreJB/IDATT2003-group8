@@ -11,10 +11,12 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -49,6 +51,11 @@ public class Board extends Application {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #F0EFEB;");
 
+        // Initialize players (for demonstration)
+        players.add(new Player("Player 1", 1));
+        players.add(new Player("Player 2", 1));
+        currentPlayer = players.get(0);
+
         // Create and set up the game board
         GridPane gameBoard = createGameBoard();
         root.setCenter(gameBoard);
@@ -56,12 +63,31 @@ public class Board extends Application {
         // Add padding around the board
         BorderPane.setMargin(gameBoard, new Insets(20));
 
+        // Create control panel
+        VBox controlPanel = createControlPanel();
+        root.setRight(controlPanel);
+
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         primaryStage.setTitle("Snakes and Ladders");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private VBox createControlPanel() {
+        VBox panel = new VBox(10);
+        panel.setPadding(new Insets(20));
+        panel.setAlignment(Pos.TOP_CENTER);
+
+        statusLabel = new Label(currentPlayer.getName() + "'s turn");
+        statusLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        Button rollButton = new Button("Roll Dice");
+     //   rollButton.setOnAction(e -> rollDice()); TODO: Implement rollDice method
+
+        panel.getChildren().addAll(statusLabel, rollButton);
+        return panel;
     }
 
     /**
