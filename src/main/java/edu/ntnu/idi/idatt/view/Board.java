@@ -1,7 +1,12 @@
 package edu.ntnu.idi.idatt.view;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
+import edu.ntnu.idi.idatt.models.Player;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +27,12 @@ public class Board extends Application {
     private static final int TILE_SIZE = 60;
     private static final int GRID_ROWS = 10;
     private static final int GRID_COLS = 9;
+
+    private List<Player> players = new ArrayList<>();
+    private Map<Integer, StackPane> tilesMap = new HashMap<>();
+    private Player currentPlayer;
+    private int currentPlayerIndex = 0;
+    private Label statusLabel;
 
     /**
      * Starts the application by setting up the primary stage.
