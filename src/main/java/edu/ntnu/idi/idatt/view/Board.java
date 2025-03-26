@@ -171,8 +171,8 @@ public class Board extends Application {
     private void setupPlayerPieces() {
         try {
             // Get images for player pieces
-            Image player1Image = new Image(getClass().getResourceAsStream("/boardPieces/player1.png"));
-            Image player2Image = new Image(getClass().getResourceAsStream("/boardPieces/player2.png"));
+            Image player1Image = new Image(getClass().getResourceAsStream("/boardPieces/SindreImage.png"));
+            Image player2Image = new Image(getClass().getResourceAsStream("/boardPieces/StianImage.png"));
 
             // Create ImageViews for player pieces
             ImageView player1Piece = new ImageView(player1Image);
