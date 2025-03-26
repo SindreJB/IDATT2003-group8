@@ -2,10 +2,7 @@ package edu.ntnu.idi.idatt.view;
 
 import edu.ntnu.idi.idatt.models.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import javafx.animation.TranslateTransition;
@@ -40,8 +37,8 @@ public class Board extends Application {
     private static final int GRID_ROWS = 10;
     private static final int GRID_COLS = 9;
 
-    private List<Player> players = new ArrayList<>();
-    private Map<Integer, StackPane> tilesMap = new HashMap<>();
+    private final List<Player> players = new ArrayList<>();
+    private final Map<Integer, StackPane> tilesMap = new HashMap<>();
     private Player currentPlayer;
     private int currentPlayerIndex = 0;
     private Label statusLabel;
@@ -66,7 +63,7 @@ public class Board extends Application {
         // Initialize players (for demonstration)
         players.add(new Player("Player 1", 1));
         players.add(new Player("Player 2", 1));
-        currentPlayer = players.get(0);
+        currentPlayer = players.getFirst();
 
         // Create and set up the game board
         GridPane gameBoard = createGameBoard();
@@ -83,7 +80,7 @@ public class Board extends Application {
         setupPlayerPieces();
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
 
         primaryStage.setTitle("Snakes and Ladders");
         primaryStage.setScene(scene);
@@ -272,11 +269,9 @@ public class Board extends Application {
      * Removes the player pieces from the given tile.
      * The player pieces are removed from the tile to prepare for the next move.
      *
-     * @param player the player whose piece is to be removed
      * @param tile   the tile from which the player piece is to be removed
      */
-    private void removePlayerFromTile(Player player, StackPane tile) {
-        // Instead of trying to find specific player pieces, collect all elements to preserve
+    private void removePlayerFromTile(StackPane tile) {
         List<Node> toKeep = new ArrayList<>();
 
         // Keep only label (tile number)
@@ -413,7 +408,7 @@ public class Board extends Application {
         StackPane toTile = tilesMap.get(toPosition);
 
         // Remove player from old position
-        removePlayerFromTile(player, fromTile);
+        removePlayerFromTile(fromTile);
 
         // If other player was on the same tile, add them back
         if (otherPlayer.getTileId() == fromPosition) {
