@@ -65,15 +65,4 @@ public class CsvHandler {
     Files.write(path, lines, StandardCharsets.UTF_8);
   }
 
-  /**
-   * Creates a file chooser dialog for selecting CSV files.
-   *
-   * @param save true for save dialog, false for open dialog
-   * @return the selected file path, or null if no file was selected
-   */
-  public static String showFileChooserDialog(boolean save) {
-    // This method would typically use JavaFX's FileChooser or Swing's JFileChooser
-    // to display a file dialog. For now, we'll return a placeholder value.
-    return save ? "players.csv" : "players.csv";
-  }
 }
