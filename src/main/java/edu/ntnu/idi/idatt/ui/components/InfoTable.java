@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 public class InfoTable {
     private Label statusLabel;
     private Label gameInfoLabel;
-    private DiceView diceView;
+    private DiceUI diceView;
 
     /**
      * Creates a new InfoTable
@@ -20,7 +20,7 @@ public class InfoTable {
     public InfoTable() {
         statusLabel = new Label();
         gameInfoLabel = new Label();
-        diceView = new DiceView();
+        diceView = new DiceUI();
     }
 
     /**
@@ -84,7 +84,7 @@ public class InfoTable {
      * Gets the dice view component
      * @return The DiceView
      */
-    public DiceView getDiceView() {
+    public DiceUI getDiceView() {
         return diceView;
     }
 

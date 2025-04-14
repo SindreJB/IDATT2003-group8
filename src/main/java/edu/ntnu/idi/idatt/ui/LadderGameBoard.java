@@ -1,6 +1,7 @@
 package edu.ntnu.idi.idatt.ui;
 
 import edu.ntnu.idi.idatt.model.Dice;
+import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,14 +18,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -48,6 +46,7 @@ public class LadderGameBoard extends Application {
     private InfoTable infoTable;
     private BorderPane root;
     private Dice dice = new Dice();
+    private GamePiece gamePiece;
 
     /**
      * Starts the application by setting up the primary stage.
@@ -68,6 +67,9 @@ public class LadderGameBoard extends Application {
         players.add(new Player("Player 1", 1));
         players.add(new Player("Player 2", 1));
         currentPlayer = players.getFirst();
+
+        // Initialize GamePiece after players are created
+        gamePiece = new GamePiece(TILE_SIZE, players);
 
         // Create and set up the game board
         GridPane gameBoard = createGameBoard();
@@ -90,7 +92,7 @@ public class LadderGameBoard extends Application {
         gameInfoLabel.setText("Game started. Roll the dice to begin.");
 
         // Setup player pieces on the board
-        setupPlayerPieces();
+        gamePiece.setupPlayerPieces(tilesMap.get(1));
 
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
@@ -194,89 +196,6 @@ public class LadderGameBoard extends Application {
     }
 
     /**
-     * Sets up player pieces on the game board.
-     * The player pieces are represented by images of the players.
-     * If the images are not available, colored circles are used as fallback.
-     */
-    private void setupPlayerPieces() {
-        try {
-            // Get images for player pieces
-            Image player1Image = new Image(getClass().getResourceAsStream("/boardPieces/SindreImage.png"));
-            Image player2Image = new Image(getClass().getResourceAsStream("/boardPieces/StianImage.png"));
-
-            // Create ImageViews for player pieces
-            ImageView player1Piece = new ImageView(player1Image);
-            ImageView player2Piece = new ImageView(player2Image);
-
-            // Scale images appropriately - make them smaller
-            player1Piece.setFitHeight(TILE_SIZE * 0.35);
-            player1Piece.setFitWidth(TILE_SIZE * 0.35);
-            player1Piece.setPreserveRatio(true);
-
-            player2Piece.setFitHeight(TILE_SIZE * 0.35);
-            player2Piece.setFitWidth(TILE_SIZE * 0.35);
-            player2Piece.setPreserveRatio(true);
-
-            // Both players start at position 1
-            StackPane startTile = tilesMap.get(1);
-
-            // Use StackPane instead of HBox to overlap player pieces slightly
-            StackPane playerContainer = new StackPane();
-
-            // Add padding around the pieces to offset them slightly
-            StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5)); // Right padding
-            StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5)); // Left padding
-
-            playerContainer.getChildren().addAll(player1Piece, player2Piece);
-            playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE); // Limit the container size
-
-            // Add to the existing tile without stretching it
-            startTile.getChildren().add(playerContainer);
-
-        } catch (Exception e) {
-            System.err.println("Error loading player pieces: " + e.getMessage());
-            e.printStackTrace();
-
-            // Fallback to colored circles if images aren't available
-            createFallbackPlayerPieces();
-        }
-    }
-
-    /**
-     * Creates colored circles as fallback player pieces.
-     * The circles are added to the start tile on the game board
-     * if the player images are not available.
-     */
-    private void createFallbackPlayerPieces() {
-        // Create colored circles as fallback pieces
-        Circle player1Piece = new Circle(TILE_SIZE * 0.12);
-        player1Piece.setFill(Color.RED);
-        player1Piece.setStroke(Color.BLACK);
-        player1Piece.setStrokeWidth(1);
-
-        Circle player2Piece = new Circle(TILE_SIZE * 0.12);
-        player2Piece.setFill(Color.BLUE);
-        player2Piece.setStroke(Color.BLACK);
-        player2Piece.setStrokeWidth(1);
-
-        // Both players start at position 1
-        StackPane startTile = tilesMap.get(1);
-
-        // Use StackPane instead of HBox to overlap player pieces slightly
-        StackPane playerContainer = new StackPane();
-
-        // Add padding around the pieces to offset them slightly
-        StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5)); // Right padding
-        StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5)); // Left padding
-
-        playerContainer.getChildren().addAll(player1Piece, player2Piece);
-        playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE); // Limit the container size
-
-        // Add to the existing tile without stretching it
-        startTile.getChildren().add(playerContainer);
-    }
-
-    /**
      * Removes the player pieces from the given tile.
      * The player pieces are removed from the tile to prepare for the next move.
      *
@@ -295,111 +214,6 @@ public class LadderGameBoard extends Application {
         // Clear tile and add back only the preserved nodes
         tile.getChildren().clear();
         tile.getChildren().addAll(toKeep);
-    }
-
-    /**
-     * Adds the player pieces to the given tile.
-     * The player pieces are added to the tile to reflect the current position of
-     * the players.
-     *
-     * @param player   the player whose piece is to be added
-     * @param position the position of the tile to which the player piece is to be
-     *                 added
-     */
-    private void addPlayerToTile(Player player, int position) {
-        int playerIndex = players.indexOf(player);
-        Player otherPlayer = players.get(1 - playerIndex);
-        StackPane tile = tilesMap.get(position);
-
-        // Preserve labels first
-        List<Label> labels = new ArrayList<>();
-        for (Node node : tile.getChildren()) {
-            if (node instanceof Label) {
-                labels.add((Label) node);
-            }
-        }
-
-        // Clear tile completely
-        tile.getChildren().clear();
-
-        // Add back labels
-        tile.getChildren().addAll(labels);
-
-        // Check if both players on same tile
-        boolean bothPlayersOnTile = (otherPlayer.getTileId() == position);
-
-        // Create container for player pieces
-        StackPane playerContainer = new StackPane();
-        playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);
-
-        try {
-            // Add current player
-            String imagePath = playerIndex == 0 ? "/boardPieces/SindreImage.png" : "/boardPieces/StianImage.png";
-            Image playerImage = new Image(getClass().getResourceAsStream(imagePath));
-            ImageView playerPiece = new ImageView(playerImage);
-            playerPiece.setFitHeight(TILE_SIZE * 0.35);
-            playerPiece.setFitWidth(TILE_SIZE * 0.35);
-            playerPiece.setPreserveRatio(true);
-
-            // Offset position if both on same tile
-            if (bothPlayersOnTile) {
-                StackPane.setMargin(playerPiece, new Insets(0,
-                        playerIndex == 0 ? 10 : -10, 0, playerIndex == 0 ? -10 : 10));
-            }
-
-            playerContainer.getChildren().add(playerPiece);
-
-            // Add other player if they're on same tile
-            if (bothPlayersOnTile) {
-                String otherImagePath = (1 - playerIndex) == 0 ? "/boardPieces/SindreImage.png"
-                        : "/boardPieces/StianImage.png";
-                Image otherImage = new Image(getClass().getResourceAsStream(otherImagePath));
-                ImageView otherPiece = new ImageView(otherImage);
-                otherPiece.setFitHeight(TILE_SIZE * 0.35);
-                otherPiece.setFitWidth(TILE_SIZE * 0.35);
-                otherPiece.setPreserveRatio(true);
-
-                StackPane.setMargin(otherPiece, new Insets(0,
-                        (1 - playerIndex) == 0 ? 10 : -10, 0, (1 - playerIndex) == 0 ? -10 : 10));
-
-                playerContainer.getChildren().add(otherPiece);
-            }
-
-            // Add container to tile
-            tile.getChildren().add(playerContainer);
-        } catch (Exception e) {
-            System.err.println("Error loading player images: " + e.getMessage());
-            e.printStackTrace();
-
-            // Fallback to circles
-            if (bothPlayersOnTile) {
-                // Create circles for both players
-                Circle player1Circle = new Circle(TILE_SIZE * 0.12);
-                player1Circle.setFill(Color.RED);
-                player1Circle.setStroke(Color.BLACK);
-                player1Circle.setStrokeWidth(1);
-
-                Circle player2Circle = new Circle(TILE_SIZE * 0.12);
-                player2Circle.setFill(Color.BLUE);
-                player2Circle.setStroke(Color.BLACK);
-                player2Circle.setStrokeWidth(1);
-
-                StackPane.setMargin(player1Circle, new Insets(0, 10, 0, -10));
-                StackPane.setMargin(player2Circle, new Insets(0, -10, 0, 10));
-
-                playerContainer.getChildren().addAll(player1Circle, player2Circle);
-            } else {
-                // Just create circle for current player
-                Circle playerCircle = new Circle(TILE_SIZE * 0.12);
-                playerCircle.setFill(playerIndex == 0 ? Color.RED : Color.BLUE);
-                playerCircle.setStroke(Color.BLACK);
-                playerCircle.setStrokeWidth(1);
-
-                playerContainer.getChildren().add(playerCircle);
-            }
-
-            tile.getChildren().add(playerContainer);
-        }
     }
 
     /**
@@ -424,34 +238,16 @@ public class LadderGameBoard extends Application {
 
         // If other player was on the same tile, add them back
         if (otherPlayer.getTileId() == fromPosition) {
-            addPlayerToTile(otherPlayer, fromPosition);
+            gamePiece.addPlayerToTile(otherPlayer, fromPosition, fromTile);
         }
 
-        // Create animating piece
-        ImageView playerPiece;
-        try {
-            String imagePath = playerIndex == 0 ? "/boardPieces/SindreImage.png" : "/boardPieces/StianImage.png";
-            Image playerImage = new Image(getClass().getResourceAsStream(imagePath));
-            playerPiece = new ImageView(playerImage);
-            playerPiece.setFitHeight(TILE_SIZE * 0.35);
-            playerPiece.setFitWidth(TILE_SIZE * 0.35);
-            playerPiece.setPreserveRatio(true);
-        } catch (Exception e) {
-            System.err.println("Error loading player image: " + e.getMessage());
-            e.printStackTrace();
-
-            // Skip animation and update directly
-            addPlayerToTile(player, toPosition);
-
-            // Update game info
-            gameInfoLabel.setText(player.getName() + " moved from tile " + fromPosition + " to tile " + toPosition);
-
-            // Switch to next player
+        // Create animating piece using GamePiece
+        ImageView playerPiece = gamePiece.createAnimationPiece(playerIndex);
+        if (playerPiece == null) {
+            // Skip animation if piece creation fails
+            gamePiece.addPlayerToTile(player, toPosition, toTile);
             switchToNextPlayer();
-
-            // Re-enable roll button
             infoTable.setRollEnabled(true);
-
             return;
         }
 
@@ -484,8 +280,8 @@ public class LadderGameBoard extends Application {
         transition.setOnFinished(e -> {
             root.getChildren().remove(animationPane);
 
-            // Add player to new position
-            addPlayerToTile(player, toPosition);
+            // Add player to new position using GamePiece
+            gamePiece.addPlayerToTile(player, toPosition, toTile);
 
             // Switch to next player
             switchToNextPlayer();
