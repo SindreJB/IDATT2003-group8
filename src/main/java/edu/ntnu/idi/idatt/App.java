@@ -1,6 +1,6 @@
 package edu.ntnu.idi.idatt;
 
-import edu.ntnu.idi.idatt.ui.Board;
+import edu.ntnu.idi.idatt.ui.LadderGameBoard;
 import edu.ntnu.idi.idatt.ui.Page;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Board board = new Board();
+        LadderGameBoard board = new LadderGameBoard();
         Page page = new Page();
         page.start(primaryStage);
     }
