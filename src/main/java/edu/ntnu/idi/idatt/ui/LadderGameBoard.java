@@ -1,10 +1,11 @@
 package edu.ntnu.idi.idatt.ui;
 
+import edu.ntnu.idi.idatt.model.Dice;
+import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 import edu.ntnu.idi.idatt.model.Player;
@@ -15,13 +16,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,7 +33,7 @@ import javafx.util.Duration;
  * game.
  * It extends the JavaFX Application class and sets up the game board UI.
  */
-public class Board extends Application {
+public class LadderGameBoard extends Application {
 
     private static final int TILE_SIZE = 60;
     private static final int GRID_ROWS = 10;
@@ -45,8 +44,10 @@ public class Board extends Application {
     private Player currentPlayer;
     private int currentPlayerIndex = 0;
     private Label statusLabel;
-    private HBox diceContainer;
     private Label gameInfoLabel;
+    private InfoTable infoTable;
+    private BorderPane root;
+    private Dice dice = new Dice();
 
     /**
      * Starts the application by setting up the primary stage.
@@ -60,7 +61,7 @@ public class Board extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        BorderPane root = new BorderPane();
+        root = new BorderPane();
         root.setStyle("-fx-background-color: #F0EFEB;");
 
         // Initialize players (for demonstration)
@@ -75,9 +76,18 @@ public class Board extends Application {
         // Add padding around the board
         BorderPane.setMargin(gameBoard, new Insets(20));
 
-        // Create control panel
-        VBox controlPanel = createControlPanel();
+        // Create InfoTable instance
+        infoTable = new InfoTable();
+        VBox controlPanel = infoTable.createControlPanel(this::rollAndMove);
         root.setRight(controlPanel);
+
+        // Get references to UI components from InfoTable
+        this.statusLabel = infoTable.getStatusLabel();
+        this.gameInfoLabel = infoTable.getGameInfoLabel();
+
+        // Set initial text for labels
+        statusLabel.setText(currentPlayer.getName() + "'s turn");
+        gameInfoLabel.setText("Game started. Roll the dice to begin.");
 
         // Setup player pieces on the board
         setupPlayerPieces();
@@ -90,34 +100,31 @@ public class Board extends Application {
         primaryStage.show();
     }
 
-    private VBox createControlPanel() {
-        VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
-        panel.setAlignment(Pos.TOP_CENTER);
+    /**
+     * Handles dice rolling and player movement
+     */
+    private void rollAndMove() {
+        // Disable roll button during animation
+        infoTable.setRollEnabled(false);
 
-        statusLabel = new Label(currentPlayer.getName() + "'s turn");
-        statusLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        // Roll the dice
+        int diceValue = dice.rollDice();
 
-        Button rollButton = new Button("Roll Dice");
-        rollButton.setOnAction(e -> moveOneTile(currentPlayer));
+        // Display dice value
+        infoTable.updateDiceDisplay(diceValue);
 
-        // Create a space for displaying dice
-        diceContainer = new HBox(10); // Use the class field directly
-        diceContainer.setAlignment(Pos.CENTER);
-        diceContainer.setPrefHeight(60);
-        diceContainer.setPrefWidth(100);
-        diceContainer.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f8f8f8;");
+        // Move player
+        int oldPosition = currentPlayer.getTileId();
+        int newPosition = Math.min(oldPosition + diceValue, GRID_ROWS * GRID_COLS); // Limit to board size
+        currentPlayer.setTileId(newPosition);
 
-        // Create a text area for game info
-        gameInfoLabel = new Label("Game information will appear here"); // Use the class field directly
-        gameInfoLabel.setWrapText(true);
-        gameInfoLabel.setPrefWidth(200);
-        gameInfoLabel.setPrefHeight(100);
-        gameInfoLabel.setStyle(
-                "-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 5; -fx-background-color: #f8f8f8;");
+        // Update the game info
+        String moveInfo = currentPlayer.getName() + " rolled " + diceValue +
+                " and moves from tile " + oldPosition + " to tile " + newPosition;
+        gameInfoLabel.setText(moveInfo);
 
-        panel.getChildren().addAll(statusLabel, rollButton, diceContainer, gameInfoLabel);
-        return panel;
+        // Animate the player movement
+        animatePlayerMove(currentPlayer, oldPosition, newPosition);
     }
 
     /**
@@ -440,9 +447,11 @@ public class Board extends Application {
             gameInfoLabel.setText(player.getName() + " moved from tile " + fromPosition + " to tile " + toPosition);
 
             // Switch to next player
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            currentPlayer = players.get(currentPlayerIndex);
-            statusLabel.setText(currentPlayer.getName() + "'s turn");
+            switchToNextPlayer();
+
+            // Re-enable roll button
+            infoTable.setRollEnabled(true);
+
             return;
         }
 
@@ -454,7 +463,6 @@ public class Board extends Application {
         Bounds toBounds = toTile.localToScene(toTile.getBoundsInLocal());
 
         // Add to scene
-        BorderPane root = (BorderPane) fromTile.getScene().getRoot();
         root.getChildren().add(animationPane);
 
         // Set start position
@@ -479,36 +487,31 @@ public class Board extends Application {
             // Add player to new position
             addPlayerToTile(player, toPosition);
 
-            // Update game info
-            gameInfoLabel.setText(player.getName() + " moved from tile " + fromPosition + " to tile " + toPosition);
-
             // Switch to next player
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            currentPlayer = players.get(currentPlayerIndex);
-            statusLabel.setText(currentPlayer.getName() + "'s turn");
+            switchToNextPlayer();
+
+            // Re-enable roll button
+            infoTable.setRollEnabled(true);
         });
 
         transition.play();
     }
 
     /**
-     * Moves the player one tile forward on the game board.
-     * The player piece is moved one tile forward on the game board.
-     *
-     * @param player the player whose piece is to be moved
+     * Switches to the next player
      */
-    private void moveOneTile(Player player) {
-        int oldPosition = player.getTileId();
-        int newPosition = oldPosition + 1;
-        player.setTileId(newPosition);
+    private void switchToNextPlayer() {
+        // Update player index and current player
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        currentPlayer = players.get(currentPlayerIndex);
 
-        // Animate the player movement
-        animatePlayerMove(player, oldPosition, newPosition);
+        // Update status label
+        statusLabel.setText(currentPlayer.getName() + "'s turn");
     }
 
     /**
      * The main entry point for the Java application.
-     * 
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
