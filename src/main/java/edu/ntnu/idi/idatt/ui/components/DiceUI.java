@@ -9,14 +9,14 @@ import javafx.scene.layout.VBox;
 /**
  * A component that displays dice and a roll button
  */
-public class DiceView {
+public class DiceUI {
     private HBox diceContainer;
     private Button rollButton;
 
     /**
      * Creates a new DiceView
      */
-    public DiceView() {
+    public DiceUI() {
         diceContainer = new HBox(10);
         rollButton = new Button("Roll Dice");
 
