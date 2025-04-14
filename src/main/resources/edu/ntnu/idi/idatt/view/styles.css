@@ -1,23 +1,312 @@
+/* Layout */
+.container {
+  -fx-max-width: 1200px;
+  -fx-padding: 20px;
+}
+
+/* Flexbox */
+.flex {
+  -fx-display: flex;
+}
+
+.flex-col {
+  -fx-orientation: vertical;
+}
+
+.flex-row {
+  -fx-orientation: horizontal;
+}
+
+.justify-center {
+  -fx-alignment: center;
+}
+
+.justify-start {
+  -fx-alignment: center-left;
+}
+
+.justify-end {
+  -fx-alignment: center-right;
+}
+
+.items-center {
+  -fx-alignment: center;
+}
+
+.space-x-2 {
+  -fx-spacing: 8;
+}
+
+.space-x-4 {
+  -fx-spacing: 16;
+}
+
+.space-y-2 {
+  -fx-spacing: 8;
+}
+
+.space-y-4 {
+  -fx-spacing: 16;
+}
+
+/* Padding */
+.p-2 {
+  -fx-padding: 8;
+}
+
+.p-4 {
+  -fx-padding: 16;
+}
+
+.px-4 {
+  -fx-padding: 0 16 0 16;
+}
+
+.py-2 {
+  -fx-padding: 8 0 8 0;
+}
+
+/* Margin */
+.m-2 {
+  -fx-margin: 8;
+}
+
+.m-4 {
+  -fx-margin: 16;
+}
+
+.mt-2 {
+  -fx-margin-top: 8;
+}
+
+.mb-4 {
+  -fx-margin-bottom: 16;
+}
+
+/* Colors - using Material Design palette */
+.bg-primary {
+  -fx-background-color: #1976d2;
+}
+
+.bg-secondary {
+  -fx-background-color: #424242;
+}
+
+.bg-success {
+  -fx-background-color: #4caf50;
+}
+
+.bg-error {
+  -fx-background-color: #f44336;
+}
+
+.bg-warning {
+  -fx-background-color: #ffc107;
+}
+
+.bg-white {
+  -fx-background-color: #ffffff;
+}
+
+.bg-gray-100 {
+  -fx-background-color: #f5f5f5;
+}
+
+.bg-gray-200 {
+  -fx-background-color: #eeeeee;
+}
+
+/* Text Colors */
+.text-white {
+  -fx-text-fill: #ffffff;
+}
+
+.text-black {
+  -fx-text-fill: #000000;
+}
+
+.text-primary {
+  -fx-text-fill: #1976d2;
+}
+
+/* Text Sizes */
+.text-xs {
+  -fx-font-size: 12px;
+}
+
+.text-sm {
+  -fx-font-size: 14px;
+}
+
+.text-base {
+  -fx-font-size: 16px;
+}
+
+.text-lg {
+  -fx-font-size: 18px;
+}
+
+.text-xl {
+  -fx-font-size: 20px;
+}
+
+.text-2xl {
+  -fx-font-size: 24px;
+}
+
+/* Font Weights */
+.font-bold {
+  -fx-font-weight: bold;
+}
+
+.font-medium {
+  -fx-font-weight: 500;
+}
+
+/* Border Radius */
+.rounded {
+  -fx-background-radius: 4;
+  -fx-border-radius: 4;
+}
+
+.rounded-lg {
+  -fx-background-radius: 8;
+  -fx-border-radius: 8;
+}
+
+.rounded-full {
+  -fx-background-radius: 9999;
+  -fx-border-radius: 9999;
+}
+
+/* Borders */
+.border {
+  -fx-border-width: 1;
+  -fx-border-color: #e0e0e0;
+}
+
+.border-2 {
+  -fx-border-width: 2;
+}
+
+/* Shadows */
+.shadow {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+}
+
+.shadow-lg {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
+}
+
+/* Hover Effects */
+.hover-grow {
+  -fx-scale-x: 1;
+  -fx-scale-y: 1;
+  -fx-transition: -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+
+.hover-grow:hover {
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+
+/* Button Styles */
+.btn {
+  -fx-padding: 8 16;
+  -fx-background-radius: 4;
+  -fx-cursor: hand;
+}
+
+.btn-primary {
+  -fx-background-color: #1976d2;
+  -fx-text-fill: white;
+}
+
+.btn-primary:hover {
+  -fx-background-color: #1565c0;
+}
+
+.btn-secondary {
+  -fx-background-color: #424242;
+  -fx-text-fill: white;
+}
+
+.btn-secondary:hover {
+  -fx-background-color: #323232;
+}
+
+/* Input Styles */
+.input {
+  -fx-padding: 8;
+  -fx-background-radius: 4;
+  -fx-border-radius: 4;
+  -fx-border-width: 1;
+  -fx-border-color: #e0e0e0;
+}
+
+.input:focused {
+  -fx-border-color: #1976d2;
+}
+
 .styled-tile {
-  -fx-background-color: #0f172a; /* slate/900 */
+  -fx-background-color: #0f172a; /* slate-900 */
   -fx-padding: 10px 16px;
   -fx-background-radius: 6px;
   -fx-border-radius: 6px;
-  -fx-width: 60;
-  -fx-height: 60;
+  -fx-pref-width: 60;
+  -fx-pref-height: 60;
   -fx-alignment: center;
-
-  -fx-text-fill: #ffffff;
-  -fx-font-family: "Inter";
-  -fx-font-size: 14px;
-  -fx-font-weight: 500;
-  -fx-line-height: 24px;
 }
 
-.styled-text {
+.tile-text {
   -fx-text-fill: #ffffff;
   -fx-font-family: "Inter";
   -fx-font-size: 14px;
   -fx-font-weight: 500;
-  -fx-line-height: 24px;
+}
+
+/* Fill parent width */
+.fill-width {
+  -fx-pref-width: -1; /* Reset preferred width */
+  -fx-max-width: Infinity; /* Allow expanding */
+  -fx-min-width: -1; /* Reset minimum width */
+  -fx-hgrow: ALWAYS; /* HBox.hgrow equivalent in CSS */
+}
+
+/* Fill parent height */
+.fill-height {
+  -fx-pref-height: -1;
+  -fx-max-height: Infinity;
+  -fx-min-height: -1;
+  -fx-vgrow: ALWAYS; /* VBox.vgrow equivalent in CSS */
+}
+
+/* Fill both directions */
+.fill {
+  -fx-pref-width: -1;
+  -fx-pref-height: -1;
+  -fx-max-width: Infinity;
+  -fx-max-height: Infinity;
+  -fx-min-width: -1;
+  -fx-min-height: -1;
+  -fx-hgrow: ALWAYS;
+  -fx-vgrow: ALWAYS;
+}
+
+/* Common percentage-based widths */
+.w-full {
+  -fx-pref-width: 100%;
+}
+
+.w-1-2 {
+  -fx-pref-width: 50%;
+}
+
+/* Common percentage-based heights */
+.h-full {
+  -fx-pref-height: 100%;
+}
+
+.h-1-2 {
+  -fx-pref-height: 50%;
 }
