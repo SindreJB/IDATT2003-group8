@@ -1,52 +1,72 @@
 package edu.ntnu.idi.idatt.model;
 
+import java.util.Objects;
+
 /**
- * The LadderAction class represents an action that moves a player to a specific
- * tile
- * when they land on a ladder in a board game.
- * 
- * <p>
- * This class implements the TileAction interface and provides the
- * implementation
- * for the tileActionResult method, which returns the tile number where the
- * player
- * should be moved to.
- * </p>
- * 
- * <p>
- * Example usage:
- * </p>
- * 
- * <pre>
- * {@code
- * LadderAction ladderAction = new LadderAction(10);
- * int result = ladderAction.tileActionResult(); // result will be 10
- * }
- * </pre>
- * 
- * @author Your Name
+ * Represents a ladder or snake action that moves a player to a different tile.
+ * Can be used for both upward movement (ladders) and downward movement
+ * (snakes).
  */
 public class LadderAction implements TileAction {
-  private final int endTile;
+  private int destinationTileId;
+  private String description;
+  private static final String TYPE = "LadderAction";
 
   /**
-   * Represents an action involving a ladder in a game.
-   * This action moves a player to a specified end tile.
+   * Creates a new ladder action.
    *
-   * @param endTile the tile number where the ladder ends
+   * @param startTileId       The ID of the tile where the ladder/snake starts
+   * @param destinationTileId The ID of the tile where the ladder/snake ends
    */
-  public LadderAction(int endTile) {
-    this.endTile = endTile;
+  public LadderAction(int startTileId, int destinationTileId) {
+    this.destinationTileId = destinationTileId;
+    this.description = String.format(
+        destinationTileId > startTileId ? "Ladder from %d to %d" : "Snake from %d to %d",
+        startTileId,
+        destinationTileId);
   }
 
-  /**
-   * Executes the action associated with the tile and returns the result.
-   *
-   * @return the end tile position after the action is performed.
-   */
   @Override
-  public int tileActionResult() {
-    return this.endTile;
+  public void perform(Player player) {
+    player.setTileId(destinationTileId);
   }
 
+  @Override
+  public String getDescription() {
+    return description;
+  }
+
+  @Override
+  public String getType() {
+    return TYPE;
+  }
+
+  // Getters and setters for JSON serialization
+  public int getDestinationTileId() {
+    return destinationTileId;
+  }
+
+  public void setDestinationTileId(int destinationTileId) {
+    this.destinationTileId = destinationTileId;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    LadderAction that = (LadderAction) o;
+    return destinationTileId == that.destinationTileId &&
+        Objects.equals(description, that.description);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(destinationTileId, description);
+  }
 }

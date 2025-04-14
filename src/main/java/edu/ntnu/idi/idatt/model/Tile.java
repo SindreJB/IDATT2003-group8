@@ -1,81 +1,94 @@
 package edu.ntnu.idi.idatt.model;
 
+import edu.ntnu.idi.idatt.model.TileAction;
+
+import java.util.Objects;
+
+import edu.ntnu.idi.idatt.model.Player;
+import edu.ntnu.idi.idatt.model.TileAction;
+
 /**
- * The Tile class represents a tile in a game or application.
- * Each tile has a unique identifier and can have an associated action.
+ * Represents a single tile on the game board.
+ * Each tile has a number, coordinates, and potentially an action.
  */
 public class Tile {
+  private int number; // The tile number (1-based)
+  private int x; // X coordinate on the board
+  private int y; // Y coordinate on the board
+  private TileAction action; // The action associated with this tile (can be null)
 
   /**
-   * The unique identifier for this tile.
-   */
-  private final int tileId;
-
-  /**
-   * The action to be performed when landing on this tile.
-   */
-  private TileAction landAction;
-
-  /**
-   * Indicates whether this tile has an associated action.
-   */
-  private boolean hasAction;
-
-  /**
-   * Constructs a Tile with the specified identifier.
+   * Creates a new tile with the specified number.
    *
-   * @param tileId the unique identifier for this tile
+   * @param number The tile number
    */
-  public Tile(int tileId) {
-    this.tileId = tileId;
+  public Tile(int number) {
+    this.number = number;
   }
 
   /**
-   * Constructs a Tile with the specified identifier and action.
+   * Executes this tile's action on a player, if an action exists.
    *
-   * @param tileId the unique identifier for this tile
-   * @param action the action to be performed when landing on this tile
+   * @param player The player to perform the action on
+   * @return true if an action was performed, false otherwise
    */
-  public Tile(int tileId, TileAction action) {
-    this.tileId = tileId;
-    this.landAction = action;
-    this.hasAction = false;
+  public boolean performAction(Player player) {
+    if (action != null) {
+      action.perform(player);
+      return true;
+    }
+    return false;
   }
 
-  /**
-   * Returns the unique identifier for this tile.
-   *
-   * @return the unique identifier for this tile
-   */
-  public int getTileId() {
-    return tileId;
+  // Getters and setters for JSON serialization
+
+  public int getNumber() {
+    return number;
   }
 
-  /**
-   * Sets the action to be performed when landing on this tile.
-   *
-   * @param action the action to be performed when landing on this tile
-   */
+  public void setNumber(int number) {
+    this.number = number;
+  }
+
+  public int getX() {
+    return x;
+  }
+
+  public void setX(int x) {
+    this.x = x;
+  }
+
+  public int getY() {
+    return y;
+  }
+
+  public void setY(int y) {
+    this.y = y;
+  }
+
+  public TileAction getAction() {
+    return action;
+  }
+
   public void setAction(TileAction action) {
-    this.landAction = action;
-    this.hasAction = true;
+    this.action = action;
   }
 
-  /**
-   * Checks if this tile has an associated action.
-   *
-   * @return true if this tile has an associated action, false otherwise
-   */
-  public boolean hasAction() {
-    return this.hasAction;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Tile tile = (Tile) o;
+    return number == tile.number &&
+        x == tile.x &&
+        y == tile.y &&
+        Objects.equals(action, tile.action);
   }
 
-  /**
-   * Returns the action to be performed when landing on this tile.
-   *
-   * @return the action to be performed when landing on this tile
-   */
-  public TileAction getLandAction() {
-    return landAction;
+  @Override
+  public int hashCode() {
+    return Objects.hash(number, x, y, action);
   }
 }

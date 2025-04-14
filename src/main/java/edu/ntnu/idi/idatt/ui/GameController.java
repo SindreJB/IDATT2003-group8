@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import edu.ntnu.idi.idatt.model.BoardGame;
+import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
 
 /**
@@ -12,7 +12,7 @@ import edu.ntnu.idi.idatt.model.Player;
  */
 public class GameController {
 
-  private final BoardGame boardGame;
+  private final Board boardGame;
   private static Player currentPlayer;
   private List<Player> players = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public class GameController {
    * Constructs a new GameController and initializes the game board and players.
    */
   public GameController() {
-    boardGame = new BoardGame();
+    boardGame = new Board(9, 10);
     AddPlayers();
   }
 
@@ -86,7 +86,8 @@ public class GameController {
    * Executes the current player's turn and moves the player on the board.
    */
   private void playCurrentPlayer() {
-    System.out.println(currentPlayer.getName() + " has landed on " + boardGame.movePlayer(currentPlayer));
+    // System.out.println(currentPlayer.getName() + " has landed on " +
+    // boardGame.movePlayer(currentPlayer));
   }
 
   /**
