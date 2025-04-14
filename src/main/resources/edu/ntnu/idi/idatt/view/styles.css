@@ -235,6 +235,20 @@
   -fx-background-color: #323232;
 }
 
+/* Destructive button style */
+.btn-destructive {
+  -fx-background-color: #f44336; /* Red color for destructive actions */
+  -fx-text-fill: white;
+}
+
+.btn-destructive:hover {
+  -fx-background-color: #d32f2f; /* Darker red on hover */
+}
+
+.btn-destructive:pressed {
+  -fx-background-color: #c62828; /* Even darker when pressed */
+}
+
 /* Input Styles */
 .input {
   -fx-padding: 8;
@@ -295,11 +309,21 @@
 
 /* Common percentage-based widths */
 .w-full {
-  -fx-pref-width: 100%;
+  -fx-pref-width: Infinity;
+
+  -fx-hgrow: ALWAYS;
 }
 
 .w-1-2 {
   -fx-pref-width: 50%;
+}
+
+.w-64 {
+  -fx-max-width: 64px;
+}
+
+.w-200 {
+  -fx-max-width: 200px;
 }
 
 /* Common percentage-based heights */

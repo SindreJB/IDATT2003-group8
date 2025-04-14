@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -36,13 +35,14 @@ public class Page extends Application {
 
     // Style the buttons
 
-    Pane div = new Pane();
+    VBox div = new VBox();
     div.getChildren().addAll(newGameButton, loadGameButton, settingsButton, exitButton);
-    div.getStyleClass().addAll("flex", "flex-col", "space-y-4", "p-4", "bg-white", "rounded", "shadow");
-    newGameButton.getStyleClass().addAll("btn", "btn-primary");
-    loadGameButton.getStyleClass().addAll("btn", "btn-primary");
-    settingsButton.getStyleClass().addAll("btn", "btn-primary");
-    exitButton.getStyleClass().addAll("btn", "btn-danger");
+    div.getStyleClass().addAll(
+        "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
+    newGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    loadGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    settingsButton.getStyleClass().addAll("btn", "btn-secondary", "w-full");
+    exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
 
     // Add actions to buttons
     newGameButton.setOnAction(e -> System.out.println("New Game clicked"));
@@ -53,7 +53,7 @@ public class Page extends Application {
     // Create layout for menu
     menuLayout.setAlignment(Pos.CENTER);
     menuLayout.setPadding(new Insets(40));
-    menuLayout.getChildren().addAll(titleLabel, newGameButton, loadGameButton, settingsButton, exitButton);
+    menuLayout.getChildren().addAll(titleLabel, div);
     menuLayout.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
     primaryStage.setTitle("Boardgame Menu");
