@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.models;
+package edu.ntnu.idi.idatt.model;
 
 /**
  * The SnakeAction class represents an action that moves a player to a different

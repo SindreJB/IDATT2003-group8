@@ -1,9 +1,10 @@
-package edu.ntnu.idi.idatt.filehandling;
+package edu.ntnu.idi.idatt.persistence;
+
+import java.io.File;
+import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Utility class for handling JSON file operations.

@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.models;
+package edu.ntnu.idi.idatt.model;
 
 /**
  * The Player class represents a player in the game with a name and a tile ID.

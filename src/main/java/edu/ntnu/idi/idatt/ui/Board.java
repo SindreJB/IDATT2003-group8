@@ -1,28 +1,31 @@
-package edu.ntnu.idi.idatt.view;
+package edu.ntnu.idi.idatt.ui;
 
-import edu.ntnu.idi.idatt.models.Player;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
+import edu.ntnu.idi.idatt.model.Player;
 import javafx.animation.TranslateTransition;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.application.Application;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -99,18 +102,19 @@ public class Board extends Application {
         rollButton.setOnAction(e -> moveOneTile(currentPlayer));
 
         // Create a space for displaying dice
-        diceContainer = new HBox(10);  // Use the class field directly
+        diceContainer = new HBox(10); // Use the class field directly
         diceContainer.setAlignment(Pos.CENTER);
         diceContainer.setPrefHeight(60);
         diceContainer.setPrefWidth(100);
         diceContainer.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f8f8f8;");
 
         // Create a text area for game info
-        gameInfoLabel = new Label("Game information will appear here");  // Use the class field directly
+        gameInfoLabel = new Label("Game information will appear here"); // Use the class field directly
         gameInfoLabel.setWrapText(true);
         gameInfoLabel.setPrefWidth(200);
         gameInfoLabel.setPrefHeight(100);
-        gameInfoLabel.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 5; -fx-background-color: #f8f8f8;");
+        gameInfoLabel.setStyle(
+                "-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 5; -fx-background-color: #f8f8f8;");
 
         panel.getChildren().addAll(statusLabel, rollButton, diceContainer, gameInfoLabel);
         return panel;
@@ -213,11 +217,11 @@ public class Board extends Application {
             StackPane playerContainer = new StackPane();
 
             // Add padding around the pieces to offset them slightly
-            StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5));  // Right padding
-            StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5));  // Left padding
+            StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5)); // Right padding
+            StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5)); // Left padding
 
             playerContainer.getChildren().addAll(player1Piece, player2Piece);
-            playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);  // Limit the container size
+            playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE); // Limit the container size
 
             // Add to the existing tile without stretching it
             startTile.getChildren().add(playerContainer);
@@ -255,11 +259,11 @@ public class Board extends Application {
         StackPane playerContainer = new StackPane();
 
         // Add padding around the pieces to offset them slightly
-        StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5));  // Right padding
-        StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5));  // Left padding
+        StackPane.setMargin(player1Piece, new Insets(0, 5, 0, -5)); // Right padding
+        StackPane.setMargin(player2Piece, new Insets(0, -5, 0, 5)); // Left padding
 
         playerContainer.getChildren().addAll(player1Piece, player2Piece);
-        playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE);  // Limit the container size
+        playerContainer.setMaxSize(TILE_SIZE, TILE_SIZE); // Limit the container size
 
         // Add to the existing tile without stretching it
         startTile.getChildren().add(playerContainer);
@@ -269,7 +273,7 @@ public class Board extends Application {
      * Removes the player pieces from the given tile.
      * The player pieces are removed from the tile to prepare for the next move.
      *
-     * @param tile   the tile from which the player piece is to be removed
+     * @param tile the tile from which the player piece is to be removed
      */
     private void removePlayerFromTile(StackPane tile) {
         List<Node> toKeep = new ArrayList<>();
@@ -340,7 +344,8 @@ public class Board extends Application {
 
             // Add other player if they're on same tile
             if (bothPlayersOnTile) {
-                String otherImagePath = (1 - playerIndex) == 0 ? "/boardPieces/SindreImage.png" : "/boardPieces/StianImage.png";
+                String otherImagePath = (1 - playerIndex) == 0 ? "/boardPieces/SindreImage.png"
+                        : "/boardPieces/StianImage.png";
                 Image otherImage = new Image(getClass().getResourceAsStream(otherImagePath));
                 ImageView otherPiece = new ImageView(otherImage);
                 otherPiece.setFitHeight(TILE_SIZE * 0.35);
@@ -395,9 +400,9 @@ public class Board extends Application {
      * The player piece is moved from the old position to the new position with an
      * animation.
      *
-     * @param player        the player whose piece is to be moved
-     * @param fromPosition  the old position of the player piece
-     * @param toPosition    the new position of the player piece
+     * @param player       the player whose piece is to be moved
+     * @param fromPosition the old position of the player piece
+     * @param toPosition   the new position of the player piece
      */
     private void animatePlayerMove(Player player, int fromPosition, int toPosition) {
         int playerIndex = players.indexOf(player);

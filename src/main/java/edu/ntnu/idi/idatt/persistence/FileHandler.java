@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.filehandling;
+package edu.ntnu.idi.idatt.persistence;
 
 import java.io.IOException;
 import java.nio.file.Files;

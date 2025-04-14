@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.models;
+package edu.ntnu.idi.idatt.model;
 
 /**
  * The LadderAction class represents an action that moves a player to a specific

@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.filehandling;
+package edu.ntnu.idi.idatt.persistence;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ntnu.idi.idatt.models.Player;
+import edu.ntnu.idi.idatt.model.Player;
 
 /**
  * The CsvHandler class is responsible for reading and writing player data
