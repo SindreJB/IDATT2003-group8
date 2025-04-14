@@ -83,7 +83,7 @@ public class Board extends Application {
         setupPlayerPieces();
 
         Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("styles.css")).toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
         primaryStage.setTitle("Snakes and Ladders");
         primaryStage.setScene(scene);
