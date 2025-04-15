@@ -1,11 +1,13 @@
 package edu.ntnu.idi.idatt.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
+import edu.ntnu.idi.idatt.persistence.CsvHandler;
 
 /**
  * The GameController class manages the flow of the Snakes and Ladders game.
@@ -115,6 +117,49 @@ public class GameController {
     }
 
     this.players = createPlayers;
+  }
+
+  /**
+   * Saves the current players to a CSV file.
+   * 
+   * @param filePath the path to save the CSV file
+   * @return true if the operation was successful, false otherwise
+   */
+  public boolean savePlayersToFile(String filePath) {
+    try {
+      CsvHandler.savePlayersToCsv(players, filePath);
+      System.out.println("Players saved to " + filePath);
+      return true;
+    } catch (IOException e) {
+      System.err.println("Error saving players: " + e.getMessage());
+      return false;
+    }
+  }
+
+  /**
+   * Loads players from a CSV file.
+   * 
+   * @param filePath the path to the CSV file
+   * @return true if the operation was successful, false otherwise
+   */
+  public boolean loadPlayersFromFile(String filePath) {
+    try {
+      List<Player> loadedPlayers = CsvHandler.loadPlayersFromCsv(filePath);
+
+      if (loadedPlayers.isEmpty()) {
+        System.out.println("No players found in file.");
+        return false;
+      }
+
+      this.players = loadedPlayers;
+      currentPlayer = players.get(0);
+
+      System.out.println("Loaded " + players.size() + " players from " + filePath);
+      return true;
+    } catch (IOException e) {
+      System.err.println("Error loading players: " + e.getMessage());
+      return false;
+    }
   }
 
   /**
