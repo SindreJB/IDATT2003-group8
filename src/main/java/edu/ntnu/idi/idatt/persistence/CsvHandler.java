@@ -40,7 +40,6 @@ public class CsvHandler {
       if (parts.length == 2) {
         String name = parts[0].trim();
         String pieceType = parts[1].trim();
-        // Players start at the first tile (tile ID 1)
         players.add(new Player(name, pieceType, 1));
       }
     }
@@ -63,7 +62,6 @@ public class CsvHandler {
     List<String> lines = new ArrayList<>();
 
     for (Player player : players) {
-      // Format: Name,PieceType
       String line = player.getName() + "," + player.getPieceType();
       lines.add(line);
     }
