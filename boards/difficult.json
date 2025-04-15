@@ -1,0 +1,514 @@
+{
+  "name" : "Difficult",
+  "description" : "A challenging board with more snakes and fewer ladders",
+  "rows" : 9,
+  "columns" : 10,
+  "tiles" : [ {
+    "number" : 1,
+    "x" : 0,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 2,
+    "x" : 1,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 3,
+    "x" : 2,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 4,
+    "x" : 3,
+    "y" : 0,
+    "action" : {
+      "destinationTileId" : 14,
+      "description" : "Ladder from 4 to 14",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 5,
+    "x" : 4,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 6,
+    "x" : 5,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 7,
+    "x" : 6,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 8,
+    "x" : 7,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 9,
+    "x" : 8,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 10,
+    "x" : 9,
+    "y" : 0,
+    "action" : null
+  }, {
+    "number" : 20,
+    "x" : 0,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 19,
+    "x" : 1,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 18,
+    "x" : 2,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 17,
+    "x" : 3,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 16,
+    "x" : 4,
+    "y" : 1,
+    "action" : {
+      "destinationTileId" : 6,
+      "description" : "Snake from 16 to 6",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 15,
+    "x" : 5,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 14,
+    "x" : 6,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 13,
+    "x" : 7,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 12,
+    "x" : 8,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 11,
+    "x" : 9,
+    "y" : 1,
+    "action" : null
+  }, {
+    "number" : 21,
+    "x" : 0,
+    "y" : 2,
+    "action" : {
+      "destinationTileId" : 42,
+      "description" : "Ladder from 21 to 42",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 22,
+    "x" : 1,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 23,
+    "x" : 2,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 24,
+    "x" : 3,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 25,
+    "x" : 4,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 26,
+    "x" : 5,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 27,
+    "x" : 6,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 28,
+    "x" : 7,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 29,
+    "x" : 8,
+    "y" : 2,
+    "action" : null
+  }, {
+    "number" : 30,
+    "x" : 9,
+    "y" : 2,
+    "action" : {
+      "destinationTileId" : 10,
+      "description" : "Snake from 30 to 10",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 40,
+    "x" : 0,
+    "y" : 3,
+    "action" : {
+      "destinationTileId" : 20,
+      "description" : "Snake from 40 to 20",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 39,
+    "x" : 1,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 38,
+    "x" : 2,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 37,
+    "x" : 3,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 36,
+    "x" : 4,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 35,
+    "x" : 5,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 34,
+    "x" : 6,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 33,
+    "x" : 7,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 32,
+    "x" : 8,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 31,
+    "x" : 9,
+    "y" : 3,
+    "action" : null
+  }, {
+    "number" : 41,
+    "x" : 0,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 42,
+    "x" : 1,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 43,
+    "x" : 2,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 44,
+    "x" : 3,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 45,
+    "x" : 4,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 46,
+    "x" : 5,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 47,
+    "x" : 6,
+    "y" : 4,
+    "action" : {
+      "destinationTileId" : 26,
+      "description" : "Snake from 47 to 26",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 48,
+    "x" : 7,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 49,
+    "x" : 8,
+    "y" : 4,
+    "action" : {
+      "destinationTileId" : 11,
+      "description" : "Snake from 49 to 11",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 50,
+    "x" : 9,
+    "y" : 4,
+    "action" : null
+  }, {
+    "number" : 60,
+    "x" : 0,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 59,
+    "x" : 1,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 58,
+    "x" : 2,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 57,
+    "x" : 3,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 56,
+    "x" : 4,
+    "y" : 5,
+    "action" : {
+      "destinationTileId" : 53,
+      "description" : "Snake from 56 to 53",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 55,
+    "x" : 5,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 54,
+    "x" : 6,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 53,
+    "x" : 7,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 52,
+    "x" : 8,
+    "y" : 5,
+    "action" : null
+  }, {
+    "number" : 51,
+    "x" : 9,
+    "y" : 5,
+    "action" : {
+      "destinationTileId" : 67,
+      "description" : "Ladder from 51 to 67",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 61,
+    "x" : 0,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 62,
+    "x" : 1,
+    "y" : 6,
+    "action" : {
+      "destinationTileId" : 19,
+      "description" : "Snake from 62 to 19",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 63,
+    "x" : 2,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 64,
+    "x" : 3,
+    "y" : 6,
+    "action" : {
+      "destinationTileId" : 60,
+      "description" : "Snake from 64 to 60",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 65,
+    "x" : 4,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 66,
+    "x" : 5,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 67,
+    "x" : 6,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 68,
+    "x" : 7,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 69,
+    "x" : 8,
+    "y" : 6,
+    "action" : null
+  }, {
+    "number" : 70,
+    "x" : 9,
+    "y" : 6,
+    "action" : {
+      "destinationTileId" : 40,
+      "description" : "Snake from 70 to 40",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 80,
+    "x" : 0,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 79,
+    "x" : 1,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 78,
+    "x" : 2,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 77,
+    "x" : 3,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 76,
+    "x" : 4,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 75,
+    "x" : 5,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 74,
+    "x" : 6,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 73,
+    "x" : 7,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 72,
+    "x" : 8,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 71,
+    "x" : 9,
+    "y" : 7,
+    "action" : null
+  }, {
+    "number" : 81,
+    "x" : 0,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 82,
+    "x" : 1,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 83,
+    "x" : 2,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 84,
+    "x" : 3,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 85,
+    "x" : 4,
+    "y" : 8,
+    "action" : {
+      "destinationTileId" : 65,
+      "description" : "Snake from 85 to 65",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 86,
+    "x" : 5,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 87,
+    "x" : 6,
+    "y" : 8,
+    "action" : {
+      "destinationTileId" : 24,
+      "description" : "Snake from 87 to 24",
+      "type" : "LadderAction"
+    }
+  }, {
+    "number" : 88,
+    "x" : 7,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 89,
+    "x" : 8,
+    "y" : 8,
+    "action" : null
+  }, {
+    "number" : 90,
+    "x" : 9,
+    "y" : 8,
+    "action" : null
+  } ],
+  "numberOfTiles" : 90
+}
