@@ -73,7 +73,7 @@ public class GameController {
       if (playerName.isEmpty()) {
         break;
       }
-      Player player = new Player(playerName, 1);
+      Player player = new Player(playerName, "DefaultPiece", 1);
       createPlayers.add(player);
       if (currentPlayer == null) {
         currentPlayer = player;
