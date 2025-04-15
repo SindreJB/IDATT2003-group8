@@ -64,8 +64,8 @@ public class LadderGameBoard extends Application {
         root.setStyle("-fx-background-color: #F0EFEB;");
 
         // Initialize players (for demonstration)
-        players.add(new Player("Player 1", 1));
-        players.add(new Player("Player 2", 1));
+        players.add(new Player("Player 1", "TopHat", 1));
+        players.add(new Player("Player 2", "RaceCar", 1));
         currentPlayer = players.getFirst();
 
         // Initialize GamePiece after players are created

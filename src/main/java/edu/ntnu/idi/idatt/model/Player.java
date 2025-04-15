@@ -1,22 +1,26 @@
 package edu.ntnu.idi.idatt.model;
 
 /**
- * The Player class represents a player in the game with a name and a tile ID.
+ * The Player class represents a player in the game with a name, piece type, and
+ * a tile ID.
  */
 public class Player {
   private final String name;
+  private final String pieceType; // Type of game piece (e.g., "TopHat", "RaceCar")
   private int tileId;
 
   /**
    * Represents a player in the game.
-   * Each player has a name and a tile ID indicating their position on the game
-   * board.
+   * Each player has a name, piece type, and a tile ID indicating their position
+   * on the game board.
    *
-   * @param name   the name of the player
-   * @param tileId the ID of the tile where the player is currently located
+   * @param name      the name of the player
+   * @param pieceType the type of game piece used by the player
+   * @param tileId    the ID of the tile where the player is currently located
    */
-  public Player(String name, int tileId) {
+  public Player(String name, String pieceType, int tileId) {
     this.name = name;
+    this.pieceType = pieceType;
     this.tileId = tileId;
   }
 
@@ -27,6 +31,15 @@ public class Player {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Retrieves the piece type of the player.
+   *
+   * @return the piece type of the player.
+   */
+  public String getPieceType() {
+    return pieceType;
   }
 
   /**
