@@ -60,25 +60,60 @@ public class GameController {
   /**
    * Prompts the user to add players to the game.
    * A maximum of 4 players can be added.
+   * Each player can select a piece type.
    */
   private void AddPlayers() {
     int maxPlayers = 4;
     List<Player> createPlayers = new ArrayList<>();
 
+    String[] pieceTypes = { "TopHat", "RaceCar", "Cat", "Thimble", "Dog" };
+
     Scanner sc = new Scanner(System.in);
     for (int i = 1; i <= maxPlayers; i++) {
       System.out.println("Enter the name of player " + i + ": ");
-      System.out.println("If you don't want to add more players, press enter");
+      System.out.println("(If you don't want to add more players, press enter)");
       String playerName = sc.nextLine();
+
       if (playerName.isEmpty()) {
         break;
       }
-      Player player = new Player(playerName, "DefaultPiece", 1);
+
+      System.out.println("Select a piece type for " + playerName + ":");
+      for (int j = 0; j < pieceTypes.length; j++) {
+        System.out.println((j + 1) + ". " + pieceTypes[j]);
+      }
+
+      int selection = 0;
+      boolean validSelection = false;
+
+      while (!validSelection) {
+        try {
+          System.out.print("Enter selection (1-" + pieceTypes.length + "): ");
+          String input = sc.nextLine();
+          selection = Integer.parseInt(input);
+
+          if (selection >= 1 && selection <= pieceTypes.length) {
+            validSelection = true;
+          } else {
+            System.out.println("Invalid selection. Please try again.");
+          }
+        } catch (NumberFormatException e) {
+          System.out.println("Please enter a valid number.");
+        }
+      }
+
+      String pieceType = pieceTypes[selection - 1];
+      Player player = new Player(playerName, pieceType, 1);
       createPlayers.add(player);
+
       if (currentPlayer == null) {
         currentPlayer = player;
       }
+
+      System.out.println(playerName + " will use the " + pieceType + " piece.");
+      System.out.println();
     }
+
     this.players = createPlayers;
   }
 
