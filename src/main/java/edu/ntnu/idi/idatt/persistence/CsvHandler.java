@@ -39,7 +39,9 @@ public class CsvHandler {
       String[] parts = line.split(",");
       if (parts.length == 2) {
         String name = parts[0].trim();
-        players.add(new Player(name, 0));
+        String pieceType = parts[1].trim();
+        // Players start at the first tile (tile ID 1)
+        players.add(new Player(name, pieceType, 1));
       }
     }
 
@@ -48,6 +50,9 @@ public class CsvHandler {
 
   /**
    * Saves players to a CSV file.
+   * Each line in the CSV file will contain a player's name and piece type,
+   * separated
+   * by a comma.
    *
    * @param players  the list of Player objects to save
    * @param filePath the path to the CSV file
@@ -58,7 +63,8 @@ public class CsvHandler {
     List<String> lines = new ArrayList<>();
 
     for (Player player : players) {
-      String line = player.getName() + ",";
+      // Format: Name,PieceType
+      String line = player.getName() + "," + player.getPieceType();
       lines.add(line);
     }
 
