@@ -1,5 +1,9 @@
 package edu.ntnu.idi.idatt.ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import javafx.application.Application;
@@ -17,9 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 public class Page extends Application {
   private Stage primaryStage;
@@ -42,25 +43,25 @@ public class Page extends Application {
     // Create menu buttons
     Button newGameButton = new Button("New Game");
     Button loadPlayersButton = new Button("Load Players from CSV");
-    Button savePlayersButton = new Button("Save Players to CSV");
+    Button createPlayersButton = new Button("Create new Players");
     Button settingsButton = new Button("Settings");
     Button exitButton = new Button("Exit");
 
     // Style the buttons
     VBox div = new VBox();
-    div.getChildren().addAll(newGameButton, loadPlayersButton, savePlayersButton, settingsButton, exitButton);
+    div.getChildren().addAll(newGameButton, loadPlayersButton, createPlayersButton, settingsButton, exitButton);
     div.getStyleClass().addAll(
         "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
     newGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     loadPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    savePlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    createPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     settingsButton.getStyleClass().addAll("btn", "btn-secondary", "w-full");
     exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
 
     // Add actions to buttons
     newGameButton.setOnAction(e -> startNewGame());
     loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
-    savePlayersButton.setOnAction(e -> savePlayersToCsv());
+    createPlayersButton.setOnAction(e -> edu.ntnu.idi.idatt.ui.components.CreatePlayersForm.display());
     settingsButton.setOnAction(e -> System.out.println("Settings clicked"));
     exitButton.setOnAction(e -> Platform.exit());
 
@@ -113,7 +114,6 @@ public class Page extends Application {
           showAlert("No players found in the file.");
         } else {
           showAlert("Successfully loaded " + loadedPlayers.size() + " players.");
-          // TODO: Here you would pass these players to your game
         }
       } catch (IOException e) {
         showAlert("Error loading players: " + e.getMessage());
@@ -125,29 +125,17 @@ public class Page extends Application {
   /**
    * Opens a file chooser dialog to save sample players to a CSV file
    */
-  private void savePlayersToCsv() {
-    // Create some sample players for demonstration
-    List<Player> samplePlayers = List.of(
-        new Player("Arne", "TopHat", 1),
-        new Player("Ivar", "RaceCar", 1),
-        new Player("Majid", "Cat", 1),
-        new Player("Atle", "Thimble", 1));
+  private void savePlayersToCsv(List<Player> players) {
 
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Save Players");
-    fileChooser.getExtensionFilters().add(
-        new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-    fileChooser.setInitialFileName("players.csv");
-
-    File selectedFile = fileChooser.showSaveDialog(primaryStage);
-    if (selectedFile != null) {
-      try {
-        CsvHandler.savePlayersToCsv(samplePlayers, selectedFile.getPath());
-        showAlert("Successfully saved players to " + selectedFile.getName());
-      } catch (IOException e) {
-        showAlert("Error saving players: " + e.getMessage());
-        e.printStackTrace();
-      }
+    String savePath = "src/main/resources/data/players.csv";
+    try {
+      CsvHandler.savePlayersToCsv(players, savePath);
+      showAlert("Successfully saved players to players.csv");
+      return;
+    } catch (IOException e) {
+      showAlert("Error saving players: " + e.getMessage());
+      e.printStackTrace();
+      return;
     }
   }
 
