@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -158,9 +159,61 @@ public class LadderGameBoard extends Application {
         }
 
         // Add snakes and ladders to the visualization
-        //drawSnakesAndLadders(gridPane);
+        drawSnakesAndLadders(gridPane);
 
         return gridPane;
+    }
+
+    /**
+     * Draws snakes and ladders on the grid based on the loaded board configuration
+     */
+    private void drawSnakesAndLadders(GridPane gridPane) {
+        // Draw ladders and snakes after all tiles are created
+        for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
+            Tile tile = gameBoard.getTile(i);
+
+            // Add ladders
+            if (tile.hasLadder()) {
+                drawConnection(i, tile.getLadder().getNumber(), true, gridPane);
+            }
+
+            // Add snakes
+            if (tile.hasSnake()) {
+                drawConnection(i, tile.getSnake().getNumber(), false, gridPane);
+            }
+        }
+    }
+
+    /**
+     * Draws a connection (snake or ladder) between two tiles
+     */
+    private void drawConnection(int start, int end, boolean isLadder, GridPane gridPane) {
+        StackPane startTile = tilesMap.get(start);
+        StackPane endTile = tilesMap.get(end);
+
+        if (startTile == null || endTile == null) return;
+
+        // Get bounds relative to the grid
+        Bounds startBounds = startTile.getBoundsInParent();
+        Bounds endBounds = endTile.getBoundsInParent();
+
+        // Create a line between the centers
+        Line line = new Line(
+                startBounds.getCenterX(), startBounds.getCenterY(),
+                endBounds.getCenterX(), endBounds.getCenterY()
+        );
+
+        // Style based on type (ladder or snake)
+        if (isLadder) {
+            line.setStroke(Color.GREEN);
+            line.getStrokeDashArray().addAll(5.0, 5.0);
+        } else {
+            line.setStroke(Color.RED);
+            line.setStrokeWidth(2);
+        }
+
+        // Add the line to the gridPane at a lower z-index
+        gridPane.getChildren().add(0, line);
     }
 
     /**
