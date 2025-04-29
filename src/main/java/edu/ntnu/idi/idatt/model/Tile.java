@@ -56,4 +56,12 @@ public class Tile {
   public boolean hasLadder() {
     return ladder != null;
   }
+
+  /**
+   * Gets the tile number
+   * @return The tile number
+   */
+  public int getNumber() {
+    return number;
+  }
 }
