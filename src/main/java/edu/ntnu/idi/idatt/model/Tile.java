@@ -7,7 +7,67 @@ public class Tile {
   private Tile snake; // The tile at the tail end of the snake
   private Tile ladder; // The tile at the top end of the ladder
 
-  // Existing constructor and methods...
+  /**
+   * Default constructor
+   */
+  public Tile() {
+  }
+
+  /**
+   * Constructor with tile number
+   * @param number The tile number
+   */
+  public Tile(int number) {
+    this.number = number;
+  }
+
+  /**
+   * Gets the tile number
+   * @return The tile number
+   */
+  public int getNumber() {
+    return number;
+  }
+
+  /**
+   * Sets the tile number
+   * @param number The tile number
+   */
+  public void setNumber(int number) {
+    this.number = number;
+  }
+
+  /**
+   * Gets the x-coordinate of the tile
+   * @return x-coordinate
+   */
+  public int getX() {
+    return x;
+  }
+
+  /**
+   * Sets the x-coordinate of the tile
+   * @param x x-coordinate
+   */
+  public void setX(int x) {
+    this.x = x;
+  }
+
+  /**
+   * Gets the y-coordinate of the tile
+   * @return y-coordinate
+   */
+  public int getY() {
+    return y;
+  }
+
+  /**
+   * Sets the y-coordinate of the tile
+   * @param y y-coordinate
+   */
+  public void setY(int y) {
+    this.y = y;
+  }
 
   /**
    * Sets the tile that this snake leads to (tail of the snake)
@@ -55,13 +115,5 @@ public class Tile {
    */
   public boolean hasLadder() {
     return ladder != null;
-  }
-
-  /**
-   * Gets the tile number
-   * @return The tile number
-   */
-  public int getNumber() {
-    return number;
   }
 }
