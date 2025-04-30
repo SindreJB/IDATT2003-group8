@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 public class BoardManager {
 
     public static Path getBoardsDirectory() {
-        Path dataDir = Paths.get(System.getProperty("user.home"), ".mappe-group8", "data", "boards");
+        Path dataDir = Paths.get("./", "data", "boards");
         try {
             Files.createDirectories(dataDir);
         } catch (IOException e) {
@@ -23,7 +23,7 @@ public class BoardManager {
         BoardConfig emptyBoard = new BoardConfig(
                 "Empty Board",
                 "An empty 9x10 Snakes and Ladders board",
-                9, 10
+                10, 9
         );
 
         try {
