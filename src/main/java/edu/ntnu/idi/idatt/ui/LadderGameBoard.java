@@ -38,7 +38,7 @@ import javafx.util.Duration;
  * The LadderGameBoard class represents the main application for the Snakes and Ladders
  * game.
  */
-public class LadderGameBoard extends Application {
+public class LadderGameBoard {
 
     private static final int TILE_SIZE = 60;
 
@@ -55,15 +55,17 @@ public class LadderGameBoard extends Application {
     private GamePiece gamePiece;
 
     /**
-     * Starts the application by setting up the primary stage.
+     * Creates a game scene with the specified board type
+     * @param boardType the type of board to load (e.g., "standard", "empty", "custom")
+     * @param primaryStage the primary stage
+     * @return the created game scene
      */
-    @Override
-    public void start(Stage primaryStage) {
+    public Scene createGameScene(String boardType, Stage primaryStage) {
         root = new BorderPane();
         root.setStyle("-fx-background-color: #F0EFEB;");
 
         // Load board from JSON
-        loadBoardFromJSON("standard");
+        loadBoardFromJSON(boardType);
 
         // Initialize players
         players.add(new Player("Player 1", 1));
@@ -100,8 +102,8 @@ public class LadderGameBoard extends Application {
         scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
         primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
+        return scene;
     }
 
     /**
@@ -373,14 +375,5 @@ public class LadderGameBoard extends Application {
 
         // Update status label
         statusLabel.setText(currentPlayer.getName() + "'s turn");
-    }
-
-    /**
-     * The main entry point for the Java application.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 }
