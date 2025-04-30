@@ -70,6 +70,7 @@ public class LadderGameBoard {
         // Initialize players
         players.add(new Player("Player 1", 1));
         players.add(new Player("Player 2", 1));
+
         currentPlayer = players.getFirst();
 
         // Initialize GamePiece after players are created
