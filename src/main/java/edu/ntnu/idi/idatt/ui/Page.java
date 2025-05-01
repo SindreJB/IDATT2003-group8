@@ -59,7 +59,15 @@ public class Page extends Application {
     exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
 
     // Add actions to buttons
-    newGameButton.setOnAction(e -> startNewGame());
+    newGameButton.setOnAction(e -> {
+      LadderGameBoard gameBoard = new LadderGameBoard();
+      Scene gameScene = gameBoard.createGameScene("standard", primaryStage);
+      primaryStage.setScene(gameScene);
+      primaryStage.setTitle("Snakes and Ladders - Standard Game");
+    });
+    loadGameButton.setOnAction(e -> System.out.println("Load Game clicked"));
+
+
     loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
     createPlayersButton.setOnAction(e -> edu.ntnu.idi.idatt.ui.components.CreatePlayersForm.display());
     settingsButton.setOnAction(e -> System.out.println("Settings clicked"));

@@ -1,15 +1,21 @@
 package edu.ntnu.idi.idatt.ui;
 
+import edu.ntnu.idi.idatt.factory.LadderGameFactory;
+import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Dice;
+import edu.ntnu.idi.idatt.model.Player;
+import edu.ntnu.idi.idatt.model.Tile;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
-import edu.ntnu.idi.idatt.model.Player;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
@@ -23,20 +29,20 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * The Board class represents the main application for the Snakes and Ladders
+ * The LadderGameBoard class represents the main application for the Snakes and Ladders
  * game.
- * It extends the JavaFX Application class and sets up the game board UI.
  */
-public class LadderGameBoard extends Application {
+public class LadderGameBoard {
 
     private static final int TILE_SIZE = 60;
-    private static final int GRID_ROWS = 10;
-    private static final int GRID_COLS = 9;
 
+    private Board gameBoard;
     private final List<Player> players = new ArrayList<>();
     private final Map<Integer, StackPane> tilesMap = new HashMap<>();
     private Player currentPlayer;
@@ -49,34 +55,33 @@ public class LadderGameBoard extends Application {
     private GamePiece gamePiece;
 
     /**
-     * Starts the application by setting up the primary stage.
-     * Initializes the main layout with a BorderPane and sets its background color.
-     * Creates and sets up the game board, adds padding around it, and places it at
-     * the center of the layout.
-     * Loads the stylesheet for the scene and sets the title of the primary stage.
-     * Finally, displays the primary stage.
-     *
-     * @param primaryStage the primary stage for this application
+     * Creates a game scene with the specified board type
+     * @param boardType the type of board to load (e.g., "standard", "empty", "custom")
+     * @param primaryStage the primary stage
+     * @return the created game scene
      */
-    @Override
-    public void start(Stage primaryStage) {
+    public Scene createGameScene(String boardType, Stage primaryStage) {
         root = new BorderPane();
         root.setStyle("-fx-background-color: #F0EFEB;");
 
-        // Initialize players (for demonstration)
-        players.add(new Player("Player 1", "TopHat", 1));
-        players.add(new Player("Player 2", "RaceCar", 1));
+        // Load board from JSON
+        loadBoardFromJSON(boardType);
+
+        // Initialize players
+        players.add(new Player("Player 1", 1));
+        players.add(new Player("Player 2", 1));
+
         currentPlayer = players.getFirst();
 
         // Initialize GamePiece after players are created
         gamePiece = new GamePiece(TILE_SIZE, players);
 
-        // Create and set up the game board
-        GridPane gameBoard = createGameBoard();
-        root.setCenter(gameBoard);
+        // Create and set up the game board UI
+        GridPane boardGrid = createGameBoardUI();
+        root.setCenter(boardGrid);
 
         // Add padding around the board
-        BorderPane.setMargin(gameBoard, new Insets(20));
+        BorderPane.setMargin(boardGrid, new Insets(20));
 
         // Create InfoTable instance
         infoTable = new InfoTable();
@@ -89,7 +94,7 @@ public class LadderGameBoard extends Application {
 
         // Set initial text for labels
         statusLabel.setText(currentPlayer.getName() + "'s turn");
-        gameInfoLabel.setText("Game started. Roll the dice to begin.");
+        gameInfoLabel.setText("Game started: " + gameBoard.getName() + "\n" + gameBoard.getDescription());
 
         // Setup player pieces on the board
         gamePiece.setupPlayerPieces(tilesMap.get(1));
@@ -97,9 +102,121 @@ public class LadderGameBoard extends Application {
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
-        primaryStage.setTitle("Snakes and Ladders");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
+
+        return scene;
+    }
+
+    /**
+     * Loads a board configuration from JSON using LadderGameFactory
+     *
+     * @param boardName the name of the board to load
+     */
+    private void loadBoardFromJSON(String boardName) {
+        Optional<Board> loadedBoard = LadderGameFactory.tryCreateBoard(boardName);
+        if (loadedBoard.isPresent()) {
+            gameBoard = loadedBoard.get();
+        } else {
+            // Fallback to default board if loading fails
+            gameBoard = new Board(10, 9);
+            gameBoard.setName("Default Board");
+            gameBoard.setDescription("Default board created when loading failed");
+        }
+    }
+
+    /**
+     * Creates a game board UI based on the loaded board configuration
+     */
+    private GridPane createGameBoardUI() {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(2);
+        gridPane.setVgap(2);
+
+        int rows = gameBoard.getRows();
+        int cols = gameBoard.getColumns();
+
+        // Create tiles in a snake-like pattern
+        for (int row = 0; row < rows; row++) {
+            int actualRow = rows - 1 - row; // Flip row order (bottom to top)
+
+            if (actualRow % 2 == 0) {
+                // Even rows go right to left
+                for (int col = cols - 1; col >= 0; col--) {
+                    int tileNumber = row * cols + (cols - col);
+                    StackPane tile = createTile(tileNumber);
+                    tile.getStyleClass().add("styled-tile");
+                    gridPane.add(tile, col, actualRow);
+                    tilesMap.put(tileNumber, tile);
+                }
+            } else {
+                // Odd rows go left to right
+                for (int col = 0; col < cols; col++) {
+                    int tileNumber = row * cols + col + 1;
+                    StackPane tile = createTile(tileNumber);
+                    tile.getStyleClass().add("styled-tile");
+                    gridPane.add(tile, col, actualRow);
+                    tilesMap.put(tileNumber, tile);
+                }
+            }
+        }
+
+        // Add snakes and ladders to the visualization
+        drawSnakesAndLadders(gridPane);
+
+        return gridPane;
+    }
+
+    /**
+     * Draws snakes and ladders on the grid based on the loaded board configuration
+     */
+    private void drawSnakesAndLadders(GridPane gridPane) {
+        // Draw ladders and snakes after all tiles are created
+        for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
+            Tile tile = gameBoard.getTile(i);
+
+            // Add ladders
+            if (tile.hasLadder()) {
+                drawConnection(i, tile.getLadder().getNumber(), true, gridPane);
+            }
+
+            // Add snakes
+            if (tile.hasSnake()) {
+                drawConnection(i, tile.getSnake().getNumber(), false, gridPane);
+            }
+        }
+    }
+
+    /**
+     * Draws a connection (snake or ladder) between two tiles
+     */
+    private void drawConnection(int start, int end, boolean isLadder, GridPane gridPane) {
+        StackPane startTile = tilesMap.get(start);
+        StackPane endTile = tilesMap.get(end);
+
+        if (startTile == null || endTile == null) return;
+
+        // Get bounds relative to the grid
+        Bounds startBounds = startTile.getBoundsInParent();
+        Bounds endBounds = endTile.getBoundsInParent();
+
+        // Create a line between the centers
+        Line line = new Line(
+                startBounds.getCenterX(), startBounds.getCenterY(),
+                endBounds.getCenterX(), endBounds.getCenterY()
+        );
+
+        // Style based on type (ladder or snake)
+        if (isLadder) {
+            line.setStroke(Color.GREEN);
+            line.getStrokeDashArray().addAll(5.0, 5.0);
+        } else {
+            line.setStroke(Color.RED);
+            line.setStrokeWidth(2);
+        }
+
+        // Add the line to the gridPane at a lower z-index
+        gridPane.getChildren().add(0, line);
     }
 
     /**
@@ -117,7 +234,7 @@ public class LadderGameBoard extends Application {
 
         // Move player
         int oldPosition = currentPlayer.getTileId();
-        int newPosition = Math.min(oldPosition + diceValue, GRID_ROWS * GRID_COLS); // Limit to board size
+        int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board size
         currentPlayer.setTileId(newPosition);
 
         // Update the game info
@@ -127,50 +244,6 @@ public class LadderGameBoard extends Application {
 
         // Animate the player movement
         animatePlayerMove(currentPlayer, oldPosition, newPosition);
-    }
-
-    /**
-     * Creates a game board represented by a GridPane with tiles arranged in a
-     * snake-like pattern.
-     * The tiles are styled with the "styled-tile" CSS class.
-     *
-     * @return a GridPane representing the game board with tiles arranged in a
-     *         snake-like pattern.
-     */
-    private GridPane createGameBoard() {
-        GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(2);
-        gridPane.setVgap(2);
-
-        // Create tiles in a snake-like pattern
-        int[] tileNumber = { 1 };
-        IntStream.rangeClosed(0, GRID_ROWS - 1)
-                .map(i -> GRID_ROWS - 1 - i)
-                .forEach(row -> {
-                    if (row % 2 == 0) {
-                        IntStream.rangeClosed(0, GRID_COLS - 1)
-                                .map(i -> GRID_COLS - 1 - i)
-                                .forEach(col -> {
-                                    StackPane tile = createTile(tileNumber[0]);
-                                    tile.getStyleClass().add("styled-tile");
-                                    gridPane.add(tile, col, row);
-                                    tilesMap.put(tileNumber[0], tile); // Store tile reference
-                                    tileNumber[0]++;
-                                });
-                    } else {
-                        IntStream.range(0, GRID_COLS)
-                                .forEach(col -> {
-                                    StackPane tile = createTile(tileNumber[0]);
-                                    tile.getStyleClass().add("styled-tile");
-                                    gridPane.add(tile, col, row);
-                                    tilesMap.put(tileNumber[0], tile); // Store tile reference
-                                    tileNumber[0]++;
-                                });
-                    }
-                });
-
-        return gridPane;
     }
 
     /**
@@ -303,14 +376,5 @@ public class LadderGameBoard extends Application {
 
         // Update status label
         statusLabel.setText(currentPlayer.getName() + "'s turn");
-    }
-
-    /**
-     * The main entry point for the Java application.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 }
