@@ -1,10 +1,9 @@
 package edu.ntnu.idi.idatt.factory;
 
-import edu.ntnu.idi.idatt.config.BoardManager;
+import edu.ntnu.idi.idatt.controller.BoardManager;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.BoardConfig;
 import edu.ntnu.idi.idatt.model.Tile;
-import edu.ntnu.idi.idatt.persistence.JsonHandler;
 
 import java.io.IOException;
 import java.nio.file.Files;
