@@ -68,8 +68,8 @@ public class LadderGameBoard {
         loadBoardFromJSON(boardType);
 
         // Initialize players
-        players.add(new Player("Player 1", 1));
-        players.add(new Player("Player 2", 1));
+        players.add(new Player("Player 1", "TopHat",1));
+        players.add(new Player("Player 2", "RaceCar", 1));
 
         currentPlayer = players.getFirst();
 
