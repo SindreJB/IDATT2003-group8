@@ -39,11 +39,16 @@ public class BoardManager {
         BoardConfig standardBoard = new BoardConfig(
                 "Standard Board",
                 "Classic 9x10 Snakes and Ladders board with traditional placement",
-                9, 10
+                10, 9
         );
 
         // Add ladders (from bottom to top)
         standardBoard.addLadder(2, 38);
+        standardBoard.addLadder(5, 44);
+        standardBoard.addLadder(6, 45);
+        standardBoard.addLadder(7, 46);
+        standardBoard.addLadder(8, 47);
+        standardBoard.addLadder(9, 48);
 
         // Add snakes (from head to tail)
         standardBoard.addSnake(16, 6);
