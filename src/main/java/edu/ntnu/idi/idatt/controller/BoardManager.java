@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.config;
+package edu.ntnu.idi.idatt.controller;
 
 import edu.ntnu.idi.idatt.model.BoardConfig;
 import edu.ntnu.idi.idatt.persistence.JsonHandler;
