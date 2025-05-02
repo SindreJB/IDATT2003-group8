@@ -1,5 +1,11 @@
 package edu.ntnu.idi.idatt.ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import edu.ntnu.idi.idatt.factory.LadderGameFactory;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Dice;
@@ -7,17 +13,7 @@ import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.IntStream;
-
 import javafx.animation.TranslateTransition;
-import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -35,7 +31,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * The LadderGameBoard class represents the main application for the Snakes and Ladders
+ * The LadderGameBoard class represents the main application for the Snakes and
+ * Ladders
  * game.
  */
 public class LadderGameBoard {
@@ -56,7 +53,9 @@ public class LadderGameBoard {
 
     /**
      * Creates a game scene with the specified board type
-     * @param boardType the type of board to load (e.g., "standard", "empty", "custom")
+     * 
+     * @param boardType    the type of board to load (e.g., "standard", "empty",
+     *                     "custom")
      * @param primaryStage the primary stage
      * @return the created game scene
      */
@@ -67,10 +66,15 @@ public class LadderGameBoard {
         // Load board from JSON
         loadBoardFromJSON(boardType);
 
-        // Initialize players
-        players.add(new Player("Player 1", 1));
-        players.add(new Player("Player 2", 1));
-
+        // // Initialize players
+        players.add(new Player("Player 1", "TopHat", 1));
+        players.add(new Player("Player 2", "RaceCar", 1));
+        if (!players.isEmpty()) {
+            currentPlayer = players.getFirst();
+        } else {
+            players.add(new Player("Player 1", "DefaultPiece", 1));
+            currentPlayer = players.getFirst();
+        }
         currentPlayer = players.getFirst();
 
         // Initialize GamePiece after players are created
@@ -194,7 +198,8 @@ public class LadderGameBoard {
         StackPane startTile = tilesMap.get(start);
         StackPane endTile = tilesMap.get(end);
 
-        if (startTile == null || endTile == null) return;
+        if (startTile == null || endTile == null)
+            return;
 
         // Get bounds relative to the grid
         Bounds startBounds = startTile.getBoundsInParent();
@@ -203,8 +208,7 @@ public class LadderGameBoard {
         // Create a line between the centers
         Line line = new Line(
                 startBounds.getCenterX(), startBounds.getCenterY(),
-                endBounds.getCenterX(), endBounds.getCenterY()
-        );
+                endBounds.getCenterX(), endBounds.getCenterY());
 
         // Style based on type (ladder or snake)
         if (isLadder) {
@@ -234,7 +238,8 @@ public class LadderGameBoard {
 
         // Move player
         int oldPosition = currentPlayer.getTileId();
-        int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board size
+        int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to
+                                                                                                           // board size
         currentPlayer.setTileId(newPosition);
 
         // Update the game info

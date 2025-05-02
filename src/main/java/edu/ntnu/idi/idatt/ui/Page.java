@@ -65,8 +65,7 @@ public class Page extends Application {
       primaryStage.setScene(gameScene);
       primaryStage.setTitle("Snakes and Ladders - Standard Game");
     });
-    loadGameButton.setOnAction(e -> System.out.println("Load Game clicked"));
-
+    // loadGameButton.setOnAction(e -> System.out.println("Load Game clicked"));
 
     loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
     createPlayersButton.setOnAction(e -> edu.ntnu.idi.idatt.ui.components.CreatePlayersForm.display());
@@ -92,7 +91,7 @@ public class Page extends Application {
     try {
       LadderGameBoard board = new LadderGameBoard();
       Stage gameStage = new Stage();
-      board.start(gameStage);
+      /* board.start(gameStage); */
       // Hide menu stage when game starts
       primaryStage.hide();
 
