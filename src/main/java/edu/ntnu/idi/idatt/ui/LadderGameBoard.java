@@ -241,6 +241,11 @@ public class LadderGameBoard {
         int oldPosition = currentPlayer.getTileId();
         int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to
                                                                                                            // board size
+        if (gameBoard.getTile(newPosition).hasLadder()) {
+            newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
+        } else if (gameBoard.getTile(newPosition).hasSnake()) {
+            newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
+        }
         currentPlayer.setTileId(newPosition);
 
         // Update the game info
