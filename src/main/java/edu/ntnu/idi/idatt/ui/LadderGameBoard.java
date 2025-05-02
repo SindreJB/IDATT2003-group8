@@ -189,6 +189,7 @@ public class LadderGameBoard {
                 drawConnection(i, tile.getSnake().getNumber(), false, gridPane);
             }
         }
+
     }
 
     /**
@@ -220,7 +221,7 @@ public class LadderGameBoard {
         }
 
         // Add the line to the gridPane at a lower z-index
-        gridPane.getChildren().add(0, line);
+        gridPane.getChildren().add(line);
     }
 
     /**
