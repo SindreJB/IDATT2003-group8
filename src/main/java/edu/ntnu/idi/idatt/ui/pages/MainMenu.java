@@ -6,7 +6,6 @@ import java.util.List;
 
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
-import edu.ntnu.idi.idatt.ui.LadderGameBoard;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -65,7 +64,7 @@ public class MainMenu extends Application {
     VBox div = new VBox();
     div.getChildren().addAll(newGameButton, loadPlayersButton, createPlayersButton, settingsButton, exitButton);
     div.getStyleClass().addAll(
-            "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
+        "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
     newGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     loadPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     createPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
