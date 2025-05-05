@@ -176,20 +176,21 @@ public class LadderGameBoard {
    */
   private void drawSnakesAndLadders(StackPane gridPane) {
     // Draw ladders and snakes after all tiles are created
+    javafx.application.Platform.runLater(() -> {
+      for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
+        Tile tile = gameBoard.getTile(i);
 
-    for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
-      Tile tile = gameBoard.getTile(i);
+        // Add ladders
+        if (tile.hasLadder()) {
+          drawConnection(tile, gridPane);
+        }
 
-      // Add ladders
-      if (tile.hasLadder()) {
-        drawConnection(tile, gridPane);
+        // Add snakes
+        if (tile.hasSnake()) {
+          drawConnection(tile, gridPane);
+        }
       }
-
-      // Add snakes
-      if (tile.hasSnake()) {
-        drawConnection(tile, gridPane);
-      }
-    }
+    });
 
   }
 
@@ -197,28 +198,61 @@ public class LadderGameBoard {
    * Draws a connection (snake or ladder) between two tiles
    */
   private void drawConnection(Tile tile, StackPane pane) {
-    Node space = tilesMap.get(tile.getNumber());
-    double startXBounds = space.getLayoutX();
-    double startYBounds = space.getLayoutY();
-    double endXBounds, endYBounds;
+    // Node space = tilesMap.get(tile.getNumber());
+    // Bounds startXBounds = space.getBoundsInParent();
+    // Bounds endXBounds;
+    // if (tile.hasLadder()) {
+
+    // Node space2 = tilesMap.get(tile.getLadder().getNumber());
+    // endXBounds = space2.getBoundsInParent();
+    // } else if (tile.hasSnake()) {
+    // Node space2 = tilesMap.get(tile.getSnake().getNumber());
+    // endXBounds = space2.getBoundsInParent();
+
+    // } else {
+    // return; // No connection to draw
+    // }
+
+    // // Create a line between the centers
+    // Line line = new Line(
+    // startXBounds.getMinX() + startXBounds.getWidth() / 2,
+    // startXBounds.getMinY() + startXBounds.getHeight() / 2,
+    // endXBounds.getMinX() + endXBounds.getWidth() / 2,
+    // endXBounds.getMinY() + endXBounds.getHeight() / 2);
+
+    StackPane startTile = tilesMap.get(tile.getNumber());
+    StackPane endTile;
+
     if (tile.hasLadder()) {
-
-      Node space2 = tilesMap.get(tile.getLadder().getNumber() + 1);
-      endXBounds = space.getLayoutX();
-      endYBounds = space2.getLayoutY();
+      endTile = tilesMap.get(tile.getLadder().getNumber());
     } else if (tile.hasSnake()) {
-      Node space2 = tilesMap.get(tile.getSnake().getNumber() + 1);
-      endXBounds = space.getLayoutX();
-      endYBounds = space2.getLayoutY();
-
+      endTile = tilesMap.get(tile.getSnake().getNumber());
     } else {
       return; // No connection to draw
     }
 
-    // Create a line between the centers
-    Line line = new Line(
-        startXBounds, startYBounds,
-        endXBounds, endYBounds);
+    Bounds startBounds = startTile.localToScene(startTile.getBoundsInLocal());
+    Bounds endBounds = endTile.localToScene(endTile.getBoundsInLocal());
+
+    // 2. Calculate center points
+    double startX = startBounds.getMinX() + startBounds.getWidth() / 2;
+    double startY = startBounds.getMinY() + startBounds.getHeight() / 2;
+    double endX = endBounds.getMinX() + endBounds.getWidth() / 2;
+    double endY = endBounds.getMinY() + endBounds.getHeight() / 2;
+
+    if (tile.hasLadder()) {
+      startY += startBounds.getHeight() * 0.3; // Start from lower part of tile
+      endY -= endBounds.getHeight() * 0.3; // End at upper part of tile
+    }
+    // Snake goes from top to bottom
+    else if (tile.hasSnake()) {
+      startY -= startBounds.getHeight() * 0.3; // Start from upper part of tile
+      endX += startBounds.getWidth() * 0.2; // Offset horizontally for visual interest
+      endY += endBounds.getHeight() * 0.3; // End at lower part of tile
+    }
+
+    // 4. Create line with these coordinates
+    Line line = new Line(startX, startY, endX, endY);
 
     // Style based on type (ladder or snake)
     if (tile.hasLadder()) {
@@ -230,7 +264,12 @@ public class LadderGameBoard {
     }
 
     // Add the line to the gridPane at a lower z-index
-    pane.getChildren().add(line);
+
+    root.getChildren().add(line);
+    line.toBack();
+    pane.toBack();
+    // line.setLayoutX(space.getTranslateX());
+    // line.setLayoutY(space.getTranslateY());
   }
 
   /**
