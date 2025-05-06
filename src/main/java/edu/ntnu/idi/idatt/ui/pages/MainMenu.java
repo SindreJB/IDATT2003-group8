@@ -79,7 +79,7 @@ public class MainMenu extends Application {
     });
 
     loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
-    createPlayersButton.setOnAction(e -> edu.ntnu.idi.idatt.ui.components.CreatePlayersForm.display());
+    createPlayersButton.setOnAction(e -> System.out.println("Create new players clicked"));
     settingsButton.setOnAction(e -> System.out.println("Settings clicked"));
     exitButton.setOnAction(e -> Platform.exit());
 
