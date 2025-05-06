@@ -397,8 +397,18 @@ public class LadderGameBoard {
     // Create animating piece using GamePiece
     ImageView playerPiece = gamePiece.createAnimationPiece(playerIndex);
     if (playerPiece == null) {
-      // Skip animation if piece creation fails
+      // Skip animation if piece creation fails, but still handle the move
+      System.err.println("Animation piece creation failed for " + player.getName());
       gamePiece.addPlayerToTile(player, toPosition, toTile);
+      
+      // Still check for victory
+      if (checkVictory(player, toPosition)) {
+        gameInfoLabel.setText(player.getName() + " has won the game!");
+        infoTable.setRollEnabled(false);
+        showAlert(player.getName() + " has won the game!");
+        return;
+      }
+      
       switchToNextPlayer();
       infoTable.setRollEnabled(true);
       return;
@@ -406,6 +416,7 @@ public class LadderGameBoard {
 
     // Create animation container
     StackPane animationPane = new StackPane(playerPiece);
+    animationPane.setMaxSize(TILE_SIZE * 0.5, TILE_SIZE * 0.5);
 
     // Get coordinates
     Bounds fromBounds = fromTile.localToScene(fromTile.getBoundsInLocal());
@@ -438,9 +449,12 @@ public class LadderGameBoard {
 
       // Check for victory
       if (checkVictory(player, toPosition)) {
-        gameInfoLabel.setText(player.getName() + " has won the game!");
+        String victoryMessage = player.getName() + " has won the game!";
+        gameInfoLabel.setText(victoryMessage);
         infoTable.setRollEnabled(false);
-        showAlert(player.getName() + " has won the game!");
+        
+        // Show victory alert
+        showAlert(victoryMessage);
         return;
       }
 

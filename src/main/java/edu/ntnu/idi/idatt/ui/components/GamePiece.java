@@ -268,6 +268,7 @@ public class GamePiece {
 
   /**
    * Creates an ImageView for a player piece for animation
+   * For both image-based and shape-based pieces
    *
    * @param playerIndex the index of the player
    * @return the created ImageView or null if creation fails
@@ -293,13 +294,38 @@ public class GamePiece {
       } catch (Exception e) {
         System.err.println("Error loading player image: " + e.getMessage());
         e.printStackTrace();
-        return null;
+        // Fall through to shape creation
       }
     }
     
-    // For non-image pieces, return null - animation will be skipped
-    // and the piece will be added to the destination directly
-    return null;
+    // For non-image pieces, create a temporary ImageView with a snapshot of the shape
+    try {
+      // Create a shape equivalent to what would be displayed on the board
+      Circle circle = new Circle(tileSize * 0.15);
+      Color pieceColor = COLOR_MAP.getOrDefault(pieceType, getDefaultColor(playerIndex));
+      circle.setFill(pieceColor);
+      circle.setStroke(Color.BLACK);
+      circle.setStrokeWidth(1);
+      
+      // Create a StackPane to hold the circle
+      StackPane shapeContainer = new StackPane(circle);
+      shapeContainer.setPrefSize(tileSize * 0.35, tileSize * 0.35);
+      
+      // Take a snapshot of the shape
+      javafx.scene.image.WritableImage snapshot = 
+          shapeContainer.snapshot(new javafx.scene.SnapshotParameters(), null);
+      
+      // Create an ImageView from the snapshot
+      ImageView shapeView = new ImageView(snapshot);
+      shapeView.setFitWidth(tileSize * 0.35);
+      shapeView.setFitHeight(tileSize * 0.35);
+      
+      return shapeView;
+    } catch (Exception e) {
+      System.err.println("Error creating shape animation: " + e.getMessage());
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
