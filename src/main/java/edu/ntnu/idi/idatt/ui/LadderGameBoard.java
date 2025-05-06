@@ -229,9 +229,14 @@ public class LadderGameBoard {
 
     // Style based on type (ladder or snake)
     if (tile.hasLadder()) {
+      // Style the ladder starting tile with green background
+      startTile.setStyle("-fx-background-color:rgb(37, 111, 37);"); // Light green background for ladder start
+      endTile.setStyle("-fx-background-color:rgb(15, 42, 20);"); // Light green background for ladder end
       line.setStroke(Color.GREEN);
       line.getStrokeDashArray().addAll(5.0, 5.0);
     } else if (tile.hasSnake()) {
+      startTile.setStyle("-fx-background-color:rgb(111, 37, 37);"); // Light green background for ladder start
+      endTile.setStyle("-fx-background-color:rgb(42, 15, 15);"); // Light green background for ladder end
       line.setStroke(Color.RED);
       line.setStrokeWidth(2);
     }
