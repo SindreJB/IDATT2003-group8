@@ -135,7 +135,7 @@ public class Tile {
    * 
    * @return true if this tile has a ladder, false otherwise
    */
-  public boolean hasActon() {
+  public boolean hasAction() {
     return hasSnake() || hasLadder();
   }
 }

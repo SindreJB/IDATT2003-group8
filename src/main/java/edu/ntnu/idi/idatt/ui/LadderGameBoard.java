@@ -179,14 +179,8 @@ public class LadderGameBoard {
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
         Tile tile = gameBoard.getTile(i);
-
-        // Add ladders
-        if (tile.hasLadder()) {
-          drawConnection(tile, gridPane);
-        }
-
-        // Add snakes
-        if (tile.hasSnake()) {
+        // Add action graphics to the tile
+        if (tile.hasAction()) {
           drawConnection(tile, gridPane);
         }
       }
@@ -198,27 +192,6 @@ public class LadderGameBoard {
    * Draws a connection (snake or ladder) between two tiles
    */
   private void drawConnection(Tile tile, StackPane pane) {
-    // Node space = tilesMap.get(tile.getNumber());
-    // Bounds startXBounds = space.getBoundsInParent();
-    // Bounds endXBounds;
-    // if (tile.hasLadder()) {
-
-    // Node space2 = tilesMap.get(tile.getLadder().getNumber());
-    // endXBounds = space2.getBoundsInParent();
-    // } else if (tile.hasSnake()) {
-    // Node space2 = tilesMap.get(tile.getSnake().getNumber());
-    // endXBounds = space2.getBoundsInParent();
-
-    // } else {
-    // return; // No connection to draw
-    // }
-
-    // // Create a line between the centers
-    // Line line = new Line(
-    // startXBounds.getMinX() + startXBounds.getWidth() / 2,
-    // startXBounds.getMinY() + startXBounds.getHeight() / 2,
-    // endXBounds.getMinX() + endXBounds.getWidth() / 2,
-    // endXBounds.getMinY() + endXBounds.getHeight() / 2);
 
     StackPane startTile = tilesMap.get(tile.getNumber());
     StackPane endTile;
