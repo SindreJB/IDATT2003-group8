@@ -100,6 +100,40 @@ public class BoardManager {
     return boardPath;
   }
 
+  /**
+   * Creates a board with wormholes and saves it to a JSON file
+   *
+   * @return The path to the created JSON file
+   * @throws IOException if there's an error writing the file
+   */
+  public static Path createWormholeBoard() throws IOException {
+    BoardConfig wormholeBoard = new BoardConfig(
+        "Wormhole Board",
+        "A 10x10 board with wormholes, snakes, and ladders",
+        10, 10);
+
+    // Add ladders (start -> end)
+    wormholeBoard.addLadder(4, 25);
+    wormholeBoard.addLadder(13, 46);
+    wormholeBoard.addLadder(50, 69);
+
+    // Add snakes (head -> tail)
+    wormholeBoard.addSnake(54, 31);
+    wormholeBoard.addSnake(89, 53);
+    wormholeBoard.addSnake(99, 41);
+
+    // Add wormholes (entrance -> exit)
+    wormholeBoard.addWormhole(22, 58); // Forward wormhole
+    wormholeBoard.addWormhole(77, 39); // Backward wormhole
+    wormholeBoard.addWormhole(63, 80); // Forward wormhole
+
+    Path boardPath = getBoardsDirectory().resolve("wormhole.json");
+    JsonHandler.writeToJson(wormholeBoard, boardPath.toString());
+    System.out.println("Wormhole board saved to: " + boardPath);
+
+    return boardPath;
+  }
+
   public static BoardConfig loadBoard(String boardName) throws IOException {
     Path boardPath = getBoardsDirectory().resolve(boardName + ".json");
     return JsonHandler.readFromJson(boardPath.toString(), BoardConfig.class);

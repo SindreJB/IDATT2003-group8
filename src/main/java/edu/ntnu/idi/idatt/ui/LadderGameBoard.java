@@ -189,10 +189,9 @@ public class LadderGameBoard {
   }
 
   /**
-   * Draws a connection (snake or ladder) between two tiles
+   * Draws a connection (snake, ladder, or wormhole) between two tiles
    */
   private void drawConnection(Tile tile, StackPane pane) {
-
     StackPane startTile = tilesMap.get(tile.getNumber());
     StackPane endTile;
 
@@ -200,6 +199,8 @@ public class LadderGameBoard {
       endTile = tilesMap.get(tile.getLadder().getNumber());
     } else if (tile.hasSnake()) {
       endTile = tilesMap.get(tile.getSnake().getNumber());
+    } else if (tile.hasWormhole()) {
+      endTile = tilesMap.get(tile.getWormhole().getNumber());
     } else {
       return; // No connection to draw
     }
@@ -207,47 +208,54 @@ public class LadderGameBoard {
     Bounds startBounds = startTile.localToScene(startTile.getBoundsInLocal());
     Bounds endBounds = endTile.localToScene(endTile.getBoundsInLocal());
 
-    // 2. Calculate center points
+    // Calculate center points
     double startX = startBounds.getMinX() + startBounds.getWidth() / 2;
     double startY = startBounds.getMinY() + startBounds.getHeight() / 2;
     double endX = endBounds.getMinX() + endBounds.getWidth() / 2;
     double endY = endBounds.getMinY() + endBounds.getHeight() / 2;
 
+    // Adjust start and end positions based on connection type
     if (tile.hasLadder()) {
       startY += startBounds.getHeight() * 0.3; // Start from lower part of tile
       endY -= endBounds.getHeight() * 0.3; // End at upper part of tile
-    }
-    // Snake goes from top to bottom
-    else if (tile.hasSnake()) {
+    } else if (tile.hasSnake()) {
       startY -= startBounds.getHeight() * 0.3; // Start from upper part of tile
       endX += startBounds.getWidth() * 0.2; // Offset horizontally for visual interest
       endY += endBounds.getHeight() * 0.3; // End at lower part of tile
+    } else if (tile.hasWormhole()) {
+      // Create a slight curve for wormholes
+      startX += startBounds.getWidth() * 0.1;
+      endX -= endBounds.getWidth() * 0.1;
     }
 
-    // 4. Create line with these coordinates
+    // Create line with these coordinates
     Line line = new Line(startX, startY, endX, endY);
 
-    // Style based on type (ladder or snake)
+    // Style based on type
     if (tile.hasLadder()) {
       // Style the ladder starting tile with green background
       startTile.setStyle("-fx-background-color:rgb(37, 111, 37);"); // Light green background for ladder start
-      endTile.setStyle("-fx-background-color:rgb(15, 42, 20);"); // Light green background for ladder end
+      endTile.setStyle("-fx-background-color:rgb(15, 42, 20);"); // Dark green background for ladder end
       line.setStroke(Color.GREEN);
       line.getStrokeDashArray().addAll(5.0, 5.0);
     } else if (tile.hasSnake()) {
-      startTile.setStyle("-fx-background-color:rgb(111, 37, 37);"); // Light green background for ladder start
-      endTile.setStyle("-fx-background-color:rgb(42, 15, 15);"); // Light green background for ladder end
+      startTile.setStyle("-fx-background-color:rgb(111, 37, 37);"); // Light red background for snake head
+      endTile.setStyle("-fx-background-color:rgb(42, 15, 15);"); // Dark red background for snake tail
       line.setStroke(Color.RED);
       line.setStrokeWidth(2);
+    } else if (tile.hasWormhole()) {
+      // Make wormholes purple with a distinct dashed pattern
+      startTile.setStyle("-fx-background-color:rgb(75, 0, 130);"); // Purple background for wormhole entrance
+      endTile.setStyle("-fx-background-color:rgb(147, 112, 219);"); // Light purple for wormhole exit
+      line.setStroke(Color.PURPLE);
+      line.setStrokeWidth(3);
+      line.getStrokeDashArray().addAll(2.0, 7.0, 5.0, 7.0); // Unique dash pattern
     }
 
-    // Add the line to the gridPane at a lower z-index
-
+    // Add the line to the root pane
     root.getChildren().add(line);
     line.toBack();
     pane.toBack();
-    // line.setLayoutX(space.getTranslateX());
-    // line.setLayoutY(space.getTranslateY());
   }
 
   /**
@@ -265,13 +273,18 @@ public class LadderGameBoard {
 
     // Move player
     int oldPosition = currentPlayer.getTileId();
-    int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to
-                                                                                                       // board size
+    int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board
+                                                                                                       // size
+
+    // Check for special tiles
     if (gameBoard.getTile(newPosition).hasLadder()) {
       newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
     } else if (gameBoard.getTile(newPosition).hasSnake()) {
       newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
+    } else if (gameBoard.getTile(newPosition).hasWormhole()) {
+      newPosition = gameBoard.getTile(newPosition).getWormhole().getNumber();
     }
+
     currentPlayer.setTileId(newPosition);
 
     // Update the game info

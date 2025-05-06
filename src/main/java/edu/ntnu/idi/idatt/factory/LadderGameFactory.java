@@ -75,7 +75,29 @@ public class LadderGameFactory {
       addLadder(board, start, end);
     }
 
+    // Add wormholes
+    if (config.getWormholeStarts() != null && config.getWormholeEnds() != null) {
+      for (int i = 0; i < config.getWormholeStarts().size(); i++) {
+        int start = config.getWormholeStarts().get(i);
+        int end = config.getWormholeEnds().get(i);
+        addWormhole(board, start, end);
+      }
+    }
+
     return board;
+  }
+
+  /**
+   * Adds a wormhole to the board
+   *
+   * @param board the board to add the wormhole to
+   * @param start the wormhole's start position
+   * @param end   the wormhole's end position
+   */
+  private static void addWormhole(Board board, int start, int end) {
+    Tile startTile = board.getTile(start);
+    Tile endTile = board.getTile(end);
+    startTile.setWormhole(endTile);
   }
 
   /**

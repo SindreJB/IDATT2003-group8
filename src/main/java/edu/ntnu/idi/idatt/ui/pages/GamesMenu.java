@@ -29,6 +29,8 @@ public class GamesMenu {
         primaryStage, "empty");
     Button customButton = createGameButton("Custom", "Custom board configuration",
         primaryStage, "custom");
+    Button wormholeButton = createGameButton("Wormhole", "Board with wormholes, snakes, and ladders",
+        primaryStage, "wormhole");
 
     // Back button
     Button backButton = new Button("Back to Menu");
@@ -42,7 +44,8 @@ public class GamesMenu {
     // Create layout
     VBox buttonContainer = new VBox(20);
     buttonContainer.setAlignment(Pos.CENTER);
-    buttonContainer.getChildren().addAll(titleLabel, standardButton, emptyButton, customButton, backButton);
+    buttonContainer.getChildren().addAll(titleLabel, standardButton, emptyButton, customButton, wormholeButton,
+        backButton);
     buttonContainer.setPadding(new Insets(50));
 
     root.setCenter(buttonContainer);
