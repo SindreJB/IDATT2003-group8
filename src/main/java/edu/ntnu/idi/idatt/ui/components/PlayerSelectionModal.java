@@ -73,7 +73,7 @@ public class PlayerSelectionModal {
      */
     private void loadPlayerPieces() {
         try {
-            List<Player> csvPlayers = CsvHandler.loadPlayersFromCsv("src/main/resources/data/players.csv");
+            List<Player> csvPlayers = CsvHandler.loadPlayersFromCsv("src/main/resources/players/players.csv");
             
             for (Player player : csvPlayers) {
                 availablePieces.add(new PlayerConfig(player.getName(), player.getPieceType()));

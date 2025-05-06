@@ -307,13 +307,17 @@ public class GamePiece {
       circle.setStroke(Color.BLACK);
       circle.setStrokeWidth(1);
       
-      // Create a StackPane to hold the circle
+      // Create a StackPane to hold the circle with transparent background
       StackPane shapeContainer = new StackPane(circle);
       shapeContainer.setPrefSize(tileSize * 0.35, tileSize * 0.35);
+      shapeContainer.setBackground(javafx.scene.layout.Background.EMPTY);  // Set transparent background
       
-      // Take a snapshot of the shape
-      javafx.scene.image.WritableImage snapshot = 
-          shapeContainer.snapshot(new javafx.scene.SnapshotParameters(), null);
+      // Create snapshot parameters with transparent background
+      javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
+      params.setFill(javafx.scene.paint.Color.TRANSPARENT);  // Make snapshot background transparent
+      
+      // Take a snapshot of the shape with transparent background
+      javafx.scene.image.WritableImage snapshot = shapeContainer.snapshot(params, null);
       
       // Create an ImageView from the snapshot
       ImageView shapeView = new ImageView(snapshot);
