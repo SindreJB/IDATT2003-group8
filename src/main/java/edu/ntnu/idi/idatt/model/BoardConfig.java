@@ -4,103 +4,103 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardConfig {
-    private String name;
-    private String description;
-    private int rows;
-    private int columns;
-    private List<Integer> snakeHeads;
-    private List<Integer> snakeTails;
-    private List<Integer> ladderStarts;
-    private List<Integer> ladderEnds;
+  private String name;
+  private String description;
+  private int rows;
+  private int columns;
+  private List<Integer> snakeHeads;
+  private List<Integer> snakeTails;
+  private List<Integer> ladderStarts;
+  private List<Integer> ladderEnds;
 
-    public BoardConfig() {
-        this.snakeHeads = new ArrayList<>();
-        this.snakeTails = new ArrayList<>();
-        this.ladderStarts = new ArrayList<>();
-        this.ladderEnds = new ArrayList<>();
-    }
+  public BoardConfig() {
+    this.snakeHeads = new ArrayList<>();
+    this.snakeTails = new ArrayList<>();
+    this.ladderStarts = new ArrayList<>();
+    this.ladderEnds = new ArrayList<>();
+  }
 
-    public BoardConfig(String name, String description, int rows, int columns) {
-        this();
-        this.name = name;
-        this.description = description;
-        this.rows = rows;
-        this.columns = columns;
-    }
+  public BoardConfig(String name, String description, int rows, int columns) {
+    this();
+    this.name = name;
+    this.description = description;
+    this.rows = rows;
+    this.columns = columns;
+  }
 
-    // Getters and setters
-    public String getName() {
-        return name;
-    }
+  // Getters and setters
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public int getRows() {
-        return rows;
-    }
+  public int getRows() {
+    return rows;
+  }
 
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
+  public void setRows(int rows) {
+    this.rows = rows;
+  }
 
-    public int getColumns() {
-        return columns;
-    }
-    public void setColumns(int columns) {
-        this.columns = columns;
-    }
+  public int getColumns() {
+    return columns;
+  }
 
-    public List<Integer> getSnakeHeads() {
-        return snakeHeads;
-    }
+  public void setColumns(int columns) {
+    this.columns = columns;
+  }
 
-    public void setSnakeHeads(List<Integer> snakeHeads) {
-        this.snakeHeads = snakeHeads;
-    }
+  public List<Integer> getSnakeHeads() {
+    return snakeHeads;
+  }
 
-    public List<Integer> getSnakeTails() {
-        return snakeTails;
-    }
+  public void setSnakeHeads(List<Integer> snakeHeads) {
+    this.snakeHeads = snakeHeads;
+  }
 
-    public void setSnakeTails(List<Integer> snakeTails) {
-        this.snakeTails = snakeTails;
-    }
+  public List<Integer> getSnakeTails() {
+    return snakeTails;
+  }
 
-    public List<Integer> getLadderStarts() {
-        return ladderStarts;
-    }
+  public void setSnakeTails(List<Integer> snakeTails) {
+    this.snakeTails = snakeTails;
+  }
 
-    public void setLadderStarts(List<Integer> ladderStarts) {
-        this.ladderStarts = ladderStarts;
-    }
+  public List<Integer> getLadderStarts() {
+    return ladderStarts;
+  }
 
-    public List<Integer> getLadderEnds() {
-        return ladderEnds;
-    }
+  public void setLadderStarts(List<Integer> ladderStarts) {
+    this.ladderStarts = ladderStarts;
+  }
 
-    public void setLadderEnds(List<Integer> ladderEnds) {
-        this.ladderEnds = ladderEnds;
-    }
+  public List<Integer> getLadderEnds() {
+    return ladderEnds;
+  }
 
+  public void setLadderEnds(List<Integer> ladderEnds) {
+    this.ladderEnds = ladderEnds;
+  }
 
-    // Helper methods
-    public void addSnake(int head, int tail) {
-        snakeHeads.add(head);
-        snakeTails.add(tail);
-    }
+  // Helper methods
+  public void addSnake(int head, int tail) {
+    snakeHeads.add(head);
+    snakeTails.add(tail);
+  }
 
-    public void addLadder(int start, int end) {
-        ladderStarts.add(start);
-        ladderEnds.add(end);
-    }
+  public void addLadder(int start, int end) {
+    ladderStarts.add(start);
+    ladderEnds.add(end);
+  }
 }
