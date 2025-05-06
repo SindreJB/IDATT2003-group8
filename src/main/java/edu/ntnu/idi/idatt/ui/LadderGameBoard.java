@@ -276,21 +276,55 @@ public class LadderGameBoard {
     int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board
                                                                                                        // size
 
+    // Store the position before checking for special tiles
+    int landedPosition = newPosition;
+
     // Check for special tiles
     if (gameBoard.getTile(newPosition).hasLadder()) {
       newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
+      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+          " and climbed a ladder from " + landedPosition + " to " + newPosition);
     } else if (gameBoard.getTile(newPosition).hasSnake()) {
       newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
+      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+          " and slid down a snake from " + landedPosition + " to " + newPosition);
     } else if (gameBoard.getTile(newPosition).hasWormhole()) {
-      newPosition = gameBoard.getTile(newPosition).getWormhole().getNumber();
+      // For wormholes, determine the direction based on probability
+      Tile wormholeTile = gameBoard.getTile(newPosition);
+      Tile destinationTile = wormholeTile.getWormhole();
+      boolean reverseTravel = false;
+
+      // If we're at a wormhole exit tile, determine if the wormhole should activate
+      // in reverse (50% chance by default)
+      if (oldPosition == destinationTile.getNumber()) {
+        // We're at an exit point, decide if we should go back through the wormhole
+        reverseTravel = Math.random() < 0.5; // 50% chance of reverse travel
+
+        if (reverseTravel) {
+          newPosition = wormholeTile.getNumber();
+          gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+              " and traveled back through the wormhole from " + landedPosition +
+              " to " + newPosition);
+        } else {
+          // Wormhole doesn't activate in reverse
+          gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+              " and landed on " + landedPosition +
+              " but the wormhole gods were kind to you");
+        }
+      } else {
+        // Normal forward wormhole travel
+        newPosition = destinationTile.getNumber();
+        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+            " and traveled through a wormhole from " + landedPosition +
+            " to " + newPosition);
+      }
+    } else {
+      // No special tile
+      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+          " and moved from " + oldPosition + " to " + newPosition);
     }
 
     currentPlayer.setTileId(newPosition);
-
-    // Update the game info
-    String moveInfo = currentPlayer.getName() + " rolled " + diceValue +
-        " and moves from tile " + oldPosition + " to tile " + newPosition;
-    gameInfoLabel.setText(moveInfo);
 
     // Animate the player movement
     animatePlayerMove(currentPlayer, oldPosition, newPosition);
