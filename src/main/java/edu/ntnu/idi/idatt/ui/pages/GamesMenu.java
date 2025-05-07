@@ -1,6 +1,6 @@
 package edu.ntnu.idi.idatt.ui.pages;
 
-import edu.ntnu.idi.idatt.ui.LadderGameBoard;
+import edu.ntnu.idi.idatt.ui.components.PlayerSelectionModal;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -48,7 +48,6 @@ public class GamesMenu {
     root.setCenter(buttonContainer);
 
     Scene scene = new Scene(root, 800, 600);
-    // Fix the stylesheet path
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     return scene;
@@ -63,12 +62,11 @@ public class GamesMenu {
     // Set tooltip with description
     button.setTooltip(new javafx.scene.control.Tooltip(description));
 
-    // Set action to launch the game with selected board type
+    // Set action to open the player selection modal
     button.setOnAction(e -> {
-      LadderGameBoard gameBoard = new LadderGameBoard();
-      Scene gameScene = gameBoard.createGameScene(boardType, primaryStage);
-      primaryStage.setScene(gameScene);
-      primaryStage.setTitle("Snakes and Ladders - " + name);
+      // Show player selection modal
+      PlayerSelectionModal playerModal = new PlayerSelectionModal(boardType, primaryStage);
+      playerModal.showModal();
     });
 
     return button;
