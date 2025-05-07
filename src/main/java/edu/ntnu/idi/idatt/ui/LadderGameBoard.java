@@ -20,6 +20,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -33,15 +35,14 @@ import javafx.util.Duration;
 
 /**
  * The LadderGameBoard class represents the main application for the Snakes and
- * Ladders
- * game.
+ * Ladders game. It supports 1-5 players with customizable game pieces.
  */
 public class LadderGameBoard {
 
   private static final int TILE_SIZE = 60;
 
   private Board gameBoard;
-  private final List<Player> players = new ArrayList<>();
+  private List<Player> players = new ArrayList<>();
   private final Map<Integer, StackPane> tilesMap = new HashMap<>();
   private Player currentPlayer;
   private int currentPlayerIndex = 0;
@@ -53,33 +54,50 @@ public class LadderGameBoard {
   private GamePiece gamePiece;
 
   /**
-   * Creates a game scene with the specified board type
+   * Creates a new LadderGameBoard instance
+   */
+  public LadderGameBoard() {
+    // Initialize empty board - will be replaced when game is created
+    this.gameBoard = new Board(10, 9);
+  }
+
+  /**
+   * Creates a game scene with the specified board type and players
    * 
    * @param boardType    the type of board to load (e.g., "standard", "empty",
    *                     "custom")
    * @param primaryStage the primary stage
+   * @param players      the list of players for the game (1-5 players)
    * @return the created game scene
    */
-  public Scene createGameScene(String boardType, Stage primaryStage) {
+  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players) {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
 
     // Load board from JSON
     loadBoardFromJSON(boardType);
 
-    // // Initialize players
-    players.add(new Player("Player 1", "TopHat", 1));
-    players.add(new Player("Player 2", "RaceCar", 1));
-    if (!players.isEmpty()) {
-      currentPlayer = players.getFirst();
+    // Initialize players
+    if (players != null && !players.isEmpty()) {
+      this.players = players;
     } else {
-      players.add(new Player("Player 1", "DefaultPiece", 1));
-      currentPlayer = players.getFirst();
+      // If no players provided, create a default single player
+      this.players.add(new Player("TopHat", "TopHat", 1));
     }
-    currentPlayer = players.getFirst();
 
-    // Initialize GamePiece after players are created
-    gamePiece = new GamePiece(TILE_SIZE, players);
+    // Validate player count
+    if (this.players.size() > 5) {
+      showAlert("Maximum 5 players supported. Only the first 5 players will be used.");
+      this.players = this.players.subList(0, 5);
+    }
+
+    // Set the first player as current
+    if (!this.players.isEmpty()) {
+      currentPlayer = this.players.get(0);
+    }
+
+    // Initialize GamePiece with players
+    gamePiece = new GamePiece(TILE_SIZE, this.players);
 
     // Create and set up the game board UI
     GridPane boardGrid = createGameBoardUI();
@@ -114,6 +132,34 @@ public class LadderGameBoard {
     primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
 
     return scene;
+  }
+
+  /**
+   * Legacy method for compatibility - creates a game with default players
+   * 
+   * @param boardType    The type of board to create
+   * @param primaryStage The primary stage
+   * @return The created scene
+   */
+  public Scene createGameScene(String boardType, Stage primaryStage) {
+    // Create a single default player
+    List<Player> defaultPlayers = new ArrayList<>();
+    defaultPlayers.add(new Player("Player 1", "TopHat", 1));
+
+    return createGameScene(boardType, primaryStage, defaultPlayers);
+  }
+
+  /**
+   * Shows an alert message
+   * 
+   * @param message The message to show
+   */
+  private void showAlert(String message) {
+    Alert alert = new Alert(AlertType.INFORMATION);
+    alert.setTitle("Game Information");
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 
   /**
@@ -186,7 +232,6 @@ public class LadderGameBoard {
         }
       }
     });
-
   }
 
   /**
@@ -349,10 +394,10 @@ public class LadderGameBoard {
   }
 
   /**
-   * Removes the player pieces from the given tile.
+   * Removes all player pieces from the given tile.
    * The player pieces are removed from the tile to prepare for the next move.
    *
-   * @param tile the tile from which the player piece is to be removed
+   * @param tile the tile from which player pieces are to be removed
    */
   private void removePlayerFromTile(StackPane tile) {
     List<Node> toKeep = new ArrayList<>();
@@ -364,7 +409,7 @@ public class LadderGameBoard {
       }
     }
 
-    // Clear tile and add back only the preserved nodes
+    // Clear tile completely
     tile.getChildren().clear();
     tile.getChildren().addAll(toKeep);
   }
@@ -380,7 +425,6 @@ public class LadderGameBoard {
    */
   private void animatePlayerMove(Player player, int fromPosition, int toPosition) {
     int playerIndex = players.indexOf(player);
-    Player otherPlayer = players.get(1 - playerIndex);
 
     // Get tiles for animation
     StackPane fromTile = tilesMap.get(fromPosition);
@@ -389,16 +433,28 @@ public class LadderGameBoard {
     // Remove player from old position
     removePlayerFromTile(fromTile);
 
-    // If other player was on the same tile, add them back
-    if (otherPlayer.getTileId() == fromPosition) {
-      gamePiece.addPlayerToTile(otherPlayer, fromPosition, fromTile);
+    // Check if other players were on the same tile and add them back
+    for (Player otherPlayer : players) {
+      if (otherPlayer != player && otherPlayer.getTileId() == fromPosition) {
+        gamePiece.addPlayerToTile(otherPlayer, fromPosition, fromTile);
+      }
     }
 
     // Create animating piece using GamePiece
     ImageView playerPiece = gamePiece.createAnimationPiece(playerIndex);
     if (playerPiece == null) {
-      // Skip animation if piece creation fails
+      // Skip animation if piece creation fails, but still handle the move
+      System.err.println("Animation piece creation failed for " + player.getName());
       gamePiece.addPlayerToTile(player, toPosition, toTile);
+
+      // Still check for victory
+      if (checkVictory(player, toPosition)) {
+        gameInfoLabel.setText(player.getName() + " has won the game!");
+        infoTable.setRollEnabled(false);
+        showAlert(player.getName() + " has won the game!");
+        return;
+      }
+
       switchToNextPlayer();
       infoTable.setRollEnabled(true);
       return;
@@ -406,6 +462,7 @@ public class LadderGameBoard {
 
     // Create animation container
     StackPane animationPane = new StackPane(playerPiece);
+    animationPane.setMaxSize(TILE_SIZE * 0.5, TILE_SIZE * 0.5);
 
     // Get coordinates
     Bounds fromBounds = fromTile.localToScene(fromTile.getBoundsInLocal());
@@ -436,6 +493,17 @@ public class LadderGameBoard {
       // Add player to new position using GamePiece
       gamePiece.addPlayerToTile(player, toPosition, toTile);
 
+      // Check for victory
+      if (checkVictory(player, toPosition)) {
+        String victoryMessage = player.getName() + " has won the game!";
+        gameInfoLabel.setText(victoryMessage);
+        infoTable.setRollEnabled(false);
+
+        // Show victory alert
+        showAlert(victoryMessage);
+        return;
+      }
+
       // Switch to next player
       switchToNextPlayer();
 
@@ -444,6 +512,19 @@ public class LadderGameBoard {
     });
 
     transition.play();
+  }
+
+  /**
+   * Checks if a player has won the game
+   * 
+   * @param player   The player to check
+   * @param position The player's position
+   * @return True if the player has won
+   */
+  private boolean checkVictory(Player player, int position) {
+    // Consider the last tile on the board as the winning position
+    int winningPosition = gameBoard.getRows() * gameBoard.getColumns();
+    return position >= winningPosition;
   }
 
   /**
