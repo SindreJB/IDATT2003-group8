@@ -166,5 +166,4 @@ public class Tile {
   public boolean hasAction() {
     return hasSnake() || hasLadder() || hasWormhole();
   }
-
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import edu.ntnu.idi.idatt.factory.LadderGameFactory;
 import edu.ntnu.idi.idatt.model.Board;
@@ -225,36 +226,38 @@ public class LadderGameBoard {
     } else if (tile.hasWormhole()) {
       // Create a slight curve for wormholes
       startX += startBounds.getWidth() * 0.1;
-      endX -= endBounds.getWidth() * 0.1;
     }
 
     // Create line with these coordinates
-    Line line = new Line(startX, startY, endX, endY);
 
     // Style based on type
     if (tile.hasLadder()) {
       // Style the ladder starting tile with green background
+      Line line = new Line(startX, startY, endX, endY);
+
       startTile.setStyle("-fx-background-color:rgb(37, 111, 37);"); // Light green background for ladder start
       endTile.setStyle("-fx-background-color:rgb(15, 42, 20);"); // Dark green background for ladder end
       line.setStroke(Color.GREEN);
       line.getStrokeDashArray().addAll(5.0, 5.0);
+      root.getChildren().add(line);
+      line.toBack();
+
     } else if (tile.hasSnake()) {
+      Line line = new Line(startX, startY, endX, endY);
+
       startTile.setStyle("-fx-background-color:rgb(111, 37, 37);"); // Light red background for snake head
       endTile.setStyle("-fx-background-color:rgb(42, 15, 15);"); // Dark red background for snake tail
       line.setStroke(Color.RED);
       line.setStrokeWidth(2);
+      root.getChildren().add(line);
+      line.toBack();
+
     } else if (tile.hasWormhole()) {
       // Make wormholes purple with a distinct dashed pattern
       startTile.setStyle("-fx-background-color:rgb(75, 0, 130);"); // Purple background for wormhole entrance
-      endTile.setStyle("-fx-background-color:rgb(147, 112, 219);"); // Light purple for wormhole exit
-      line.setStroke(Color.PURPLE);
-      line.setStrokeWidth(3);
-      line.getStrokeDashArray().addAll(2.0, 7.0, 5.0, 7.0); // Unique dash pattern
     }
 
     // Add the line to the root pane
-    root.getChildren().add(line);
-    line.toBack();
     pane.toBack();
   }
 
@@ -289,34 +292,27 @@ public class LadderGameBoard {
       gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
           " and slid down a snake from " + landedPosition + " to " + newPosition);
     } else if (gameBoard.getTile(newPosition).hasWormhole()) {
-      // For wormholes, determine the direction based on probability
-      Tile wormholeTile = gameBoard.getTile(newPosition);
-      Tile destinationTile = wormholeTile.getWormhole();
-      boolean reverseTravel = false;
+      // For wormholes, we generate a random movement between -15 and +20 tiles
+      int randomMovement = new Random().nextInt(36) - 15; // Range from -15 to +20
 
-      // If we're at a wormhole exit tile, determine if the wormhole should activate
-      // in reverse (50% chance by default)
-      if (oldPosition == destinationTile.getNumber()) {
-        // We're at an exit point, decide if we should go back through the wormhole
-        reverseTravel = Math.random() < 0.5; // 50% chance of reverse travel
+      int wormholeResult = Math.max(1, newPosition + randomMovement);
+      newPosition = wormholeResult;
 
-        if (reverseTravel) {
-          newPosition = wormholeTile.getNumber();
-          gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-              " and traveled back through the wormhole from " + landedPosition +
-              " to " + newPosition);
-        } else {
-          // Wormhole doesn't activate in reverse
-          gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-              " and landed on " + landedPosition +
-              " but the wormhole gods were kind to you");
-        }
-      } else {
-        // Normal forward wormhole travel
-        newPosition = destinationTile.getNumber();
+      // Create a descriptive message based on the random movement
+      if (randomMovement > 0) {
         gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-            " and traveled through a wormhole from " + landedPosition +
-            " to " + newPosition);
+            " and entered a wormhole at " + landedPosition +
+            "! The wormhole sent you forward " + randomMovement +
+            " spaces to " + newPosition + "!");
+      } else if (randomMovement < 0) {
+        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+            " and entered a wormhole at " + landedPosition +
+            "! The wormhole sent you backward " + Math.abs(randomMovement) +
+            " spaces to " + newPosition + "!");
+      } else {
+        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+            " and entered a wormhole at " + landedPosition +
+            "! The wormhole spun you around but left you in the same place!");
       }
     } else {
       // No special tile
