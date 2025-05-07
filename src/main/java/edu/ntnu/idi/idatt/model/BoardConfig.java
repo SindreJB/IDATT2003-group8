@@ -12,12 +12,14 @@ public class BoardConfig {
   private List<Integer> snakeTails;
   private List<Integer> ladderStarts;
   private List<Integer> ladderEnds;
+  private List<Integer> wormholeStarts;
 
   public BoardConfig() {
     this.snakeHeads = new ArrayList<>();
     this.snakeTails = new ArrayList<>();
     this.ladderStarts = new ArrayList<>();
     this.ladderEnds = new ArrayList<>();
+    this.wormholeStarts = new ArrayList<>();
   }
 
   public BoardConfig(String name, String description, int rows, int columns) {
@@ -93,6 +95,14 @@ public class BoardConfig {
     this.ladderEnds = ladderEnds;
   }
 
+  public List<Integer> getWormholeStarts() {
+    return wormholeStarts;
+  }
+
+  public void setWormholeStarts(List<Integer> wormholeStarts) {
+    this.wormholeStarts = wormholeStarts;
+  }
+
   // Helper methods
   public void addSnake(int head, int tail) {
     snakeHeads.add(head);
@@ -102,5 +112,9 @@ public class BoardConfig {
   public void addLadder(int start, int end) {
     ladderStarts.add(start);
     ladderEnds.add(end);
+  }
+
+  public void addWormhole(int start, int end) {
+    wormholeStarts.add(start);
   }
 }

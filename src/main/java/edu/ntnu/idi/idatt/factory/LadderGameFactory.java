@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.Random;
 
 import edu.ntnu.idi.idatt.controller.BoardManager;
 import edu.ntnu.idi.idatt.model.Board;
@@ -75,7 +76,34 @@ public class LadderGameFactory {
       addLadder(board, start, end);
     }
 
+    // Add wormholes
+    if (config.getWormholeStarts() != null) {
+      for (int i = 0; i < config.getWormholeStarts().size(); i++) {
+        int start = config.getWormholeStarts().get(i);
+        addWormhole(board, start);
+      }
+    }
+
     return board;
+  }
+
+  /**
+   * Adds a wormhole to the board
+   *
+   * @param board the board to add the wormhole to
+   * @param start the wormhole's start position
+   */
+  private static void addWormhole(Board board, int start) {
+    Tile startTile = board.getTile(start);
+    // Generate a random destination for the wormhole
+    Random random = new Random();
+    int destination;
+    do {
+      destination = random.nextInt(board.getRows() * board.getColumns()) + 1;
+    } while (destination == start);
+
+    Tile endTile = board.getTile(destination);
+    startTile.setWormhole(endTile);
   }
 
   /**

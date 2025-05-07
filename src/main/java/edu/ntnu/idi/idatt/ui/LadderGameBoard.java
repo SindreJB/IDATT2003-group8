@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import edu.ntnu.idi.idatt.factory.LadderGameFactory;
 import edu.ntnu.idi.idatt.model.Board;
@@ -51,7 +52,7 @@ public class LadderGameBoard {
   private BorderPane root;
   private Dice dice = new Dice();
   private GamePiece gamePiece;
-  
+
   /**
    * Creates a new LadderGameBoard instance
    */
@@ -63,7 +64,8 @@ public class LadderGameBoard {
   /**
    * Creates a game scene with the specified board type and players
    * 
-   * @param boardType    the type of board to load (e.g., "standard", "empty", "custom")
+   * @param boardType    the type of board to load (e.g., "standard", "empty",
+   *                     "custom")
    * @param primaryStage the primary stage
    * @param players      the list of players for the game (1-5 players)
    * @return the created game scene
@@ -82,13 +84,13 @@ public class LadderGameBoard {
       // If no players provided, create a default single player
       this.players.add(new Player("TopHat", "TopHat", 1));
     }
-    
+
     // Validate player count
     if (this.players.size() > 5) {
       showAlert("Maximum 5 players supported. Only the first 5 players will be used.");
       this.players = this.players.subList(0, 5);
     }
-    
+
     // Set the first player as current
     if (!this.players.isEmpty()) {
       currentPlayer = this.players.get(0);
@@ -131,11 +133,11 @@ public class LadderGameBoard {
 
     return scene;
   }
-  
+
   /**
    * Legacy method for compatibility - creates a game with default players
    * 
-   * @param boardType The type of board to create
+   * @param boardType    The type of board to create
    * @param primaryStage The primary stage
    * @return The created scene
    */
@@ -143,7 +145,7 @@ public class LadderGameBoard {
     // Create a single default player
     List<Player> defaultPlayers = new ArrayList<>();
     defaultPlayers.add(new Player("Player 1", "TopHat", 1));
-    
+
     return createGameScene(boardType, primaryStage, defaultPlayers);
   }
 
@@ -224,14 +226,8 @@ public class LadderGameBoard {
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
         Tile tile = gameBoard.getTile(i);
-
-        // Add ladders
-        if (tile.hasLadder()) {
-          drawConnection(tile, gridPane);
-        }
-
-        // Add snakes
-        if (tile.hasSnake()) {
+        // Add action graphics to the tile
+        if (tile.hasAction()) {
           drawConnection(tile, gridPane);
         }
       }
@@ -239,7 +235,7 @@ public class LadderGameBoard {
   }
 
   /**
-   * Draws a connection (snake or ladder) between two tiles
+   * Draws a connection (snake, ladder, or wormhole) between two tiles
    */
   private void drawConnection(Tile tile, StackPane pane) {
     StackPane startTile = tilesMap.get(tile.getNumber());
@@ -249,6 +245,8 @@ public class LadderGameBoard {
       endTile = tilesMap.get(tile.getLadder().getNumber());
     } else if (tile.hasSnake()) {
       endTile = tilesMap.get(tile.getSnake().getNumber());
+    } else if (tile.hasWormhole()) {
+      endTile = tilesMap.get(tile.getWormhole().getNumber());
     } else {
       return; // No connection to draw
     }
@@ -262,32 +260,49 @@ public class LadderGameBoard {
     double endX = endBounds.getMinX() + endBounds.getWidth() / 2;
     double endY = endBounds.getMinY() + endBounds.getHeight() / 2;
 
+    // Adjust start and end positions based on connection type
     if (tile.hasLadder()) {
       startY += startBounds.getHeight() * 0.3; // Start from lower part of tile
       endY -= endBounds.getHeight() * 0.3; // End at upper part of tile
-    }
-    // Snake goes from top to bottom
-    else if (tile.hasSnake()) {
+    } else if (tile.hasSnake()) {
       startY -= startBounds.getHeight() * 0.3; // Start from upper part of tile
       endX += startBounds.getWidth() * 0.2; // Offset horizontally for visual interest
       endY += endBounds.getHeight() * 0.3; // End at lower part of tile
+    } else if (tile.hasWormhole()) {
+      // Create a slight curve for wormholes
+      startX += startBounds.getWidth() * 0.1;
     }
 
     // Create line with these coordinates
-    Line line = new Line(startX, startY, endX, endY);
 
-    // Style based on type (ladder or snake)
+    // Style based on type
     if (tile.hasLadder()) {
+      // Style the ladder starting tile with green background
+      Line line = new Line(startX, startY, endX, endY);
+
+      startTile.setStyle("-fx-background-color:rgb(37, 111, 37);"); // Light green background for ladder start
+      endTile.setStyle("-fx-background-color:rgb(15, 42, 20);"); // Dark green background for ladder end
       line.setStroke(Color.GREEN);
       line.getStrokeDashArray().addAll(5.0, 5.0);
+      root.getChildren().add(line);
+      line.toBack();
+
     } else if (tile.hasSnake()) {
+      Line line = new Line(startX, startY, endX, endY);
+
+      startTile.setStyle("-fx-background-color:rgb(111, 37, 37);"); // Light red background for snake head
+      endTile.setStyle("-fx-background-color:rgb(42, 15, 15);"); // Dark red background for snake tail
       line.setStroke(Color.RED);
       line.setStrokeWidth(2);
+      root.getChildren().add(line);
+      line.toBack();
+
+    } else if (tile.hasWormhole()) {
+      // Make wormholes purple with a distinct dashed pattern
+      startTile.setStyle("-fx-background-color:rgb(75, 0, 130);"); // Purple background for wormhole entrance
     }
 
-    // Add the line to the gridPane at a lower z-index
-    root.getChildren().add(line);
-    line.toBack();
+    // Add the line to the root pane
     pane.toBack();
   }
 
@@ -306,25 +321,56 @@ public class LadderGameBoard {
 
     // Move player
     int oldPosition = currentPlayer.getTileId();
-    int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board size
-    
-    // Check if landed on ladder or snake
+    int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board
+                                                                                                       // size
+
+    // Store the position before checking for special tiles
+    int landedPosition = newPosition;
+
+    // Check for special tiles
     if (gameBoard.getTile(newPosition).hasLadder()) {
       newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
+      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+          " and climbed a ladder from " + landedPosition + " to " + newPosition);
     } else if (gameBoard.getTile(newPosition).hasSnake()) {
       newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
-    }
-    currentPlayer.setTileId(newPosition);
+      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+          " and slid down a snake from " + landedPosition + " to " + newPosition);
+    } else if (gameBoard.getTile(newPosition).hasWormhole()) {
+      // For wormholes, we generate a random movement between -15 and +20 tiles
+      int randomMovement = new Random().nextInt(36) - 15; // Range from -15 to +20
 
-    // Update the game info
-    String moveInfo = currentPlayer.getName() + " rolled " + diceValue +
-        " and moves from tile " + oldPosition + " to tile " + newPosition;
-    gameInfoLabel.setText(moveInfo);
+      int wormholeResult = Math.max(1, newPosition + randomMovement);
+      newPosition = wormholeResult;
+
+      // Create a descriptive message based on the random movement
+      if (randomMovement > 0) {
+        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+            " and entered a wormhole at " + landedPosition +
+            "! The wormhole sent you forward " + randomMovement +
+            " spaces to " + newPosition + "!");
+      } else if (randomMovement < 0) {
+        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+            " and entered a wormhole at " + landedPosition +
+            "! The wormhole sent you backward " + Math.abs(randomMovement) +
+            " spaces to " + newPosition + "!");
+      } else {
+        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+            " and entered a wormhole at " + landedPosition +
+            "! The wormhole spun you around but left you in the same place!");
+      }
+    } else {
+      // No special tile
+      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
+          " and moved from " + oldPosition + " to " + newPosition);
+    }
+
+    currentPlayer.setTileId(newPosition);
 
     // Animate the player movement
     animatePlayerMove(currentPlayer, oldPosition, newPosition);
   }
-  
+
   /**
    * Creates a tile represented by a StackPane with a specified number.
    * The tile has a preferred size defined by TILE_SIZE and contains a label
@@ -367,7 +413,7 @@ public class LadderGameBoard {
     tile.getChildren().clear();
     tile.getChildren().addAll(toKeep);
   }
-  
+
   /**
    * Animates the player movement from one tile to another.
    * The player piece is moved from the old position to the new position with an
@@ -400,7 +446,7 @@ public class LadderGameBoard {
       // Skip animation if piece creation fails, but still handle the move
       System.err.println("Animation piece creation failed for " + player.getName());
       gamePiece.addPlayerToTile(player, toPosition, toTile);
-      
+
       // Still check for victory
       if (checkVictory(player, toPosition)) {
         gameInfoLabel.setText(player.getName() + " has won the game!");
@@ -408,7 +454,7 @@ public class LadderGameBoard {
         showAlert(player.getName() + " has won the game!");
         return;
       }
-      
+
       switchToNextPlayer();
       infoTable.setRollEnabled(true);
       return;
@@ -452,7 +498,7 @@ public class LadderGameBoard {
         String victoryMessage = player.getName() + " has won the game!";
         gameInfoLabel.setText(victoryMessage);
         infoTable.setRollEnabled(false);
-        
+
         // Show victory alert
         showAlert(victoryMessage);
         return;
@@ -471,7 +517,7 @@ public class LadderGameBoard {
   /**
    * Checks if a player has won the game
    * 
-   * @param player The player to check
+   * @param player   The player to check
    * @param position The player's position
    * @return True if the player has won
    */
