@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
 
-import edu.ntnu.idi.idatt.factory.LadderGameFactory;
 import edu.ntnu.idi.idatt.model.Board;
-import edu.ntnu.idi.idatt.model.Dice;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
 import edu.ntnu.idi.idatt.ui.components.GameAlert;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
+import edu.ntnu.idi.idatt.ui.components.PlayerSelectionModal;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -35,31 +32,76 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * The LadderGameBoard class represents the main application for the Snakes and
+ * The LadderGameBoard class represents the UI for the Snakes and
  * Ladders game. It supports 1-5 players with customizable game pieces.
  */
 public class LadderGameBoard {
 
   private static final int TILE_SIZE = 60;
 
-  private Board gameBoard;
-  private List<Player> players = new ArrayList<>();
+  // UI components
   private final Map<Integer, StackPane> tilesMap = new HashMap<>();
-  private Player currentPlayer;
-  private int currentPlayerIndex = 0;
   private Label statusLabel;
   private Label gameInfoLabel;
   private InfoTable infoTable;
   private BorderPane root;
-  private Dice dice = new Dice();
   private GamePiece gamePiece;
+
+  // Game controller manages all game logic
+  private GameController gameController;
 
   /**
    * Creates a new LadderGameBoard instance
    */
   public LadderGameBoard() {
-    // Initialize empty board - will be replaced when game is created
-    this.gameBoard = new Board(10, 9);
+    // Initialize the game controller
+    this.gameController = new GameController();
+
+    // Set up callbacks from controller to UI
+    setupControllerCallbacks();
+  }
+
+  /**
+   * Sets up callbacks from the GameController to update the UI
+   */
+  private void setupControllerCallbacks() {
+    // Update UI when player turn changes
+    gameController.setOnTurnChanged(() -> {
+      Player currentPlayer = gameController.getCurrentPlayer();
+      if (statusLabel != null) {
+        statusLabel.setText(currentPlayer.getName() + "'s turn");
+      }
+    });
+
+    // Handle dice roll results with UI feedback
+    gameController.setOnDiceRolled((diceValue, message, oldPosition, newPosition) -> {
+      if (infoTable != null) {
+        infoTable.updateDiceDisplay(diceValue);
+      }
+
+      if (gameInfoLabel != null) {
+        gameInfoLabel.setText(message);
+      }
+    });
+
+    // Handle detailed player movement for animation
+    gameController.setOnPlayerMovement((player, oldPosition, newPosition, checkVictory) -> {
+      animatePlayerMove(player, oldPosition, newPosition, checkVictory);
+    });
+
+    // Handle game won event
+    gameController.setOnGameWon(() -> {
+      Player winner = gameController.getCurrentPlayer();
+      String victoryMessage = winner.getName() + " has won the game!";
+      gameInfoLabel.setText(victoryMessage);
+
+      if (infoTable != null) {
+        infoTable.setRollEnabled(false);
+      }
+
+      // Show victory alert with game options
+      showGameOverAlert("Game Over", victoryMessage);
+    });
   }
 
   /**
@@ -75,45 +117,39 @@ public class LadderGameBoard {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
 
-    // Load board from JSON
-    loadBoardFromJSON(boardType);
+    // Load board and set up players using the controller
+    gameController.loadBoard(boardType);
+    gameController.setupGame(players);
 
-    // Initialize players
-    if (players != null && !players.isEmpty()) {
-      this.players = players;
-    } else {
-      // If no players provided, create a default single player
-      this.players.add(new Player("TopHat", "TopHat", 1));
-    }
+    // Get board from controller for UI setup
+    Board gameBoard = gameController.getGameBoard();
+    List<Player> gamePlayers = gameController.getPlayers();
 
-    // Validate player count
-    if (this.players.size() > 5) {
+    // Validate player count in UI
+    if (gamePlayers.size() > 5) {
       showAlert("Maximum 5 players supported. Only the first 5 players will be used.");
-      this.players = this.players.subList(0, 5);
-    }
-
-    // Set the first player as current
-    if (!this.players.isEmpty()) {
-      currentPlayer = this.players.get(0);
     }
 
     // Initialize GamePiece with players
-    gamePiece = new GamePiece(TILE_SIZE, this.players);
+    gamePiece = new GamePiece(TILE_SIZE, gamePlayers);
 
     // Create and set up the game board UI
-    GridPane boardGrid = createGameBoardUI();
+    GridPane boardGrid = createGameBoardUI(gameBoard);
     StackPane gameBoardPane = new StackPane();
 
     gameBoardPane.getChildren().add(boardGrid);
-    drawSnakesAndLadders(gameBoardPane);
+    drawSnakesAndLadders(gameBoardPane, gameBoard);
     root.setCenter(gameBoardPane);
 
     // Add padding around the board
     BorderPane.setMargin(boardGrid, new Insets(20));
 
-    // Create InfoTable instance
+    // Create InfoTable instance with roll action delegate to controller
     infoTable = new InfoTable();
-    VBox controlPanel = infoTable.createControlPanel(this::rollAndMove);
+    VBox controlPanel = infoTable.createControlPanel(() -> {
+      infoTable.setRollEnabled(false); // Disable roll button during turn
+      gameController.rollDiceAndMove();
+    });
     root.setRight(controlPanel);
 
     // Get references to UI components from InfoTable
@@ -121,6 +157,7 @@ public class LadderGameBoard {
     this.gameInfoLabel = infoTable.getGameInfoLabel();
 
     // Set initial text for labels
+    Player currentPlayer = gameController.getCurrentPlayer();
     statusLabel.setText(currentPlayer.getName() + "'s turn");
     gameInfoLabel.setText("Game started: " + gameBoard.getName() + "\n" + gameBoard.getDescription());
 
@@ -175,26 +212,9 @@ public class LadderGameBoard {
   }
 
   /**
-   * Loads a board configuration from JSON using LadderGameFactory
-   *
-   * @param boardName the name of the board to load
-   */
-  private void loadBoardFromJSON(String boardName) {
-    Optional<Board> loadedBoard = LadderGameFactory.tryCreateBoard(boardName);
-    if (loadedBoard.isPresent()) {
-      gameBoard = loadedBoard.get();
-    } else {
-      // Fallback to default board if loading fails
-      gameBoard = new Board(10, 9);
-      gameBoard.setName("Default Board");
-      gameBoard.setDescription("Default board created when loading failed");
-    }
-  }
-
-  /**
    * Creates a game board UI based on the loaded board configuration
    */
-  private GridPane createGameBoardUI() {
+  private GridPane createGameBoardUI(Board gameBoard) {
     GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER);
     gridPane.setHgap(2);
@@ -233,7 +253,7 @@ public class LadderGameBoard {
   /**
    * Draws snakes and ladders on the grid based on the loaded board configuration
    */
-  private void drawSnakesAndLadders(StackPane gridPane) {
+  private void drawSnakesAndLadders(StackPane gridPane, Board gameBoard) {
     // Draw ladders and snakes after all tiles are created
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
@@ -285,8 +305,6 @@ public class LadderGameBoard {
       startX += startBounds.getWidth() * 0.1;
     }
 
-    // Create line with these coordinates
-
     // Style based on type
     if (tile.hasLadder()) {
       // Style the ladder starting tile with green background
@@ -316,71 +334,6 @@ public class LadderGameBoard {
 
     // Add the line to the root pane
     pane.toBack();
-  }
-
-  /**
-   * Handles dice rolling and player movement
-   */
-  private void rollAndMove() {
-    // Disable roll button during animation
-    infoTable.setRollEnabled(false);
-
-    // Roll the dice
-    int diceValue = dice.rollDice();
-
-    // Display dice value
-    infoTable.updateDiceDisplay(diceValue);
-
-    // Move player
-    int oldPosition = currentPlayer.getTileId();
-    int newPosition = Math.min(oldPosition + diceValue, gameBoard.getRows() * gameBoard.getColumns()); // Limit to board
-                                                                                                       // size
-
-    // Store the position before checking for special tiles
-    int landedPosition = newPosition;
-
-    // Check for special tiles
-    if (gameBoard.getTile(newPosition).hasLadder()) {
-      newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
-      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-          " and climbed a ladder from " + landedPosition + " to " + newPosition);
-    } else if (gameBoard.getTile(newPosition).hasSnake()) {
-      newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
-      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-          " and slid down a snake from " + landedPosition + " to " + newPosition);
-    } else if (gameBoard.getTile(newPosition).hasWormhole()) {
-      // For wormholes, we generate a random movement between -15 and +20 tiles
-      int randomMovement = new Random().nextInt(36) - 15; // Range from -15 to +20
-
-      int wormholeResult = Math.max(1, newPosition + randomMovement);
-      newPosition = wormholeResult;
-
-      // Create a descriptive message based on the random movement
-      if (randomMovement > 0) {
-        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-            " and entered a wormhole at " + landedPosition +
-            "! The wormhole sent you forward " + randomMovement +
-            " spaces to " + newPosition + "!");
-      } else if (randomMovement < 0) {
-        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-            " and entered a wormhole at " + landedPosition +
-            "! The wormhole sent you backward " + Math.abs(randomMovement) +
-            " spaces to " + newPosition + "!");
-      } else {
-        gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-            " and entered a wormhole at " + landedPosition +
-            "! The wormhole spun you around but left you in the same place!");
-      }
-    } else {
-      // No special tile
-      gameInfoLabel.setText(currentPlayer.getName() + " rolled " + diceValue +
-          " and moved from " + oldPosition + " to " + newPosition);
-    }
-
-    currentPlayer.setTileId(newPosition);
-
-    // Animate the player movement
-    animatePlayerMove(currentPlayer, oldPosition, newPosition);
   }
 
   /**
@@ -428,14 +381,16 @@ public class LadderGameBoard {
 
   /**
    * Animates the player movement from one tile to another.
-   * The player piece is moved from the old position to the new position with an
-   * animation.
+   * This is purely a UI function that visualizes movement decided by the
+   * controller.
    *
    * @param player       the player whose piece is to be moved
    * @param fromPosition the old position of the player piece
    * @param toPosition   the new position of the player piece
+   * @param checkVictory whether to check for victory after animation
    */
-  private void animatePlayerMove(Player player, int fromPosition, int toPosition) {
+  private void animatePlayerMove(Player player, int fromPosition, int toPosition, boolean checkVictory) {
+    List<Player> players = gameController.getPlayers();
     int playerIndex = players.indexOf(player);
 
     // Get tiles for animation
@@ -459,17 +414,12 @@ public class LadderGameBoard {
       System.err.println("Animation piece creation failed for " + player.getName());
       gamePiece.addPlayerToTile(player, toPosition, toTile);
 
-      // Still check for victory
-      if (checkVictory(player, toPosition)) {
-        gameInfoLabel.setText(player.getName() + " has won the game!");
-        infoTable.setRollEnabled(false);
-
-        // Show victory alert with game options
-        showGameOverAlert("Game Over", player.getName() + " has won the game!");
+      if (checkVictory) {
+        // Victory already checked by controller
         return;
       }
 
-      switchToNextPlayer();
+      // Re-enable roll button
       infoTable.setRollEnabled(true);
       return;
     }
@@ -505,61 +455,27 @@ public class LadderGameBoard {
       root.getChildren().remove(animationPane);
 
       // Add player to new position using GamePiece
-      gamePiece.addPlayerToTile(player, toPosition, toTile); // Check for victory
-      if (checkVictory(player, toPosition)) {
-        String victoryMessage = player.getName() + " has won the game!";
-        gameInfoLabel.setText(victoryMessage);
-        infoTable.setRollEnabled(false);
+      gamePiece.addPlayerToTile(player, toPosition, toTile);
 
-        // Show victory alert with game options
-        showGameOverAlert("Game Over", victoryMessage);
-        return;
+      // Victory already handled by controller
+      if (!checkVictory) {
+        // Re-enable roll button if not a victory
+        infoTable.setRollEnabled(true);
       }
-
-      // Switch to next player
-      switchToNextPlayer();
-
-      // Re-enable roll button
-      infoTable.setRollEnabled(true);
     });
 
     transition.play();
   }
 
   /**
-   * Checks if a player has won the game
-   * 
-   * @param player   The player to check
-   * @param position The player's position
-   * @return True if the player has won
-   */
-  private boolean checkVictory(Player player, int position) {
-    // Consider the last tile on the board as the winning position
-    int winningPosition = gameBoard.getRows() * gameBoard.getColumns();
-    return position >= winningPosition;
-  }
-
-  /**
-   * Switches to the next player
-   */
-  private void switchToNextPlayer() {
-    // Update player index and current player
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-    currentPlayer = players.get(currentPlayerIndex);
-
-    // Update status label
-    statusLabel.setText(currentPlayer.getName() + "'s turn");
-  }
-
-  /**
    * Resets the current game to its initial state.
-   * Players remain the same but positions are reset.
+   * UI delegate for the controller's resetGame method.
    */
   public void resetGame() {
-    // Reset player positions to start position
+    // Clear all player pieces from board
+    List<Player> players = gameController.getPlayers();
     for (Player player : players) {
       int oldPosition = player.getTileId();
-      player.setTileId(1);
 
       // Remove player from old position visual
       StackPane oldTile = tilesMap.get(oldPosition);
@@ -568,19 +484,21 @@ public class LadderGameBoard {
             ((ImageView) node).getUserData() != null &&
             ((ImageView) node).getUserData().equals(player.getName()));
       }
-
-      // Add player to start position visual
-      StackPane startTile = tilesMap.get(0);
-      if (startTile != null) {
-        gamePiece.addPlayerToTile(player, 0, startTile);
-      }
     }
 
-    // Reset turn to first player
-    currentPlayerIndex = 0;
-    currentPlayer = players.get(0);
+    // Reset game state through controller
+    gameController.resetGame();
 
-    // Update the UI
+    // Update the UI after reset
+    Player currentPlayer = gameController.getCurrentPlayer();
+    StackPane startTile = tilesMap.get(1);
+
+    // Re-add all players to the start position
+    for (Player player : players) {
+      gamePiece.addPlayerToTile(player, 1, startTile);
+    }
+
+    // Update UI labels
     gameInfoLabel.setText(currentPlayer.getName() + "'s turn");
     statusLabel.setText(currentPlayer.getName() + "'s turn");
     infoTable.setRollEnabled(true);
@@ -590,8 +508,21 @@ public class LadderGameBoard {
    * Sets up a new game with player selection.
    */
   public void setupNewGame() {
-    // Clear the board and start fresh
+    // Get the current stage from the scene
     Stage stage = (Stage) root.getScene().getWindow();
+
+    // Show player selection modal
+    PlayerSelectionModal playerSelector = new PlayerSelectionModal(
+        gameController.getGameBoard().getName(), stage);
+    playerSelector.showModal();
   }
 
+  /**
+   * Gets the game controller
+   * 
+   * @return The game controller
+   */
+  public GameController getGameController() {
+    return gameController;
+  }
 }
