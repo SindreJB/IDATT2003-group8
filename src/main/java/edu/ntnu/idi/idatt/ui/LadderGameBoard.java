@@ -12,6 +12,7 @@ import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Dice;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.ui.components.GameAlert;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import javafx.animation.TranslateTransition;
@@ -160,6 +161,17 @@ public class LadderGameBoard {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
+  }
+
+  /**
+   * Shows a game-over alert with options to restart, start a new game, or exit
+   * 
+   * @param title   The alert title
+   * @param message The message to show
+   */
+  private void showGameOverAlert(String title, String message) {
+    GameAlert gameAlert = new GameAlert();
+    gameAlert.showGameAlert(title, message, new LadderGameActionsImpl(this));
   }
 
   /**
@@ -451,7 +463,9 @@ public class LadderGameBoard {
       if (checkVictory(player, toPosition)) {
         gameInfoLabel.setText(player.getName() + " has won the game!");
         infoTable.setRollEnabled(false);
-        showAlert(player.getName() + " has won the game!");
+
+        // Show victory alert with game options
+        showGameOverAlert("Game Over", player.getName() + " has won the game!");
         return;
       }
 
@@ -491,16 +505,14 @@ public class LadderGameBoard {
       root.getChildren().remove(animationPane);
 
       // Add player to new position using GamePiece
-      gamePiece.addPlayerToTile(player, toPosition, toTile);
-
-      // Check for victory
+      gamePiece.addPlayerToTile(player, toPosition, toTile); // Check for victory
       if (checkVictory(player, toPosition)) {
         String victoryMessage = player.getName() + " has won the game!";
         gameInfoLabel.setText(victoryMessage);
         infoTable.setRollEnabled(false);
 
-        // Show victory alert
-        showAlert(victoryMessage);
+        // Show victory alert with game options
+        showGameOverAlert("Game Over", victoryMessage);
         return;
       }
 
@@ -538,4 +550,48 @@ public class LadderGameBoard {
     // Update status label
     statusLabel.setText(currentPlayer.getName() + "'s turn");
   }
+
+  /**
+   * Resets the current game to its initial state.
+   * Players remain the same but positions are reset.
+   */
+  public void resetGame() {
+    // Reset player positions to start position
+    for (Player player : players) {
+      int oldPosition = player.getTileId();
+      player.setTileId(1);
+
+      // Remove player from old position visual
+      StackPane oldTile = tilesMap.get(oldPosition);
+      if (oldTile != null) {
+        oldTile.getChildren().removeIf(node -> node instanceof ImageView &&
+            ((ImageView) node).getUserData() != null &&
+            ((ImageView) node).getUserData().equals(player.getName()));
+      }
+
+      // Add player to start position visual
+      StackPane startTile = tilesMap.get(0);
+      if (startTile != null) {
+        gamePiece.addPlayerToTile(player, 0, startTile);
+      }
+    }
+
+    // Reset turn to first player
+    currentPlayerIndex = 0;
+    currentPlayer = players.get(0);
+
+    // Update the UI
+    gameInfoLabel.setText(currentPlayer.getName() + "'s turn");
+    statusLabel.setText(currentPlayer.getName() + "'s turn");
+    infoTable.setRollEnabled(true);
+  }
+
+  /**
+   * Sets up a new game with player selection.
+   */
+  public void setupNewGame() {
+    // Clear the board and start fresh
+    Stage stage = (Stage) root.getScene().getWindow();
+  }
+
 }
