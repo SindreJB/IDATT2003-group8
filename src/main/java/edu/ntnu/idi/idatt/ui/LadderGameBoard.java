@@ -8,6 +8,7 @@ import java.util.Map;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.ui.components.AnimationManager;
 import edu.ntnu.idi.idatt.ui.components.GameAlert;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
@@ -46,6 +47,7 @@ public class LadderGameBoard {
   private InfoTable infoTable;
   private BorderPane root;
   private GamePiece gamePiece;
+  private AnimationManager animationManager;
 
   // Game controller manages all game logic
   private GameController gameController;
@@ -155,6 +157,9 @@ public class LadderGameBoard {
     // Get references to UI components from InfoTable
     this.statusLabel = infoTable.getStatusLabel();
     this.gameInfoLabel = infoTable.getGameInfoLabel();
+
+    // Initialize the AnimationManager
+    this.animationManager = new AnimationManager(root, gamePiece, tilesMap, infoTable, TILE_SIZE);
 
     // Set initial text for labels
     Player currentPlayer = gameController.getCurrentPlayer();
@@ -359,30 +364,8 @@ public class LadderGameBoard {
   }
 
   /**
-   * Removes all player pieces from the given tile.
-   * The player pieces are removed from the tile to prepare for the next move.
-   *
-   * @param tile the tile from which player pieces are to be removed
-   */
-  private void removePlayerFromTile(StackPane tile) {
-    List<Node> toKeep = new ArrayList<>();
-
-    // Keep only label (tile number)
-    for (Node node : tile.getChildren()) {
-      if (node instanceof Label) {
-        toKeep.add(node);
-      }
-    }
-
-    // Clear tile completely
-    tile.getChildren().clear();
-    tile.getChildren().addAll(toKeep);
-  }
-
-  /**
    * Animates the player movement from one tile to another.
-   * This is purely a UI function that visualizes movement decided by the
-   * controller.
+   * Delegates to the AnimationManager component.
    *
    * @param player       the player whose piece is to be moved
    * @param fromPosition the old position of the player piece
@@ -391,80 +374,7 @@ public class LadderGameBoard {
    */
   private void animatePlayerMove(Player player, int fromPosition, int toPosition, boolean checkVictory) {
     List<Player> players = gameController.getPlayers();
-    int playerIndex = players.indexOf(player);
-
-    // Get tiles for animation
-    StackPane fromTile = tilesMap.get(fromPosition);
-    StackPane toTile = tilesMap.get(toPosition);
-
-    // Remove player from old position
-    removePlayerFromTile(fromTile);
-
-    // Check if other players were on the same tile and add them back
-    for (Player otherPlayer : players) {
-      if (otherPlayer != player && otherPlayer.getTileId() == fromPosition) {
-        gamePiece.addPlayerToTile(otherPlayer, fromPosition, fromTile);
-      }
-    }
-
-    // Create animating piece using GamePiece
-    ImageView playerPiece = gamePiece.createAnimationPiece(playerIndex);
-    if (playerPiece == null) {
-      // Skip animation if piece creation fails, but still handle the move
-      System.err.println("Animation piece creation failed for " + player.getName());
-      gamePiece.addPlayerToTile(player, toPosition, toTile);
-
-      if (checkVictory) {
-        // Victory already checked by controller
-        return;
-      }
-
-      // Re-enable roll button
-      infoTable.setRollEnabled(true);
-      return;
-    }
-
-    // Create animation container
-    StackPane animationPane = new StackPane(playerPiece);
-    animationPane.setMaxSize(TILE_SIZE * 0.5, TILE_SIZE * 0.5);
-
-    // Get coordinates
-    Bounds fromBounds = fromTile.localToScene(fromTile.getBoundsInLocal());
-    Bounds toBounds = toTile.localToScene(toTile.getBoundsInLocal());
-
-    // Add to scene
-    root.getChildren().add(animationPane);
-
-    // Set start position
-    double startX = fromBounds.getMinX() + (fromBounds.getWidth() - playerPiece.getFitWidth()) / 2;
-    double startY = fromBounds.getMinY() + (fromBounds.getHeight() - playerPiece.getFitHeight()) / 2;
-    animationPane.setTranslateX(startX);
-    animationPane.setTranslateY(startY);
-
-    // Set end position
-    double endX = toBounds.getMinX() + (toBounds.getWidth() - playerPiece.getFitWidth()) / 2;
-    double endY = toBounds.getMinY() + (toBounds.getHeight() - playerPiece.getFitHeight()) / 2;
-
-    // Create animation
-    TranslateTransition transition = new TranslateTransition(Duration.millis(500), animationPane);
-    transition.setToX(endX);
-    transition.setToY(endY);
-
-    // When animation completes
-    transition.setOnFinished(e -> {
-      root.getChildren().remove(animationPane);
-
-      // Add player to new position using GamePiece
-      gamePiece.addPlayerToTile(player, toPosition, toTile);
-
-      // Victory already handled by controller
-      if (!checkVictory) {
-        // Re-enable roll button if not a victory
-        infoTable.setRollEnabled(true);
-      }
-    });
-
-    transition.play();
+    animationManager.animatePlayerMove(player, players, fromPosition, toPosition, checkVictory);
   }
 
   /**
