@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
+import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
@@ -23,7 +25,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -51,7 +52,7 @@ public class LadderGameBoard implements GameObserver {
   private AnimationManager animationManager;
 
   // Game controller manages all game logic
-  private GameController gameController;
+  private final GameController gameController;
 
   /**
    * Creates a new LadderGameBoard instance
@@ -115,8 +116,9 @@ public class LadderGameBoard implements GameObserver {
    * @param primaryStage the primary stage
    * @param players      the list of players for the game (1-5 players)
    * @return the created game scene
+   * @throws LadderGameException if there's an issue creating the game board
    */
-  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players) {
+  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players) throws LadderGameException {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
 
@@ -185,6 +187,7 @@ public class LadderGameBoard implements GameObserver {
    * Implementation of the GameObserver interface's update method.
    * Handles different types of game events.
    * 
+
    * @param event The game event to handle
    */
   @Override
@@ -322,8 +325,9 @@ public class LadderGameBoard implements GameObserver {
    *                     "custom")
    * @param primaryStage the primary stage
    * @return the created game scene
+
    */
-  public Scene createGameScene(String boardType, Stage primaryStage) {
+  public Scene createGameScene(String boardType, Stage primaryStage) throws LadderGameException {
     // Create a single default player
     List<Player> defaultPlayers = new ArrayList<>();
     defaultPlayers.add(new Player("Player 1", "TopHat", 1));
@@ -357,15 +361,22 @@ public class LadderGameBoard implements GameObserver {
 
   /**
    * Creates a game board UI based on the loaded board configuration
+   * 
+   * @throws LadderGameException If the board has invalid dimensions
    */
-  private GridPane createGameBoardUI(Board gameBoard) {
+  private GridPane createGameBoardUI(Board gameBoard) throws LadderGameException {
+
+    int rows = gameBoard.getRows();
+    int cols = gameBoard.getColumns();
+
+    if (rows <= 0 || cols <= 0) {
+      throw new LadderGameException("Invalid board dimensions: " + rows + "x" + cols);
+    }
+
     GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER);
     gridPane.setHgap(2);
     gridPane.setVgap(2);
-
-    int rows = gameBoard.getRows();
-    int cols = gameBoard.getColumns();
 
     // Create tiles in a snake-like pattern
     for (int row = 0; row < rows; row++) {
@@ -519,37 +530,49 @@ public class LadderGameBoard implements GameObserver {
   /**
    * Resets the current game to its initial state.
    * UI delegate for the controller's resetGame method.
+   * 
+   * @throws InitializeLadderGameException if player pieces cannot be reset
+   *                                       properly
    */
-  public void resetGame() {
-    // Clear all player pieces from board
+  public void resetGame() throws InitializeLadderGameException {
     List<Player> players = gameController.getPlayers();
+    // Clear all player pieces from board
     for (Player player : players) {
       int oldPosition = player.getTileId();
-
-      // Remove player from old position visual
       StackPane oldTile = tilesMap.get(oldPosition);
       if (oldTile != null) {
-        oldTile.getChildren().removeIf(node -> node instanceof ImageView &&
-            ((ImageView) node).getUserData() != null &&
-            ((ImageView) node).getUserData().equals(player.getName()));
+        oldTile.getChildren().removeIf(node -> !(node instanceof Label));
+      } else {
+        throw new InitializeLadderGameException(
+            "Failed to find tile for player '" + player.getName() + "' at position " + oldPosition);
       }
     }
 
     // Reset game state through controller
-    gameController.resetGame();
+    try {
+      gameController.resetGame();
+    } catch (Exception e) {
+      throw new InitializeLadderGameException("Error while resetting game state.", e);
+    }
 
     // Update the UI after reset
     Player currentPlayer = gameController.getCurrentPlayer();
     StackPane startTile = tilesMap.get(1);
-
-    // Re-add all players to the start position
-    for (Player player : players) {
-      gamePiece.addPlayerToTile(player, 1, startTile);
+    if (startTile == null) {
+      throw new InitializeLadderGameException("Start tile not found during reset.");
     }
-
+    for (Player player : players) {
+      try {
+        gamePiece.addPlayerToTile(player, 1, startTile);
+      } catch (Exception e) {
+        throw new InitializeLadderGameException("Failed to add player '" + player.getName() + "' to start tile.", e);
+      }
+    }
     // Update UI labels
-    gameInfoLabel.setText(currentPlayer.getName() + "'s turn");
-    statusLabel.setText(currentPlayer.getName() + "'s turn");
+    if (currentPlayer != null) {
+      gameInfoLabel.setText(currentPlayer.getName() + "'s turn");
+      statusLabel.setText(currentPlayer.getName() + "'s turn");
+    }
     infoTable.setRollEnabled(true);
   }
 
