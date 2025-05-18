@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
@@ -218,15 +219,22 @@ public class LadderGameBoard {
 
   /**
    * Creates a game board UI based on the loaded board configuration
+   * 
+   * @throws LadderGameException If the board has invalid dimensions
    */
-  private GridPane createGameBoardUI(Board gameBoard) {
+  private GridPane createGameBoardUI(Board gameBoard) throws LadderGameException {
+
+    int rows = gameBoard.getRows();
+    int cols = gameBoard.getColumns();
+
+    if (rows <= 0 || cols <= 0) {
+      throw new LadderGameException("Invalid board dimensions: " + rows + "x" + cols);
+    }
+
     GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER);
     gridPane.setHgap(2);
     gridPane.setVgap(2);
-
-    int rows = gameBoard.getRows();
-    int cols = gameBoard.getColumns();
 
     // Create tiles in a snake-like pattern
     for (int row = 0; row < rows; row++) {
