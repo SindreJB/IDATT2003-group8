@@ -1,6 +1,6 @@
 package edu.ntnu.idi.idatt.exceptions;
 
-public class InitialIzeLadderGameException extends GameInitializationException {
+public class InitializeLadderGameException extends GameInitializationException {
   private static final long serialVersionUID = 1L;
 
   /**
@@ -9,7 +9,7 @@ public class InitialIzeLadderGameException extends GameInitializationException {
    *
    * @param message The detail message
    */
-  public InitialIzeLadderGameException(String message) {
+  public InitializeLadderGameException(String message) {
     super(message);
   }
 
@@ -20,7 +20,7 @@ public class InitialIzeLadderGameException extends GameInitializationException {
    * @param message The detail message
    * @param cause   The cause of the exception
    */
-  public InitialIzeLadderGameException(String message, Throwable cause) {
+  public InitializeLadderGameException(String message, Throwable cause) {
     super(message, cause);
   }
 
