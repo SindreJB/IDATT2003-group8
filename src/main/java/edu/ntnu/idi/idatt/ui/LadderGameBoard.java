@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
@@ -47,7 +48,7 @@ public class LadderGameBoard {
   private AnimationManager animationManager;
 
   // Game controller manages all game logic
-  private GameController gameController;
+  private final GameController gameController;
 
   /**
    * Creates a new LadderGameBoard instance
@@ -386,35 +387,49 @@ public class LadderGameBoard {
   /**
    * Resets the current game to its initial state.
    * UI delegate for the controller's resetGame method.
+   * 
+   * @throws InitializeLadderGameException if player pieces cannot be reset
+   *                                       properly
    */
-  public void resetGame() {
-    // Clear all player pieces from board
+  public void resetGame() throws InitializeLadderGameException {
     List<Player> players = gameController.getPlayers();
+    // Clear all player pieces from board
     for (Player player : players) {
       int oldPosition = player.getTileId();
-
-      // Remove player from old position visual
       StackPane oldTile = tilesMap.get(oldPosition);
       if (oldTile != null) {
         oldTile.getChildren().removeIf(node -> !(node instanceof Label));
+      } else {
+        throw new InitializeLadderGameException(
+            "Failed to find tile for player '" + player.getName() + "' at position " + oldPosition);
       }
     }
 
     // Reset game state through controller
-    gameController.resetGame();
+    try {
+      gameController.resetGame();
+    } catch (Exception e) {
+      throw new InitializeLadderGameException("Error while resetting game state.", e);
+    }
 
     // Update the UI after reset
     Player currentPlayer = gameController.getCurrentPlayer();
     StackPane startTile = tilesMap.get(1);
-
-    // Re-add all players to the start position
-    for (Player player : players) {
-      gamePiece.addPlayerToTile(player, 1, startTile);
+    if (startTile == null) {
+      throw new InitializeLadderGameException("Start tile not found during reset.");
     }
-
+    for (Player player : players) {
+      try {
+        gamePiece.addPlayerToTile(player, 1, startTile);
+      } catch (Exception e) {
+        throw new InitializeLadderGameException("Failed to add player '" + player.getName() + "' to start tile.", e);
+      }
+    }
     // Update UI labels
-    gameInfoLabel.setText(currentPlayer.getName() + "'s turn");
-    statusLabel.setText(currentPlayer.getName() + "'s turn");
+    if (currentPlayer != null) {
+      gameInfoLabel.setText(currentPlayer.getName() + "'s turn");
+      statusLabel.setText(currentPlayer.getName() + "'s turn");
+    }
     infoTable.setRollEnabled(true);
   }
 
