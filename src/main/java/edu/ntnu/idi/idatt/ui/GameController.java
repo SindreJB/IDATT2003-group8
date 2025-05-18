@@ -2,7 +2,9 @@ package edu.ntnu.idi.idatt.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -11,6 +13,8 @@ import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Dice;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.observer.GameEvent;
+import edu.ntnu.idi.idatt.observer.GameObserver;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 
 /**
@@ -25,6 +29,7 @@ public class GameController {
   private Player currentPlayer;
   private int currentPlayerIndex = 0;
   private Dice dice = new Dice();
+  private Map<GameObserver, List<String>> observerEventTypes = new HashMap<>();
 
   // Event listeners/callbacks for UI updates
   private Runnable onPlayerMoved;
@@ -64,6 +69,8 @@ public class GameController {
     Optional<Board> loadedBoard = LadderGameFactory.tryCreateBoard(boardType);
     if (loadedBoard.isPresent()) {
       gameBoard = loadedBoard.get();
+      // Notify observers about the new board
+      gameBoard.notifyObservers(new GameEvent("BOARD_LOADED", gameBoard));
       return true;
     }
     return false;
@@ -86,6 +93,63 @@ public class GameController {
       // Set first player as current
       currentPlayerIndex = 0;
       currentPlayer = this.players.get(0);
+      
+      // Notify observers about game setup
+      if (gameBoard != null) {
+        gameBoard.notifyObservers(new GameEvent("GAME_SETUP", this.players));
+      }
+    }
+  }
+
+  /**
+   * Registers an observer for specific event types
+   * 
+   * @param observer The observer to register
+   * @param eventTypes The event types the observer is interested in, or empty for all events
+   */
+  public void registerObserver(GameObserver observer, String... eventTypes) {
+    if (observer == null) return;
+    
+    // Add observer to the board
+    if (gameBoard != null) {
+      gameBoard.addObserver(observer);
+    }
+    
+    // Track event types this observer is interested in
+    if (eventTypes != null && eventTypes.length > 0) {
+      List<String> types = observerEventTypes.getOrDefault(observer, new ArrayList<>());
+      for (String type : eventTypes) {
+        types.add(type);
+      }
+      observerEventTypes.put(observer, types);
+    }
+  }
+  
+  /**
+   * Unregisters an observer
+   * 
+   * @param observer The observer to unregister
+   */
+  public void unregisterObserver(GameObserver observer) {
+    if (observer == null) return;
+    
+    // Remove from board
+    if (gameBoard != null) {
+      gameBoard.removeObserver(observer);
+    }
+    
+    // Remove from tracking map
+    observerEventTypes.remove(observer);
+  }
+  
+  /**
+   * Notifies observers about a game event
+   * 
+   * @param event The event to notify about
+   */
+  private void notifyObservers(GameEvent event) {
+    if (gameBoard != null) {
+      gameBoard.notifyObservers(event);
     }
   }
 
@@ -97,6 +161,9 @@ public class GameController {
   public int rollDiceAndMove() {
     // Roll the dice
     int diceValue = dice.rollDice();
+    
+    // Notify observers about dice roll
+    notifyObservers(new GameEvent("DICE_ROLLED", diceValue));
 
     // Get player's current position
     int oldPosition = currentPlayer.getTileId();
@@ -114,10 +181,20 @@ public class GameController {
       newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
       message = currentPlayer.getName() + " rolled " + diceValue +
           " and climbed a ladder from " + landedPosition + " to " + newPosition;
+      
+      // Notify about ladder event
+      notifyObservers(new GameEvent("LADDER_CLIMBED", 
+          Map.of("player", currentPlayer, "from", landedPosition, "to", newPosition)));
+      
     } else if (gameBoard.getTile(newPosition).hasSnake()) {
       newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
       message = currentPlayer.getName() + " rolled " + diceValue +
           " and slid down a snake from " + landedPosition + " to " + newPosition;
+      
+      // Notify about snake event
+      notifyObservers(new GameEvent("SNAKE_SLIDE", 
+          Map.of("player", currentPlayer, "from", landedPosition, "to", newPosition)));
+      
     } else if (gameBoard.getTile(newPosition).hasWormhole()) {
       // For wormholes, generate a random movement between -15 and +20 tiles
       int randomMovement = new Random().nextInt(36) - 15;
@@ -141,6 +218,10 @@ public class GameController {
             " and entered a wormhole at " + landedPosition +
             "! The wormhole spun you around but left you in the same place!";
       }
+      
+      // Notify about wormhole event
+      notifyObservers(new GameEvent("WORMHOLE_TELEPORT", 
+          Map.of("player", currentPlayer, "from", landedPosition, "to", newPosition, "movement", randomMovement)));
     } else {
       // No special tile
       message = currentPlayer.getName() + " rolled " + diceValue +
@@ -149,8 +230,12 @@ public class GameController {
 
     // Update player position
     currentPlayer.setTileId(newPosition);
+    
+    // Notify about player movement
+    notifyObservers(new GameEvent("PLAYER_MOVED", 
+        Map.of("player", currentPlayer, "from", oldPosition, "to", newPosition, "diceValue", diceValue)));
 
-    // Notify listeners
+    // Notify listeners via callbacks (legacy)
     if (onDiceRolled != null) {
       onDiceRolled.onDiceRolled(diceValue, message, oldPosition, newPosition);
     }
@@ -163,6 +248,10 @@ public class GameController {
 
     // Check for victory
     if (hasWon) {
+      // Notify observers about game won event
+      notifyObservers(new GameEvent("GAME_WON", currentPlayer));
+      
+      // Legacy notification
       if (onGameWon != null) {
         onGameWon.run();
       }
@@ -193,7 +282,11 @@ public class GameController {
   public void switchToNextPlayer() {
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     currentPlayer = players.get(currentPlayerIndex);
+    
+    // Notify observers about turn change
+    notifyObservers(new GameEvent("TURN_CHANGED", currentPlayer));
 
+    // Legacy notification
     if (onTurnChanged != null) {
       onTurnChanged.run();
     }
@@ -211,7 +304,11 @@ public class GameController {
     // Reset turn to first player
     currentPlayerIndex = 0;
     currentPlayer = players.get(0);
+    
+    // Notify observers about game reset
+    notifyObservers(new GameEvent("GAME_RESET", players));
 
+    // Legacy notification
     if (onTurnChanged != null) {
       onTurnChanged.run();
     }
@@ -260,9 +357,12 @@ public class GameController {
   public boolean savePlayersToFile(String filePath) {
     try {
       CsvHandler.savePlayersToCsv(players, filePath);
+      // Notify observers about saving players
+      notifyObservers(new GameEvent("PLAYERS_SAVED", filePath));
       return true;
     } catch (IOException e) {
       System.err.println("Error saving players: " + e.getMessage());
+      notifyObservers(new GameEvent("ERROR", "Error saving players: " + e.getMessage()));
       return false;
     }
   }
@@ -278,16 +378,21 @@ public class GameController {
       List<Player> loadedPlayers = CsvHandler.loadPlayersFromCsv(filePath);
 
       if (loadedPlayers.isEmpty()) {
+        notifyObservers(new GameEvent("ERROR", "No players found in file"));
         return false;
       }
 
       this.players = loadedPlayers;
       currentPlayer = players.get(0);
       currentPlayerIndex = 0;
+      
+      // Notify observers about loaded players
+      notifyObservers(new GameEvent("PLAYERS_LOADED", loadedPlayers));
 
       return true;
     } catch (IOException e) {
       System.err.println("Error loading players: " + e.getMessage());
+      notifyObservers(new GameEvent("ERROR", "Error loading players: " + e.getMessage()));
       return false;
     }
   }

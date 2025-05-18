@@ -10,11 +10,14 @@ import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.observer.GameEvent;
+import edu.ntnu.idi.idatt.observer.GameObserver;
 import edu.ntnu.idi.idatt.ui.components.AnimationManager;
 import edu.ntnu.idi.idatt.ui.components.GameAlert;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import edu.ntnu.idi.idatt.ui.components.PlayerSelectionModal;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -33,8 +36,9 @@ import javafx.stage.Stage;
 /**
  * The LadderGameBoard class represents the UI for the Snakes and
  * Ladders game. It supports 1-5 players with customizable game pieces.
+ * Implements GameObserver to receive updates from the game model.
  */
-public class LadderGameBoard {
+public class LadderGameBoard implements GameObserver {
 
   private static final int TILE_SIZE = 60;
 
@@ -118,6 +122,9 @@ public class LadderGameBoard {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
 
+    // Register this view as an observer before loading board and players
+    gameController.registerObserver(this, "PLAYER_MOVED", "TURN_CHANGED", "GAME_WON", "DICE_ROLLED");
+    
     // Load board and set up players using the controller
     gameController.loadBoard(boardType);
     gameController.setupGame(players);
@@ -177,12 +184,148 @@ public class LadderGameBoard {
   }
 
   /**
-   * Legacy method for compatibility - creates a game with default players
+   * Implementation of the GameObserver interface's update method.
+   * Handles different types of game events.
    * 
-   * @param boardType    The type of board to create
-   * @param primaryStage The primary stage
-   * @return The created scene
-   * @throws LadderGameException if there's an issue creating the game board
+
+   * @param event The game event to handle
+   */
+  @Override
+  public void update(GameEvent event) {
+    if (event == null) return;
+    
+    // Process events based on their type
+    switch (event.getType()) {
+      case "DICE_ROLLED":
+        Platform.runLater(() -> {
+          if (infoTable != null && event.getData() instanceof Integer) {
+            infoTable.updateDiceDisplay((Integer) event.getData());
+          }
+        });
+        break;
+        
+      case "PLAYER_MOVED":
+        Platform.runLater(() -> {
+          if (event.getData() instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> data = (Map<String, Object>) event.getData();
+            Player player = (Player) data.get("player");
+            int oldPosition = (Integer) data.get("from");
+            int newPosition = (Integer) data.get("to");
+            boolean checkVictory = (Boolean) data.getOrDefault("checkVictory", false);
+            
+            // Use the existing animation system
+            animatePlayerMove(player, oldPosition, newPosition, checkVictory);
+          }
+        });
+        break;
+        
+      case "TURN_CHANGED":
+        Platform.runLater(() -> {
+          if (statusLabel != null && event.getData() instanceof Player) {
+            Player player = (Player) event.getData();
+            statusLabel.setText(player.getName() + "'s turn");
+          }
+        });
+        break;
+        
+      case "GAME_WON":
+        Platform.runLater(() -> {
+          if (event.getData() instanceof Player) {
+            Player winner = (Player) event.getData();
+            String victoryMessage = winner.getName() + " has won the game!";
+            
+            if (gameInfoLabel != null) {
+              gameInfoLabel.setText(victoryMessage);
+            }
+            
+            if (infoTable != null) {
+              infoTable.setRollEnabled(false);
+            }
+            
+            // Show victory alert
+            showGameOverAlert("Game Over", victoryMessage);
+          }
+        });
+        break;
+        
+      case "LADDER_CLIMBED":
+      case "SNAKE_SLIDE":
+      case "WORMHOLE_TELEPORT":
+        if (event.getData() instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) event.getData();
+          handleSpecialTileEvent(event.getType(), data);
+        }
+        break;
+        
+      case "BOARD_LOADED":
+        Platform.runLater(() -> {
+          if (event.getData() instanceof Board) {
+            Board board = (Board) event.getData();
+            if (gameInfoLabel != null) {
+              gameInfoLabel.setText("Board loaded: " + board.getName() + "\n" + board.getDescription());
+            }
+          }
+        });
+        break;
+        
+      case "ERROR":
+        Platform.runLater(() -> {
+          if (event.getData() != null) {
+            showAlert(event.getData().toString());
+          }
+        });
+        break;
+    }
+  }
+  
+  /**
+   * Handle special tile events like ladder, snake, or wormhole
+   * 
+   * @param eventType The type of event
+   * @param data Event data map
+   */
+  private void handleSpecialTileEvent(String eventType, Map<String, Object> data) {
+    if (gameInfoLabel == null) return;
+    
+    Platform.runLater(() -> {
+      Player player = (Player) data.get("player");
+      int from = (Integer) data.get("from");
+      int to = (Integer) data.get("to");
+      
+      String message = "";
+      switch (eventType) {
+        case "LADDER_CLIMBED":
+          message = player.getName() + " climbed a ladder from " + from + " to " + to;
+          break;
+        case "SNAKE_SLIDE":
+          message = player.getName() + " slid down a snake from " + from + " to " + to;
+          break;
+        case "WORMHOLE_TELEPORT":
+          int movement = (Integer) data.get("movement");
+          if (movement > 0) {
+            message = player.getName() + " was teleported forward " + movement + " spaces by a wormhole!";
+          } else if (movement < 0) {
+            message = player.getName() + " was teleported backward " + Math.abs(movement) + " spaces by a wormhole!";
+          } else {
+            message = player.getName() + " entered a wormhole but came out in the same place!";
+          }
+          break;
+      }
+      
+      gameInfoLabel.setText(message);
+    });
+  }
+
+  /**
+   * Creates a game scene with the specified board type and players
+   * 
+   * @param boardType    the type of board to load (e.g., "standard", "empty",
+   *                     "custom")
+   * @param primaryStage the primary stage
+   * @return the created game scene
+
    */
   public Scene createGameScene(String boardType, Stage primaryStage) throws LadderGameException {
     // Create a single default player
@@ -437,6 +580,9 @@ public class LadderGameBoard {
    * Sets up a new game with player selection.
    */
   public void setupNewGame() {
+    // Unregister this observer first to avoid duplicate notifications
+    gameController.unregisterObserver(this);
+    
     // Get the current stage from the scene
     Stage stage = (Stage) root.getScene().getWindow();
 

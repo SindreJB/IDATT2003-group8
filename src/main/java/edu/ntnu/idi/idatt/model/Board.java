@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import edu.ntnu.idi.idatt.observer.GameEvent;
+import edu.ntnu.idi.idatt.observer.GameObserver;
+
 /**
  * Represents a game board with a collection of tiles arranged in a grid.
  * Designed to be easily serializable to/from JSON.
@@ -14,6 +17,7 @@ public class Board {
   private int rows;
   private int columns;
   private List<Tile> tiles;
+  private List<GameObserver> observers;
 
   /**
    * Creates a new board with the specified dimensions.
@@ -25,6 +29,7 @@ public class Board {
     this.rows = rows;
     this.columns = columns;
     this.tiles = new ArrayList<>();
+    this.observers = new ArrayList<>();
     initializeTiles();
   }
 
@@ -99,6 +104,37 @@ public class Board {
     return tiles.size();
   }
 
+  /**
+   * Adds an observer to the board's observer list.
+   * 
+   * @param observer The observer to add
+   */
+  public void addObserver(GameObserver observer) {
+    if (observer != null && !observers.contains(observer)) {
+      observers.add(observer);
+    }
+  }
+
+  /**
+   * Removes an observer from the board's observer list.
+   * 
+   * @param observer The observer to remove
+   */
+  public void removeObserver(GameObserver observer) {
+    observers.remove(observer);
+  }
+
+  /**
+   * Notifies all observers of a game event.
+   * 
+   * @param event The game event to notify observers about
+   */
+  public void notifyObservers(GameEvent event) {
+    for (GameObserver observer : observers) {
+      observer.update(event);
+    }
+  }
+
   // Getters and setters for JSON serialization
 
   public String getName() {
@@ -107,6 +143,7 @@ public class Board {
 
   public void setName(String name) {
     this.name = name;
+    notifyObservers(new GameEvent("BOARD_NAME_CHANGED", name));
   }
 
   public String getDescription() {
@@ -115,6 +152,7 @@ public class Board {
 
   public void setDescription(String description) {
     this.description = description;
+    notifyObservers(new GameEvent("BOARD_DESCRIPTION_CHANGED", description));
   }
 
   public int getRows() {
@@ -131,6 +169,7 @@ public class Board {
 
   public void setTiles(List<Tile> tiles) {
     this.tiles = tiles;
+    notifyObservers(new GameEvent("TILES_CHANGED", tiles));
   }
 
   @Override
