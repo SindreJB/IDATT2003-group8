@@ -213,7 +213,7 @@ public class LadderGameBoard {
    */
   private void showGameOverAlert(String title, String message) {
     GameAlert gameAlert = new GameAlert();
-    gameAlert.showGameAlert(title, message, new LadderGameActionsImpl(this));
+    gameAlert.showGameAlert(title, message, new LadderGameActions(this));
   }
 
   /**
