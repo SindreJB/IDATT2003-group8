@@ -124,7 +124,7 @@ public class LadderGameBoard implements GameObserver {
 
     // Register this view as an observer before loading board and players
     gameController.registerObserver(this, "PLAYER_MOVED", "TURN_CHANGED", "GAME_WON", "DICE_ROLLED");
-    
+
     // Load board and set up players using the controller
     gameController.loadBoard(boardType);
     gameController.setupGame(players);
@@ -187,13 +187,14 @@ public class LadderGameBoard implements GameObserver {
    * Implementation of the GameObserver interface's update method.
    * Handles different types of game events.
    * 
-
+   * 
    * @param event The game event to handle
    */
   @Override
   public void update(GameEvent event) {
-    if (event == null) return;
-    
+    if (event == null)
+      return;
+
     // Process events based on their type
     switch (event.getType()) {
       case "DICE_ROLLED":
@@ -203,7 +204,7 @@ public class LadderGameBoard implements GameObserver {
           }
         });
         break;
-        
+
       case "PLAYER_MOVED":
         Platform.runLater(() -> {
           if (event.getData() instanceof Map) {
@@ -213,13 +214,13 @@ public class LadderGameBoard implements GameObserver {
             int oldPosition = (Integer) data.get("from");
             int newPosition = (Integer) data.get("to");
             boolean checkVictory = (Boolean) data.getOrDefault("checkVictory", false);
-            
+
             // Use the existing animation system
             animatePlayerMove(player, oldPosition, newPosition, checkVictory);
           }
         });
         break;
-        
+
       case "TURN_CHANGED":
         Platform.runLater(() -> {
           if (statusLabel != null && event.getData() instanceof Player) {
@@ -228,27 +229,27 @@ public class LadderGameBoard implements GameObserver {
           }
         });
         break;
-        
+
       case "GAME_WON":
         Platform.runLater(() -> {
           if (event.getData() instanceof Player) {
             Player winner = (Player) event.getData();
             String victoryMessage = winner.getName() + " has won the game!";
-            
+
             if (gameInfoLabel != null) {
               gameInfoLabel.setText(victoryMessage);
             }
-            
+
             if (infoTable != null) {
               infoTable.setRollEnabled(false);
             }
-            
+
             // Show victory alert
             showGameOverAlert("Game Over", victoryMessage);
           }
         });
         break;
-        
+
       case "LADDER_CLIMBED":
       case "SNAKE_SLIDE":
       case "WORMHOLE_TELEPORT":
@@ -258,7 +259,7 @@ public class LadderGameBoard implements GameObserver {
           handleSpecialTileEvent(event.getType(), data);
         }
         break;
-        
+
       case "BOARD_LOADED":
         Platform.runLater(() -> {
           if (event.getData() instanceof Board) {
@@ -269,7 +270,7 @@ public class LadderGameBoard implements GameObserver {
           }
         });
         break;
-        
+
       case "ERROR":
         Platform.runLater(() -> {
           if (event.getData() != null) {
@@ -279,21 +280,22 @@ public class LadderGameBoard implements GameObserver {
         break;
     }
   }
-  
+
   /**
    * Handle special tile events like ladder, snake, or wormhole
    * 
    * @param eventType The type of event
-   * @param data Event data map
+   * @param data      Event data map
    */
   private void handleSpecialTileEvent(String eventType, Map<String, Object> data) {
-    if (gameInfoLabel == null) return;
-    
+    if (gameInfoLabel == null)
+      return;
+
     Platform.runLater(() -> {
       Player player = (Player) data.get("player");
       int from = (Integer) data.get("from");
       int to = (Integer) data.get("to");
-      
+
       String message = "";
       switch (eventType) {
         case "LADDER_CLIMBED":
@@ -313,7 +315,7 @@ public class LadderGameBoard implements GameObserver {
           }
           break;
       }
-      
+
       gameInfoLabel.setText(message);
     });
   }
@@ -325,7 +327,7 @@ public class LadderGameBoard implements GameObserver {
    *                     "custom")
    * @param primaryStage the primary stage
    * @return the created game scene
-
+   * 
    */
   public Scene createGameScene(String boardType, Stage primaryStage) throws LadderGameException {
     // Create a single default player
@@ -582,7 +584,7 @@ public class LadderGameBoard implements GameObserver {
   public void setupNewGame() {
     // Unregister this observer first to avoid duplicate notifications
     gameController.unregisterObserver(this);
-    
+
     // Get the current stage from the scene
     Stage stage = (Stage) root.getScene().getWindow();
 
