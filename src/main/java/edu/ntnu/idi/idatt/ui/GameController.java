@@ -12,7 +12,7 @@ import edu.ntnu.idi.idatt.factory.LadderGameFactory;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Dice;
 import edu.ntnu.idi.idatt.model.Player;
-import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.model.LadderGameTile;
 import edu.ntnu.idi.idatt.observer.GameEvent;
 import edu.ntnu.idi.idatt.observer.GameObserver;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
@@ -93,7 +93,7 @@ public class GameController {
       // Set first player as current
       currentPlayerIndex = 0;
       currentPlayer = this.players.get(0);
-      
+
       // Notify observers about game setup
       if (gameBoard != null) {
         gameBoard.notifyObservers(new GameEvent("GAME_SETUP", this.players));
@@ -104,17 +104,19 @@ public class GameController {
   /**
    * Registers an observer for specific event types
    * 
-   * @param observer The observer to register
-   * @param eventTypes The event types the observer is interested in, or empty for all events
+   * @param observer   The observer to register
+   * @param eventTypes The event types the observer is interested in, or empty for
+   *                   all events
    */
   public void registerObserver(GameObserver observer, String... eventTypes) {
-    if (observer == null) return;
-    
+    if (observer == null)
+      return;
+
     // Add observer to the board
     if (gameBoard != null) {
       gameBoard.addObserver(observer);
     }
-    
+
     // Track event types this observer is interested in
     if (eventTypes != null && eventTypes.length > 0) {
       List<String> types = observerEventTypes.getOrDefault(observer, new ArrayList<>());
@@ -124,24 +126,25 @@ public class GameController {
       observerEventTypes.put(observer, types);
     }
   }
-  
+
   /**
    * Unregisters an observer
    * 
    * @param observer The observer to unregister
    */
   public void unregisterObserver(GameObserver observer) {
-    if (observer == null) return;
-    
+    if (observer == null)
+      return;
+
     // Remove from board
     if (gameBoard != null) {
       gameBoard.removeObserver(observer);
     }
-    
+
     // Remove from tracking map
     observerEventTypes.remove(observer);
   }
-  
+
   /**
    * Notifies observers about a game event
    * 
@@ -161,7 +164,7 @@ public class GameController {
   public int rollDiceAndMove() {
     // Roll the dice
     int diceValue = dice.rollDice();
-    
+
     // Notify observers about dice roll
     notifyObservers(new GameEvent("DICE_ROLLED", diceValue));
 
@@ -181,20 +184,20 @@ public class GameController {
       newPosition = gameBoard.getTile(newPosition).getLadder().getNumber();
       message = currentPlayer.getName() + " rolled " + diceValue +
           " and climbed a ladder from " + landedPosition + " to " + newPosition;
-      
+
       // Notify about ladder event
-      notifyObservers(new GameEvent("LADDER_CLIMBED", 
+      notifyObservers(new GameEvent("LADDER_CLIMBED",
           Map.of("player", currentPlayer, "from", landedPosition, "to", newPosition)));
-      
+
     } else if (gameBoard.getTile(newPosition).hasSnake()) {
       newPosition = gameBoard.getTile(newPosition).getSnake().getNumber();
       message = currentPlayer.getName() + " rolled " + diceValue +
           " and slid down a snake from " + landedPosition + " to " + newPosition;
-      
+
       // Notify about snake event
-      notifyObservers(new GameEvent("SNAKE_SLIDE", 
+      notifyObservers(new GameEvent("SNAKE_SLIDE",
           Map.of("player", currentPlayer, "from", landedPosition, "to", newPosition)));
-      
+
     } else if (gameBoard.getTile(newPosition).hasWormhole()) {
       // For wormholes, generate a random movement between -15 and +20 tiles
       int randomMovement = new Random().nextInt(36) - 15;
@@ -218,9 +221,9 @@ public class GameController {
             " and entered a wormhole at " + landedPosition +
             "! The wormhole spun you around but left you in the same place!";
       }
-      
+
       // Notify about wormhole event
-      notifyObservers(new GameEvent("WORMHOLE_TELEPORT", 
+      notifyObservers(new GameEvent("WORMHOLE_TELEPORT",
           Map.of("player", currentPlayer, "from", landedPosition, "to", newPosition, "movement", randomMovement)));
     } else {
       // No special tile
@@ -230,9 +233,9 @@ public class GameController {
 
     // Update player position
     currentPlayer.setTileId(newPosition);
-    
+
     // Notify about player movement
-    notifyObservers(new GameEvent("PLAYER_MOVED", 
+    notifyObservers(new GameEvent("PLAYER_MOVED",
         Map.of("player", currentPlayer, "from", oldPosition, "to", newPosition, "diceValue", diceValue)));
 
     // Notify listeners via callbacks (legacy)
@@ -250,7 +253,7 @@ public class GameController {
     if (hasWon) {
       // Notify observers about game won event
       notifyObservers(new GameEvent("GAME_WON", currentPlayer));
-      
+
       // Legacy notification
       if (onGameWon != null) {
         onGameWon.run();
@@ -282,7 +285,7 @@ public class GameController {
   public void switchToNextPlayer() {
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     currentPlayer = players.get(currentPlayerIndex);
-    
+
     // Notify observers about turn change
     notifyObservers(new GameEvent("TURN_CHANGED", currentPlayer));
 
@@ -304,7 +307,7 @@ public class GameController {
     // Reset turn to first player
     currentPlayerIndex = 0;
     currentPlayer = players.get(0);
-    
+
     // Notify observers about game reset
     notifyObservers(new GameEvent("GAME_RESET", players));
 
@@ -321,7 +324,7 @@ public class GameController {
    * @return True if the tile has a special action
    */
   public boolean hasTileAction(int tileId) {
-    Tile tile = gameBoard.getTile(tileId);
+    LadderGameTile tile = gameBoard.getTile(tileId);
     return tile != null && tile.hasAction();
   }
 
@@ -332,7 +335,7 @@ public class GameController {
    * @return The destination tile ID, or the source if no action exists
    */
   public int getActionDestination(int tileId) {
-    Tile tile = gameBoard.getTile(tileId);
+    LadderGameTile tile = gameBoard.getTile(tileId);
     if (tile == null)
       return tileId;
 
@@ -385,7 +388,7 @@ public class GameController {
       this.players = loadedPlayers;
       currentPlayer = players.get(0);
       currentPlayerIndex = 0;
-      
+
       // Notify observers about loaded players
       notifyObservers(new GameEvent("PLAYERS_LOADED", loadedPlayers));
 

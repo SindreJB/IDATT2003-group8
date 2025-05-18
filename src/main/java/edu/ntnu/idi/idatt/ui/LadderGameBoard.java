@@ -9,7 +9,7 @@ import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.Player;
-import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.model.LadderGameTile;
 import edu.ntnu.idi.idatt.observer.GameEvent;
 import edu.ntnu.idi.idatt.observer.GameObserver;
 import edu.ntnu.idi.idatt.ui.components.AnimationManager;
@@ -414,7 +414,7 @@ public class LadderGameBoard implements GameObserver {
     // Draw ladders and snakes after all tiles are created
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
-        Tile tile = gameBoard.getTile(i);
+        LadderGameTile tile = gameBoard.getTile(i);
         // Add action graphics to the tile
         if (tile.hasAction()) {
           drawConnection(tile, gridPane);
@@ -426,7 +426,7 @@ public class LadderGameBoard implements GameObserver {
   /**
    * Draws a connection (snake, ladder, or wormhole) between two tiles
    */
-  private void drawConnection(Tile tile, StackPane pane) {
+  private void drawConnection(LadderGameTile tile, StackPane pane) {
     StackPane startTile = tilesMap.get(tile.getNumber());
     StackPane endTile;
 
