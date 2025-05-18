@@ -1,5 +1,6 @@
 package edu.ntnu.idi.idatt.ui;
 
+import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.model.GameActions;
 import javafx.application.Platform;
 
@@ -22,7 +23,13 @@ public class LadderGameActions implements GameActions {
 
   @Override
   public void restartGame() {
-    gameBoard.resetGame();
+    try {
+      gameBoard.resetGame();
+    } catch (InitializeLadderGameException e) {
+      // Handle the exception appropriately, for example:
+      System.err.println("Failed to restart game: " + e.getMessage());
+      // You might want to show an error dialog to the user
+    }
   }
 
   @Override
