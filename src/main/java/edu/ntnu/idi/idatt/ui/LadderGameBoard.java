@@ -14,11 +14,9 @@ import edu.ntnu.idi.idatt.ui.components.GameAlert;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import edu.ntnu.idi.idatt.ui.components.PlayerSelectionModal;
-import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -31,7 +29,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * The LadderGameBoard class represents the UI for the Snakes and
@@ -115,8 +112,9 @@ public class LadderGameBoard {
    * @param primaryStage the primary stage
    * @param players      the list of players for the game (1-5 players)
    * @return the created game scene
+   * @throws LadderGameException if there's an issue creating the game board
    */
-  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players) {
+  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players) throws LadderGameException {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
 
@@ -184,8 +182,9 @@ public class LadderGameBoard {
    * @param boardType    The type of board to create
    * @param primaryStage The primary stage
    * @return The created scene
+   * @throws LadderGameException if there's an issue creating the game board
    */
-  public Scene createGameScene(String boardType, Stage primaryStage) {
+  public Scene createGameScene(String boardType, Stage primaryStage) throws LadderGameException {
     // Create a single default player
     List<Player> defaultPlayers = new ArrayList<>();
     defaultPlayers.add(new Player("Player 1", "TopHat", 1));

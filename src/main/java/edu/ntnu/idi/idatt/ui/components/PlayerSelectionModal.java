@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import edu.ntnu.idi.idatt.ui.LadderGameBoard;
@@ -28,13 +29,13 @@ public class PlayerSelectionModal {
 
   private final String boardType;
   private final Stage primaryStage;
-  private List<PlayerConfig> availablePieces = new ArrayList<>();
+  private final List<PlayerConfig> availablePieces = new ArrayList<>();
 
   // Player selection components
   private VBox playerCountPanel;
   private VBox playerSelectionPanel;
   private Spinner<Integer> playerCountSpinner;
-  private List<ComboBox<String>> playerSelectors = new ArrayList<>();
+  private final List<ComboBox<String>> playerSelectors = new ArrayList<>();
 
   /**
    * Represents a player configuration from CSV
@@ -80,19 +81,18 @@ public class PlayerSelectionModal {
       }
 
       if (availablePieces.isEmpty()) {
-        // Add fallback options if CSV loading fails
+        // Fallback option if CSV is empty
+
         availablePieces.add(new PlayerConfig("Sindre", "SindreImage.png"));
         availablePieces.add(new PlayerConfig("Stian", "StianImage.png"));
-        availablePieces.add(new PlayerConfig("Blue", "blue circle"));
       }
     } catch (IOException e) {
       System.err.println("Error loading player pieces: " + e.getMessage());
       e.printStackTrace();
 
-      // Add fallback options if CSV loading fails
+      // Fallback option if CSV loading fails
       availablePieces.add(new PlayerConfig("Sindre", "SindreImage.png"));
       availablePieces.add(new PlayerConfig("Stian", "StianImage.png"));
-      availablePieces.add(new PlayerConfig("Blue", "blue circle"));
     }
   }
 
@@ -112,7 +112,7 @@ public class PlayerSelectionModal {
     createPlayerCountPanel(window);
     createPlayerSelectionPanel(window);
 
-    // Initially show the player count panel
+    // Show the player count panel
     VBox mainLayout = new VBox(20);
     mainLayout.setPadding(new Insets(20));
     mainLayout.setAlignment(Pos.CENTER);
@@ -338,9 +338,15 @@ public class PlayerSelectionModal {
    * @param players The selected players
    */
   private void startGame(List<Player> players) {
-    LadderGameBoard gameBoard = new LadderGameBoard();
-    Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
-    primaryStage.setScene(gameScene);
-    primaryStage.setTitle("Snakes and Ladders - " + boardType);
+    try {
+      LadderGameBoard gameBoard = new LadderGameBoard();
+      Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
+      primaryStage.setScene(gameScene);
+      primaryStage.setTitle("Snakes and Ladders - " + boardType);
+    } catch (LadderGameException e) {
+      showAlert("Error starting game: " + e.getMessage());
+      System.err.println("Error starting game: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 }
