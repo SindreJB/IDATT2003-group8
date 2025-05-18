@@ -9,7 +9,7 @@ import java.util.Random;
 import edu.ntnu.idi.idatt.controller.BoardManager;
 import edu.ntnu.idi.idatt.model.Board;
 import edu.ntnu.idi.idatt.model.BoardConfig;
-import edu.ntnu.idi.idatt.model.Tile;
+import edu.ntnu.idi.idatt.model.LadderGameTile;
 
 /**
  * Factory for creating ladder game boards from configurations
@@ -94,7 +94,7 @@ public class LadderGameFactory {
    * @param start the wormhole's start position
    */
   private static void addWormhole(Board board, int start) {
-    Tile startTile = board.getTile(start);
+    LadderGameTile startTile = board.getTile(start);
     // Generate a random destination for the wormhole
     Random random = new Random();
     int destination;
@@ -102,7 +102,7 @@ public class LadderGameFactory {
       destination = random.nextInt(board.getRows() * board.getColumns()) + 1;
     } while (destination == start);
 
-    Tile endTile = board.getTile(destination);
+    LadderGameTile endTile = board.getTile(destination);
     startTile.setWormhole(endTile);
   }
 
@@ -114,8 +114,8 @@ public class LadderGameFactory {
    * @param tail  the snake's tail position
    */
   private static void addSnake(Board board, int head, int tail) {
-    Tile headTile = board.getTile(head);
-    Tile tailTile = board.getTile(tail);
+    LadderGameTile headTile = board.getTile(head);
+    LadderGameTile tailTile = board.getTile(tail);
     headTile.setSnake(tailTile);
   }
 
@@ -127,8 +127,8 @@ public class LadderGameFactory {
    * @param end   the ladder's end position
    */
   private static void addLadder(Board board, int start, int end) {
-    Tile startTile = board.getTile(start);
-    Tile endTile = board.getTile(end);
+    LadderGameTile startTile = board.getTile(start);
+    LadderGameTile endTile = board.getTile(end);
     startTile.setLadder(endTile);
   }
 

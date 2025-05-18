@@ -16,7 +16,7 @@ public class Board {
   private String description;
   private int rows;
   private int columns;
-  private List<Tile> tiles;
+  private List<LadderGameTile> tiles;
   private List<GameObserver> observers;
 
   /**
@@ -52,10 +52,8 @@ public class Board {
       // For odd rows, numbers go right to left
       int tileNumber = row % 2 == 0 ? row * columns + col + 1 : (row + 1) * columns - col;
 
-      Tile tile = new Tile(tileNumber);
+      LadderGameTile tile = new LadderGameTile(tileNumber);
       // Calculate and set the x,y coordinates for UI positioning
-      tile.setX(col);
-      tile.setY(row);
       tiles.add(tile);
     }
   }
@@ -67,7 +65,7 @@ public class Board {
    * @return The tile with the specified number
    * @throws IllegalArgumentException if the tile number is invalid
    */
-  public Tile getTile(int number) {
+  public LadderGameTile getTile(int number) {
     if (number < 1 || number > tiles.size()) {
       throw new IllegalArgumentException("Invalid tile number: " + number);
     }
@@ -75,24 +73,6 @@ public class Board {
         .filter(t -> t.getNumber() == number)
         .findFirst()
         .orElseThrow(() -> new IllegalStateException("Tile not found: " + number));
-  }
-
-  /**
-   * Gets a tile by its grid coordinates.
-   *
-   * @param x The x-coordinate (column)
-   * @param y The y-coordinate (row)
-   * @return The tile at the specified coordinates
-   * @throws IllegalArgumentException if the coordinates are invalid
-   */
-  public Tile getTileAt(int x, int y) {
-    if (x < 0 || x >= columns || y < 0 || y >= rows) {
-      throw new IllegalArgumentException("Invalid coordinates: " + x + "," + y);
-    }
-    return tiles.stream()
-        .filter(t -> t.getX() == x && t.getY() == y)
-        .findFirst()
-        .orElseThrow(() -> new IllegalStateException("Tile not found at: " + x + "," + y));
   }
 
   /**
@@ -163,11 +143,11 @@ public class Board {
     return columns;
   }
 
-  public List<Tile> getTiles() {
+  public List<LadderGameTile> getTiles() {
     return tiles;
   }
 
-  public void setTiles(List<Tile> tiles) {
+  public void setTiles(List<LadderGameTile> tiles) {
     this.tiles = tiles;
     notifyObservers(new GameEvent("TILES_CHANGED", tiles));
   }
