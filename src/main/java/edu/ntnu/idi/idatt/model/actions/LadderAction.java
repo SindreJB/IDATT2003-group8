@@ -7,7 +7,7 @@ public class LadderAction extends TileAbstract {
 
   /**
    * Creates a new ladder action.
-   *
+   * 
    * @param bottomTile The tile at the bottom of the ladder
    * @param topTile    The tile at the top of the ladder
    */
@@ -18,10 +18,12 @@ public class LadderAction extends TileAbstract {
     }
   }
 
+  @Override
   public String getActionType() {
     return "LADDER";
   }
 
+  @Override
   public String getDescription() {
     return "Climb ladder from " + getSourceTile() + " to " + getDestinationTile();
   }
