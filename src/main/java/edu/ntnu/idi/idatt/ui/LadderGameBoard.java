@@ -21,7 +21,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -397,9 +396,7 @@ public class LadderGameBoard {
       // Remove player from old position visual
       StackPane oldTile = tilesMap.get(oldPosition);
       if (oldTile != null) {
-        oldTile.getChildren().removeIf(node -> node instanceof ImageView &&
-            ((ImageView) node).getUserData() != null &&
-            ((ImageView) node).getUserData().equals(player.getName()));
+        oldTile.getChildren().removeIf(node -> !(node instanceof Label));
       }
     }
 
