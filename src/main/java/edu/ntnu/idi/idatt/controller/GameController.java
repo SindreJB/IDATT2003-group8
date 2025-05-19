@@ -24,8 +24,8 @@ public abstract class GameController {
   private List<Player> players;
   private Player currentPlayer;
   private int currentPlayerIndex;
-  private Dice dice;
-  private Map<GameObserver, List<String>> observerEventTypes;
+  private final Dice dice;
+  private final Map<GameObserver, List<String>> observerEventTypes;
 
   /**
    * Creates a new game controller

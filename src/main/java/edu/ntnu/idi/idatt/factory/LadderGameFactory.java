@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.Random;
 
 import edu.ntnu.idi.idatt.controller.BoardManager;
-import edu.ntnu.idi.idatt.model.LadderBoard;
 import edu.ntnu.idi.idatt.model.BoardConfig;
+import edu.ntnu.idi.idatt.model.LadderBoard;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
 
 /**
@@ -31,17 +31,10 @@ public class LadderGameFactory {
     if (!Files.exists(boardPath)) {
       // Create the requested board configuration
       switch (boardName) {
-        case "standard":
-          BoardManager.createStandardBoard();
-          break;
-        case "empty":
-          BoardManager.createEmptyBoard();
-          break;
-        case "custom":
-          BoardManager.createCustomBoard(boardName);
-          break;
-        default:
-          throw new IllegalArgumentException("Unknown board type: " + boardName);
+        case "standard" -> BoardManager.createStandardBoard();
+        case "empty" -> BoardManager.createEmptyBoard();
+        case "custom" -> BoardManager.createCustomBoard(boardName);
+        default -> throw new IllegalArgumentException("Unknown board type: " + boardName);
       }
     }
 

@@ -221,6 +221,7 @@ public class LadderGameController extends GameController {
     return tile != null && tile.hasAction();
   }
 
+  @Override
   public LadderBoard getGameBoard() {
     return (LadderBoard) super.getGameBoard();
   }
