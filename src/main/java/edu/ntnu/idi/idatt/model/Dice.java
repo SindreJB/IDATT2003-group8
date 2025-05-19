@@ -36,7 +36,11 @@ public class Dice {
     if (numberOfDice < 1) {
       throw new IllegalArgumentException("Number of dice must be at least 1");
     }
-    dice = new ArrayList<>(numberOfDice);
+    dice = new ArrayList<>();
+    for (int i = 0; i < numberOfDice; i++) {
+      dice.add(new Die());
+    }
+
   }
 
   /**

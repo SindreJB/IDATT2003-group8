@@ -14,7 +14,7 @@ class DiceTest {
 
   @Test
   void constructorShouldCreateTwoDice() {
-    Dice dice = new Dice();
+    Dice dice = new Dice(2);
     List<Die> diceList = dice.getDice();
 
     assertEquals(2, diceList.size(), "Dice should contain exactly two Die objects");
@@ -22,7 +22,7 @@ class DiceTest {
 
   @Test
   void rollDiceShouldReturnSumOfDice() {
-    Dice dice = new Dice();
+    Dice dice = new Dice(2);
     int result = dice.rollDice();
 
     assertTrue(result >= 2 && result <= 12,
@@ -31,7 +31,7 @@ class DiceTest {
 
   @RepeatedTest(100)
   void rollDiceShouldProduceValuesInExpectedRange() {
-    Dice dice = new Dice();
+    Dice dice = new Dice(2);
     int result = dice.rollDice();
 
     assertTrue(result >= 2 && result <= 12,
@@ -40,7 +40,7 @@ class DiceTest {
 
   @Test
   void multipleRollsShouldProduceVariedResults() {
-    Dice dice = new Dice();
+    Dice dice = new Dice(2);
     Set<Integer> results = new HashSet<>();
 
     for (int i = 0; i < 50; i++) {
@@ -53,7 +53,7 @@ class DiceTest {
 
   @Test
   void getDiceShouldReturnCorrectDice() {
-    Dice dice = new Dice();
+    Dice dice = new Dice(2);
     List<Die> diceList = dice.getDice();
 
     assertNotNull(diceList, "Dice list should not be null");
