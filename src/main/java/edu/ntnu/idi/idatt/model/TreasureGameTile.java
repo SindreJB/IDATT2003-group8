@@ -1,27 +1,19 @@
 package edu.ntnu.idi.idatt.model;
 
 public class TreasureGameTile extends Tile {
-  private int treasureValue;
+  private int tileType;
 
   public TreasureGameTile(int number) {
     super(number);
-    this.treasureValue = 0; // Default value
+    this.tileType = 0; // Default value
   }
 
-  public int getTreasureValue() {
-    return treasureValue;
+  public void setTileType(int tileType) {
+    this.tileType = tileType;
   }
 
-  public void setTreasureValue(int treasureValue) {
-    this.treasureValue = treasureValue;
-  }
-
-  @Override
-  public String toString() {
-    return "TreasureGameTile{" +
-        "number=" + getNumber() +
-        ", treasureValue=" + treasureValue +
-        '}';
+  public int getTileType() {
+    return tileType;
   }
 
 }

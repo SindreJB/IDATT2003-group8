@@ -47,4 +47,21 @@ public class TreasureBoard extends AbstractBoard<TreasureGameTile> {
     }
   }
 
+  @Override
+  public TreasureGameTile getTile(int number) {
+    return super.getTile(number);
+  }
+
+  public TreasureBoard getGameBoard() {
+    return this;
+  }
+
+  public int getRows() {
+    return rows;
+  }
+
+  public int getColumns() {
+    return columns;
+  }
+
 }
