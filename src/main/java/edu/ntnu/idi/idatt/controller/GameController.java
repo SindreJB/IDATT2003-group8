@@ -32,7 +32,7 @@ public abstract class GameController {
    */
   public GameController() {
     this.players = new ArrayList<>();
-    this.dice = new Dice();
+    this.dice = new Dice(2);
     this.currentPlayerIndex = 0;
     this.observerEventTypes = new HashMap<>();
   }
