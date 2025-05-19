@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import edu.ntnu.idi.idatt.controller.BoardManager;
-import edu.ntnu.idi.idatt.model.Board;
+import edu.ntnu.idi.idatt.model.LadderBoard;
 import edu.ntnu.idi.idatt.model.BoardConfig;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
 
@@ -24,7 +24,7 @@ public class LadderGameFactory {
    * @return the created board
    * @throws IOException if there's an error reading or writing files
    */
-  public static Board createBoard(String boardName) throws IOException {
+  public static LadderBoard createBoard(String boardName) throws IOException {
     // Check if the board configuration file exists
     Path boardPath = BoardManager.getBoardsDirectory().resolve(boardName + ".json");
 
@@ -56,9 +56,9 @@ public class LadderGameFactory {
    * @param config the board configuration
    * @return the created board
    */
-  public static Board createBoardFromConfig(BoardConfig config) {
+  public static LadderBoard createBoardFromConfig(BoardConfig config) {
     // Create a new board with specified dimensions
-    Board board = new Board(config.getRows(), config.getColumns());
+    LadderBoard board = new LadderBoard(config.getRows(), config.getColumns());
     board.setName(config.getName());
     board.setDescription(config.getDescription());
 
@@ -93,7 +93,7 @@ public class LadderGameFactory {
    * @param board the board to add the wormhole to
    * @param start the wormhole's start position
    */
-  private static void addWormhole(Board board, int start) {
+  private static void addWormhole(LadderBoard board, int start) {
     LadderGameTile startTile = board.getTile(start);
     // Generate a random destination for the wormhole
     Random random = new Random();
@@ -113,7 +113,7 @@ public class LadderGameFactory {
    * @param head  the snake's head position
    * @param tail  the snake's tail position
    */
-  private static void addSnake(Board board, int head, int tail) {
+  private static void addSnake(LadderBoard board, int head, int tail) {
     LadderGameTile headTile = board.getTile(head);
     LadderGameTile tailTile = board.getTile(tail);
     headTile.setSnake(tailTile);
@@ -126,7 +126,7 @@ public class LadderGameFactory {
    * @param start the ladder's start position
    * @param end   the ladder's end position
    */
-  private static void addLadder(Board board, int start, int end) {
+  private static void addLadder(LadderBoard board, int start, int end) {
     LadderGameTile startTile = board.getTile(start);
     LadderGameTile endTile = board.getTile(end);
     startTile.setLadder(endTile);
@@ -139,7 +139,7 @@ public class LadderGameFactory {
    * @param boardName the name of the board configuration file
    * @return the created board, or empty if creation fails
    */
-  public static Optional<Board> tryCreateBoard(String boardName) {
+  public static Optional<LadderBoard> tryCreateBoard(String boardName) {
     try {
       return Optional.of(createBoard(boardName));
     } catch (IOException | IllegalArgumentException e) {

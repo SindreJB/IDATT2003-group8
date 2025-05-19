@@ -8,15 +8,17 @@ import edu.ntnu.idi.idatt.observer.GameEvent;
 import edu.ntnu.idi.idatt.observer.GameObserver;
 
 /**
- * Represents a game board with a collection of tiles arranged in a grid.
- * Designed to be easily serializable to/from JSON.
+ * AbstractBoard provides a base implementation for board games.
+ * Contains common functionality that any board game would need.
+ *
+ * @param <T> The type of tile used on this board
  */
-public class Board {
+public abstract class AbstractBoard<T extends Tile> {
   private String name;
   private String description;
-  private int rows;
-  private int columns;
-  private List<LadderGameTile> tiles;
+  protected int rows;
+  protected int columns;
+  protected List<T> tiles;
   private List<GameObserver> observers;
 
   /**
@@ -25,7 +27,7 @@ public class Board {
    * @param rows    Number of rows in the board
    * @param columns Number of columns in the board
    */
-  public Board(int rows, int columns) {
+  public AbstractBoard(int rows, int columns) {
     this.rows = rows;
     this.columns = columns;
     this.tiles = new ArrayList<>();
@@ -34,41 +36,23 @@ public class Board {
   }
 
   /**
-   * Initialize tiles in a snake pattern (like traditional Snakes and Ladders).
-   * For example, in a 3x3 board:
-   * 7 8 9
-   * 6 5 4
-   * 1 2 3
+   * Initialize the tiles for this board.
+   * Each board game implementation will define its own initialization logic.
    */
-  private void initializeTiles() {
-    tiles.clear();
-    int totalTiles = rows * columns;
-
-    for (int i = 0; i < totalTiles; i++) {
-      int row = i / columns;
-      int col = i % columns;
-
-      // For even rows, numbers go left to right
-      // For odd rows, numbers go right to left
-      int tileNumber = row % 2 == 0 ? row * columns + col + 1 : (row + 1) * columns - col;
-
-      LadderGameTile tile = new LadderGameTile(tileNumber);
-      // Calculate and set the x,y coordinates for UI positioning
-      tiles.add(tile);
-    }
-  }
+  protected abstract void initializeTiles();
 
   /**
-   * Gets a tile by its number (1-based indexing).
+   * Gets a tile by its number.
    *
-   * @param number The tile number to retrieve
+   * @param number The tile number
    * @return The tile with the specified number
    * @throws IllegalArgumentException if the tile number is invalid
    */
-  public LadderGameTile getTile(int number) {
-    if (number < 1 || number > tiles.size()) {
+  public T getTile(int number) {
+    if (number < 1 || number > getNumberOfTiles()) {
       throw new IllegalArgumentException("Invalid tile number: " + number);
     }
+
     return tiles.stream()
         .filter(t -> t.getNumber() == number)
         .findFirst()
@@ -85,7 +69,19 @@ public class Board {
   }
 
   /**
-   * Adds an observer to the board's observer list.
+   * Validates a tile number.
+   *
+   * @param tileNumber The tile number to validate
+   * @throws IllegalArgumentException if the tile number is invalid
+   */
+  protected void validateTileNumber(int tileNumber) {
+    if (tileNumber < 1 || tileNumber > getNumberOfTiles()) {
+      throw new IllegalArgumentException("Invalid tile number: " + tileNumber);
+    }
+  }
+
+  /**
+   * Adds an observer to the board.
    * 
    * @param observer The observer to add
    */
@@ -96,7 +92,7 @@ public class Board {
   }
 
   /**
-   * Removes an observer from the board's observer list.
+   * Removes an observer from the board.
    * 
    * @param observer The observer to remove
    */
@@ -109,13 +105,13 @@ public class Board {
    * 
    * @param event The game event to notify observers about
    */
-  public void notifyObservers(GameEvent event) {
+  protected void notifyObservers(GameEvent event) {
     for (GameObserver observer : observers) {
       observer.update(event);
     }
   }
 
-  // Getters and setters for JSON serialization
+  // Getters and setters
 
   public String getName() {
     return name;
@@ -143,13 +139,13 @@ public class Board {
     return columns;
   }
 
-  public List<LadderGameTile> getTiles() {
-    return tiles;
+  public List<T> getTiles() {
+    return new ArrayList<>(tiles); // Return a defensive copy
   }
 
-  public void setTiles(List<LadderGameTile> tiles) {
-    this.tiles = tiles;
-    notifyObservers(new GameEvent("TILES_CHANGED", tiles));
+  public void setTiles(List<T> tiles) {
+    this.tiles = new ArrayList<>(tiles); // Create a defensive copy
+    notifyObservers(new GameEvent("TILES_CHANGED", this.tiles));
   }
 
   @Override
@@ -158,16 +154,18 @@ public class Board {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    Board board = (Board) o;
-    return rows == board.rows &&
-        columns == board.columns &&
-        Objects.equals(name, board.name) &&
-        Objects.equals(description, board.description) &&
-        Objects.equals(tiles, board.tiles);
+
+    AbstractBoard<?> that = (AbstractBoard<?>) o;
+    return rows == that.rows &&
+        columns == that.columns &&
+        Objects.equals(name, that.name) &&
+        Objects.equals(description, that.description) &&
+        Objects.equals(tiles, that.tiles);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(name, description, rows, columns, tiles);
   }
+
 }

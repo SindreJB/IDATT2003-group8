@@ -40,17 +40,26 @@ public class BoardManager {
         "Standard Board",
         "Classic 9x10 Snakes and Ladders board with traditional placement",
         10, 9);
-
     // Add ladders (from bottom to top)
-    standardBoard.addLadder(2, 38);
-    standardBoard.addLadder(5, 44);
-    standardBoard.addLadder(6, 45);
-    standardBoard.addLadder(7, 46);
-    standardBoard.addLadder(8, 47);
-    standardBoard.addLadder(9, 48);
+    standardBoard.addLadder(3, 22);
+    standardBoard.addLadder(11, 26);
+    standardBoard.addLadder(21, 42);
+    standardBoard.addLadder(36, 57);
+    standardBoard.addLadder(51, 67);
+    standardBoard.addLadder(71, 83);
 
     // Add snakes (from head to tail)
-    standardBoard.addSnake(16, 6);
+    standardBoard.addSnake(17, 7);
+    standardBoard.addSnake(29, 15);
+    standardBoard.addSnake(47, 26);
+    standardBoard.addSnake(62, 43);
+    standardBoard.addSnake(87, 61);
+    standardBoard.addSnake(95, 73);
+
+    // Add wormholes (entrance)
+    standardBoard.addWormhole(5);
+    standardBoard.addWormhole(13);
+    standardBoard.addWormhole(45);
 
     try {
       Path boardPath = getBoardsDirectory().resolve("standard.json");
@@ -75,23 +84,28 @@ public class BoardManager {
         10, 10);
 
     // Add custom ladders (start -> end)
-    customBoard.addLadder(4, 25);
-    customBoard.addLadder(13, 46);
-    customBoard.addLadder(33, 49);
-    customBoard.addLadder(42, 63);
-    customBoard.addLadder(50, 69);
-    customBoard.addLadder(62, 81);
-    customBoard.addLadder(74, 92);
+    customBoard.addLadder(4, 23);
+    customBoard.addLadder(14, 35);
+    customBoard.addLadder(28, 49);
+    customBoard.addLadder(37, 65);
+    customBoard.addLadder(48, 68);
+    customBoard.addLadder(57, 82);
+    customBoard.addLadder(79, 96);
 
     // Add custom snakes (head -> tail)
-    customBoard.addSnake(27, 5);
-    customBoard.addSnake(40, 3);
-    customBoard.addSnake(43, 18);
-    customBoard.addSnake(54, 31);
-    customBoard.addSnake(66, 45);
-    customBoard.addSnake(76, 58);
-    customBoard.addSnake(89, 53);
-    customBoard.addSnake(99, 41);
+    customBoard.addSnake(24, 6);
+    customBoard.addSnake(39, 18);
+    customBoard.addSnake(52, 31);
+    customBoard.addSnake(63, 42);
+    customBoard.addSnake(75, 54);
+    customBoard.addSnake(88, 67);
+    customBoard.addSnake(97, 78);
+
+    // add wormholes (entrance)
+    customBoard.addWormhole(10);
+    customBoard.addWormhole(20);
+    customBoard.addWormhole(30);
+    customBoard.addWormhole(40);
 
     Path boardPath = getBoardsDirectory().resolve(boardName + ".json");
     JsonHandler.writeToJson(customBoard, boardPath.toString());
@@ -123,9 +137,9 @@ public class BoardManager {
     wormholeBoard.addSnake(99, 41);
 
     // Add wormholes (entrance -> exit)
-    wormholeBoard.addWormhole(22, 58); // Forward wormhole
-    wormholeBoard.addWormhole(77, 39); // Backward wormhole
-    wormholeBoard.addWormhole(63, 80); // Forward wormhole
+    wormholeBoard.addWormhole(22);
+    wormholeBoard.addWormhole(77);
+    wormholeBoard.addWormhole(63);
 
     Path boardPath = getBoardsDirectory().resolve("wormhole.json");
     JsonHandler.writeToJson(wormholeBoard, boardPath.toString());

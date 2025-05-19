@@ -114,7 +114,7 @@ public class BoardConfig {
     ladderEnds.add(end);
   }
 
-  public void addWormhole(int start, int end) {
+  public void addWormhole(int start) {
     wormholeStarts.add(start);
   }
 }

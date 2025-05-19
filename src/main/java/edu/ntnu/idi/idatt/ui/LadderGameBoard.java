@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ntnu.idi.idatt.controller.LadderGameController;
 import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
-import edu.ntnu.idi.idatt.model.Board;
-import edu.ntnu.idi.idatt.model.Player;
+import edu.ntnu.idi.idatt.model.LadderBoard;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
+import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.observer.GameEvent;
 import edu.ntnu.idi.idatt.observer.GameObserver;
 import edu.ntnu.idi.idatt.ui.components.AnimationManager;
@@ -52,14 +53,14 @@ public class LadderGameBoard implements GameObserver {
   private AnimationManager animationManager;
 
   // Game controller manages all game logic
-  private final GameController gameController;
+  private final LadderGameController gameController;
 
   /**
    * Creates a new LadderGameBoard instance
    */
   public LadderGameBoard() {
     // Initialize the game controller
-    this.gameController = new GameController();
+    this.gameController = new LadderGameController();
 
     // Set up callbacks from controller to UI
     setupControllerCallbacks();
@@ -70,12 +71,12 @@ public class LadderGameBoard implements GameObserver {
    */
   private void setupControllerCallbacks() {
     // Update UI when player turn changes
-    gameController.setOnTurnChanged(() -> {
-      Player currentPlayer = gameController.getCurrentPlayer();
-      if (statusLabel != null) {
-        statusLabel.setText(currentPlayer.getName() + "'s turn");
-      }
-    });
+    // gameController.setOnTurnChanged(() -> {
+    // Player currentPlayer = gameController.getCurrentPlayer();
+    // if (statusLabel != null) {
+    // statusLabel.setText(currentPlayer.getName() + "'s turn");
+    // }
+    // });
 
     // Handle dice roll results with UI feedback
     gameController.setOnDiceRolled((diceValue, message, oldPosition, newPosition) -> {
@@ -130,7 +131,7 @@ public class LadderGameBoard implements GameObserver {
     gameController.setupGame(players);
 
     // Get board from controller for UI setup
-    Board gameBoard = gameController.getGameBoard();
+    LadderBoard gameBoard = gameController.getGameBoard();
     List<Player> gamePlayers = gameController.getPlayers();
 
     // Validate player count in UI
@@ -262,8 +263,8 @@ public class LadderGameBoard implements GameObserver {
 
       case "BOARD_LOADED":
         Platform.runLater(() -> {
-          if (event.getData() instanceof Board) {
-            Board board = (Board) event.getData();
+          if (event.getData() instanceof LadderBoard) {
+            LadderBoard board = (LadderBoard) event.getData();
             if (gameInfoLabel != null) {
               gameInfoLabel.setText("Board loaded: " + board.getName() + "\n" + board.getDescription());
             }
@@ -366,7 +367,7 @@ public class LadderGameBoard implements GameObserver {
    * 
    * @throws LadderGameException If the board has invalid dimensions
    */
-  private GridPane createGameBoardUI(Board gameBoard) throws LadderGameException {
+  private GridPane createGameBoardUI(LadderBoard gameBoard) throws LadderGameException {
 
     int rows = gameBoard.getRows();
     int cols = gameBoard.getColumns();
@@ -410,7 +411,7 @@ public class LadderGameBoard implements GameObserver {
   /**
    * Draws snakes and ladders on the grid based on the loaded board configuration
    */
-  private void drawSnakesAndLadders(StackPane gridPane, Board gameBoard) {
+  private void drawSnakesAndLadders(StackPane gridPane, LadderBoard gameBoard) {
     // Draw ladders and snakes after all tiles are created
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
@@ -599,7 +600,7 @@ public class LadderGameBoard implements GameObserver {
    * 
    * @return The game controller
    */
-  public GameController getGameController() {
+  public LadderGameController getGameController() {
     return gameController;
   }
 }
