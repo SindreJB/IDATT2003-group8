@@ -7,6 +7,9 @@ package edu.ntnu.idi.idatt.model;
  */
 public class LadderBoard extends AbstractBoard<LadderGameTile> {
 
+  private int rows;
+  private int columns;
+
   /**
    * Creates a new Snakes and Ladders board with the specified dimensions.
    * 
@@ -14,7 +17,10 @@ public class LadderBoard extends AbstractBoard<LadderGameTile> {
    * @param columns Number of columns in the board
    */
   public LadderBoard(int rows, int columns) {
-    super(rows, columns);
+    super();
+    this.rows = rows;
+    this.columns = columns;
+    initializeTiles();
   }
 
   /**
@@ -58,5 +64,13 @@ public class LadderBoard extends AbstractBoard<LadderGameTile> {
 
   public LadderBoard getGameBoard() {
     return this;
+  }
+
+  public int getRows() {
+    return rows;
+  }
+
+  public int getColumns() {
+    return columns;
   }
 }

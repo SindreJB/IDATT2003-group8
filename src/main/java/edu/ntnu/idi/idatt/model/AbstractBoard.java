@@ -16,8 +16,6 @@ import edu.ntnu.idi.idatt.observer.GameObserver;
 public abstract class AbstractBoard<T extends Tile> {
   private String name;
   private String description;
-  protected int rows;
-  protected int columns;
   protected List<T> tiles;
   private List<GameObserver> observers;
 
@@ -27,9 +25,7 @@ public abstract class AbstractBoard<T extends Tile> {
    * @param rows    Number of rows in the board
    * @param columns Number of columns in the board
    */
-  public AbstractBoard(int rows, int columns) {
-    this.rows = rows;
-    this.columns = columns;
+  public AbstractBoard() {
     this.tiles = new ArrayList<>();
     this.observers = new ArrayList<>();
     initializeTiles();
@@ -131,14 +127,6 @@ public abstract class AbstractBoard<T extends Tile> {
     notifyObservers(new GameEvent("BOARD_DESCRIPTION_CHANGED", description));
   }
 
-  public int getRows() {
-    return rows;
-  }
-
-  public int getColumns() {
-    return columns;
-  }
-
   public List<T> getTiles() {
     return new ArrayList<>(tiles); // Return a defensive copy
   }
@@ -156,16 +144,14 @@ public abstract class AbstractBoard<T extends Tile> {
       return false;
 
     AbstractBoard<?> that = (AbstractBoard<?>) o;
-    return rows == that.rows &&
-        columns == that.columns &&
-        Objects.equals(name, that.name) &&
+    return Objects.equals(name, that.name) &&
         Objects.equals(description, that.description) &&
         Objects.equals(tiles, that.tiles);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, description, rows, columns, tiles);
+    return Objects.hash(name, description, tiles);
   }
 
 }
