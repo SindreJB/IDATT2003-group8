@@ -535,6 +535,7 @@ public class LadderGameBoard implements GameObserver {
   private void animatePlayerMove(Player player, int fromPosition, int toPosition, boolean checkVictory) {
     List<Player> players = gameController.getPlayers();
     animationManager.animatePlayerMove(player, players, fromPosition, toPosition, checkVictory);
+    infoTable.setRollEnabled(true);
   }
 
   /**
@@ -584,6 +585,10 @@ public class LadderGameBoard implements GameObserver {
       statusLabel.setText(currentPlayer.getName() + "'s turn");
     }
     infoTable.setRollEnabled(true);
+  }
+
+  public BorderPane getRoot() {
+    return root;
   }
 
   /**
