@@ -67,7 +67,7 @@ public class CreatePlayer {
             (int) (color.getGreen() * 255),
             (int) (color.getBlue() * 255));
 
-        Player player = new Player(nameInput.getText(), "random", 0);
+        Player player = new Player(nameInput.getText(), colorHex, 0);
         savePlayersToCsv(List.of(player));
 
         window.close();
