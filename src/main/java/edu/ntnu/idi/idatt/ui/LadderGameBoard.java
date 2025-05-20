@@ -9,6 +9,7 @@ import edu.ntnu.idi.idatt.controller.LadderGameController;
 import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.LadderBoard;
+import edu.ntnu.idi.idatt.model.LadderGameActions;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.observer.GameEvent;
@@ -534,6 +535,7 @@ public class LadderGameBoard implements GameObserver {
   private void animatePlayerMove(Player player, int fromPosition, int toPosition, boolean checkVictory) {
     List<Player> players = gameController.getPlayers();
     animationManager.animatePlayerMove(player, players, fromPosition, toPosition, checkVictory);
+    infoTable.setRollEnabled(true);
   }
 
   /**
@@ -583,6 +585,10 @@ public class LadderGameBoard implements GameObserver {
       statusLabel.setText(currentPlayer.getName() + "'s turn");
     }
     infoTable.setRollEnabled(true);
+  }
+
+  public BorderPane getRoot() {
+    return root;
   }
 
   /**
