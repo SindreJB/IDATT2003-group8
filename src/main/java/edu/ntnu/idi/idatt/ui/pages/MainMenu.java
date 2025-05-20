@@ -57,18 +57,16 @@ public class MainMenu extends Application {
     Button newGameButton = new Button("New Game");
     Button loadPlayersButton = new Button("Load Players from CSV");
     Button createPlayersButton = new Button("Create new Players");
-    Button settingsButton = new Button("Settings");
     Button exitButton = new Button("Exit");
 
     // Style the buttons
     VBox div = new VBox();
-    div.getChildren().addAll(newGameButton, loadPlayersButton, createPlayersButton, settingsButton, exitButton);
+    div.getChildren().addAll(newGameButton, loadPlayersButton, createPlayersButton, exitButton);
     div.getStyleClass().addAll(
         "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
     newGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     loadPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     createPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    settingsButton.getStyleClass().addAll("btn", "btn-secondary", "w-full");
     exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
 
     // Add actions to buttons
@@ -79,8 +77,9 @@ public class MainMenu extends Application {
     });
 
     loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
-    createPlayersButton.setOnAction(e -> System.out.println("Create new players clicked"));
-    settingsButton.setOnAction(e -> System.out.println("Settings clicked"));
+    createPlayersButton.setOnAction(e -> {
+      edu.ntnu.idi.idatt.ui.components.CreatePlayer.display();
+    });
     exitButton.setOnAction(e -> Platform.exit());
 
     // Create layout for menu
@@ -115,23 +114,6 @@ public class MainMenu extends Application {
         showAlert("Error loading players: " + e.getMessage());
         e.printStackTrace();
       }
-    }
-  }
-
-  /**
-   * Opens a file chooser dialog to save sample players to a CSV file
-   */
-  private void savePlayersToCsv(List<Player> players) {
-
-    String savePath = "src/main/resources/data/players.csv";
-    try {
-      CsvHandler.savePlayersToCsv(players, savePath);
-      showAlert("Successfully saved players to players.csv");
-      return;
-    } catch (IOException e) {
-      showAlert("Error saving players: " + e.getMessage());
-      e.printStackTrace();
-      return;
     }
   }
 
