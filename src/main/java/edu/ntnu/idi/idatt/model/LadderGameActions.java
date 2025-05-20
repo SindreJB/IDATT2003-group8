@@ -1,7 +1,7 @@
-package edu.ntnu.idi.idatt.ui;
+package edu.ntnu.idi.idatt.model;
 
 import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
-import edu.ntnu.idi.idatt.model.GameActions;
+import edu.ntnu.idi.idatt.ui.LadderGameBoard;
 import javafx.application.Platform;
 
 /**
@@ -34,21 +34,7 @@ public class LadderGameActions implements GameActions {
 
   @Override
   public void startNewGame() {
-    // Get the current stage from the root BorderPane
-    // Stage stage = (Stage) gameBoard.getRoot().getScene().getWindow();
 
-    // Create a new GameLauncher to return to the start page
-    // GameLauncher launcher = new GameLauncher();
-
-    // Set the start page scene on the stage
-    // Scene startScene = launcher.createStartScene(stage);
-    // stage.setScene(startScene);
-    // stage.setTitle("Snakes and Ladders Game");
-
-    // // If needed, adjust stage size to match the start page layout
-    // stage.setWidth(600);
-    // stage.setHeight(400);
-    // stage.centerOnScreen();
   }
 
   @Override

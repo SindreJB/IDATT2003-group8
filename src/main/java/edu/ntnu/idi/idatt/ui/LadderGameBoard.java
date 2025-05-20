@@ -9,6 +9,7 @@ import edu.ntnu.idi.idatt.controller.LadderGameController;
 import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.LadderBoard;
+import edu.ntnu.idi.idatt.model.LadderGameActions;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.observer.GameEvent;
