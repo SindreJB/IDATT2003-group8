@@ -1,5 +1,6 @@
 package edu.ntnu.idi.idatt.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,8 +32,15 @@ public class Dice {
    * Constructs a Dice object with two Die objects.
    * The Dice object represents a pair of dice.
    */
-  public Dice() {
-    this.dice = List.of(new Die(), new Die()); // Two dice
+  public Dice(int numberOfDice) {
+    if (numberOfDice < 1) {
+      throw new IllegalArgumentException("Number of dice must be at least 1");
+    }
+    dice = new ArrayList<>();
+    for (int i = 0; i < numberOfDice; i++) {
+      dice.add(new Die());
+    }
+
   }
 
   /**

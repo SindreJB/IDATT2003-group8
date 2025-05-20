@@ -7,8 +7,8 @@ package edu.ntnu.idi.idatt.model;
  */
 public class LadderBoard extends AbstractBoard<LadderGameTile> {
 
-  private int rows;
-  private int columns;
+  private final int rows;
+  private final int columns;
 
   /**
    * Creates a new Snakes and Ladders board with the specified dimensions.
@@ -20,7 +20,7 @@ public class LadderBoard extends AbstractBoard<LadderGameTile> {
     super();
     this.rows = rows;
     this.columns = columns;
-    initializeTiles();
+    initializeTilesInternal();
   }
 
   /**
@@ -31,7 +31,14 @@ public class LadderBoard extends AbstractBoard<LadderGameTile> {
    * 1 2 3
    */
   @Override
-  protected void initializeTiles() {
+  protected final void initializeTiles() {
+    initializeTilesInternal();
+  }
+
+  /**
+   * Private helper method to initialize tiles, called from constructor.
+   */
+  private void initializeTilesInternal() {
     tiles.clear();
     int totalTiles = rows * columns;
 

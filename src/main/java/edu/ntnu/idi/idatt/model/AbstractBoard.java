@@ -17,7 +17,7 @@ public abstract class AbstractBoard<T extends Tile> {
   private String name;
   private String description;
   protected List<T> tiles;
-  private List<GameObserver> observers;
+  private final List<GameObserver> observers;
 
   /**
    * Creates a new board with the specified dimensions.
@@ -28,6 +28,14 @@ public abstract class AbstractBoard<T extends Tile> {
   public AbstractBoard() {
     this.tiles = new ArrayList<>();
     this.observers = new ArrayList<>();
+  }
+
+  /**
+   * Initializes the board after construction.
+   * This method should be called by concrete subclasses after their constructor
+   * completes.
+   */
+  protected final void initialize() {
     initializeTiles();
   }
 

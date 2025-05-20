@@ -41,7 +41,7 @@ import javafx.stage.Stage;
  */
 public class LadderGameBoard implements GameObserver {
 
-  private static final int TILE_SIZE = 60;
+  private static final int TILE_SIZE = 100;
 
   // UI components
   private final Map<Integer, StackPane> tilesMap = new HashMap<>();
@@ -391,6 +391,8 @@ public class LadderGameBoard implements GameObserver {
           int tileNumber = row * cols + (cols - col);
           StackPane tile = createTile(tileNumber);
           tile.getStyleClass().add("styled-tile");
+          tile.setMinSize(TILE_SIZE, TILE_SIZE);
+          tile.setMaxSize(TILE_SIZE, TILE_SIZE);
           gridPane.add(tile, col, actualRow);
           tilesMap.put(tileNumber, tile);
         }
@@ -400,6 +402,10 @@ public class LadderGameBoard implements GameObserver {
           int tileNumber = row * cols + col + 1;
           StackPane tile = createTile(tileNumber);
           tile.getStyleClass().add("styled-tile");
+
+          tile.setMinSize(TILE_SIZE, TILE_SIZE);
+          tile.setMaxSize(TILE_SIZE, TILE_SIZE);
+
           gridPane.add(tile, col, actualRow);
           tilesMap.put(tileNumber, tile);
         }
@@ -508,7 +514,7 @@ public class LadderGameBoard implements GameObserver {
 
     // Create tile number
     Label text = new Label(String.valueOf(number));
-    text.getStyleClass().add("styled-text");
+    text.getStyleClass().add("tile-text");
 
     // Add background and number to tile
     tile.getChildren().addAll(text);

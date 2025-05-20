@@ -24,15 +24,15 @@ public abstract class GameController {
   private List<Player> players;
   private Player currentPlayer;
   private int currentPlayerIndex;
-  private Dice dice;
-  private Map<GameObserver, List<String>> observerEventTypes;
+  private final Dice dice;
+  private final Map<GameObserver, List<String>> observerEventTypes;
 
   /**
    * Creates a new game controller
    */
   public GameController() {
     this.players = new ArrayList<>();
-    this.dice = new Dice();
+    this.dice = new Dice(2);
     this.currentPlayerIndex = 0;
     this.observerEventTypes = new HashMap<>();
   }
