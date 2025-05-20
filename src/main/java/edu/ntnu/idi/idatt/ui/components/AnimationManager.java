@@ -82,11 +82,6 @@ public class AnimationManager {
       System.err.println("Animation piece creation failed for " + player.getName());
       gamePiece.addPlayerToTile(player, toPosition, toTile);
 
-      if (checkVictory) {
-        // Victory already checked by controller
-        return;
-      }
-
       // Re-enable roll button
       infoTable.setRollEnabled(true);
       return;
@@ -125,11 +120,6 @@ public class AnimationManager {
       // Add player to new position using GamePiece
       gamePiece.addPlayerToTile(player, toPosition, toTile);
 
-      // Victory already handled by controller
-      if (!checkVictory) {
-        // Re-enable roll button if not a victory
-        infoTable.setRollEnabled(true);
-      }
     });
 
     transition.play();

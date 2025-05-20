@@ -1,14 +1,10 @@
 package edu.ntnu.idi.idatt.ui.components;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.ntnu.idi.idatt.model.Player;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -19,18 +15,11 @@ import javafx.scene.shape.Circle;
 public class GamePiece {
   private final int tileSize;
   private final List<Player> players;
-  
-  // Colors for fallback pieces
-  private static final Map<String, Color> COLOR_MAP = new HashMap<>();
-  
-  static {
-    // Initialize color map
-    COLOR_MAP.put("Pink star", Color.PINK);
-    COLOR_MAP.put("Yellow square", Color.YELLOW);
-    COLOR_MAP.put("blue circle", Color.BLUE);
-    COLOR_MAP.put("green triangle", Color.GREEN);
-    COLOR_MAP.put("red pentagon", Color.RED);
-  }
+
+  // Default colors if hex parsing fails
+  private static final Color[] DEFAULT_COLORS = {
+      Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.PURPLE
+  };
 
   /**
    * Creates a GamePiece manager for visualizing players
@@ -52,30 +41,30 @@ public class GamePiece {
     // Create a container for all player pieces
     StackPane playerContainer = new StackPane();
     playerContainer.setMaxSize(tileSize, tileSize);
-    
+
     // Add all players to the start tile
     addAllPlayersToContainer(playerContainer, 1);
-    
+
     // Add container to the start tile
     startTile.getChildren().add(playerContainer);
   }
-  
+
   /**
    * Adds all players at the specified position to a container
    * 
    * @param container The container to add pieces to
-   * @param position The board position to check
+   * @param position  The board position to check
    */
   private void addAllPlayersToContainer(StackPane container, int position) {
     int playerCount = 0;
-    
+
     // Count players at this position
     for (Player player : players) {
       if (player.getTileId() == position) {
         playerCount++;
       }
     }
-    
+
     // Add each player at this position
     int currentIndex = 0;
     for (int i = 0; i < players.size(); i++) {
@@ -86,79 +75,77 @@ public class GamePiece {
       }
     }
   }
-  
+
+  /**
+   * Gets the color for a player from their piece type (hex string)
+   * 
+   * @param player      The player to get color for
+   * @param playerIndex Fallback index for default color
+   * @return The parsed Color object
+   */
+  private Color getPlayerColor(Player player, int playerIndex) {
+    // Debug the color value we're trying to parse
+
+    String colorHex = player.getPieceType();
+
+    // If null or empty, use default
+    if (colorHex == null || colorHex.isEmpty()) {
+      return getDefaultColor(playerIndex);
+    }
+
+    try {
+      // Make sure the color has a proper hex format
+      if (!colorHex.startsWith("#")) {
+        colorHex = "#" + colorHex;
+      }
+
+      Color parsedColor = Color.web(colorHex);
+      return parsedColor;
+    } catch (Exception e) {
+      // Log the error and use default
+      return getDefaultColor(playerIndex);
+    }
+  }
+
   /**
    * Adds a single player piece to the container
    * 
-   * @param container The container to add the piece to
-   * @param player The player to add
+   * @param container   The container to add the piece to
+   * @param player      The player to add
    * @param playerIndex The index of this player among those at this position
    * @param playerCount The total number of players at this position
    */
   private void addPlayerPieceToContainer(StackPane container, Player player, int playerIndex, int playerCount) {
-    String pieceType = player.getPieceType();
-    
-    // Check if piece type indicates an image file
-    if (pieceType.endsWith(".png")) {
-      try {
-        // Try to load the image
-        String imagePath = "/boardPieces/" + pieceType;
-        Image pieceImage = new Image(getClass().getResourceAsStream(imagePath));
-        
-        // Create image view
-        ImageView pieceView = new ImageView(pieceImage);
-        
-        // Size and position
-        double size = calculatePieceSize(playerCount);
-        pieceView.setFitWidth(size);
-        pieceView.setFitHeight(size);
-        pieceView.setPreserveRatio(true);
-        
-        Insets margin = calculatePieceMargin(playerIndex, playerCount);
-        StackPane.setMargin(pieceView, margin);
-        
-        container.getChildren().add(pieceView);
-        return;
-      } catch (Exception e) {
-        System.err.println("Error loading image " + pieceType + ": " + e.getMessage());
-        // Fall through to shape creation
-      }
-    }
-    
-    // For non-image pieces or if image loading failed, create appropriate shapes
-    createShapePiece(container, player, playerIndex, playerCount);
-  }
-  
-  /**
-   * Creates a shape-based piece for a player
-   * 
-   * @param container The container to add the piece to
-   * @param player The player to create a piece for
-   * @param playerIndex The index of this player among those at this position
-   * @param playerCount The total number of players at this position
-   */
-  private void createShapePiece(StackPane container, Player player, int playerIndex, int playerCount) {
-    String pieceType = player.getPieceType();
-    
-    // Get color for this piece type
-    Color pieceColor = COLOR_MAP.getOrDefault(pieceType, 
-        getDefaultColor(playerIndex));
-    
-    // Create circle
+    // Get color from player piece type
+    Color pieceColor = getPlayerColor(player, playerIndex);
+
+    // Create circle with the color
     double size = calculatePieceSize(playerCount) * 0.4;
     Circle circle = new Circle(size);
+
+    // Set color
     circle.setFill(pieceColor);
-    circle.setStroke(Color.BLACK);
-    circle.setStrokeWidth(1);
-    
+    circle.setStroke(Color.BEIGE);
+    circle.setStrokeWidth(2);
+
     // Calculate position
     Insets margin = calculatePieceMargin(playerIndex, playerCount);
     StackPane.setMargin(circle, margin);
-    
+
     // Add to container
     container.getChildren().add(circle);
   }
-  
+
+  /**
+   * Get a default color based on player index
+   * 
+   * @param playerIndex The index of the player
+   * @return A default color
+   */
+  private Color getDefaultColor(int playerIndex) {
+    return DEFAULT_COLORS[playerIndex % DEFAULT_COLORS.length];
+  }
+
   /**
    * Calculates the appropriate piece size based on how many players are on a tile
    * 
@@ -167,15 +154,21 @@ public class GamePiece {
    */
   private double calculatePieceSize(int playerCount) {
     switch (playerCount) {
-      case 1: return tileSize * 0.45; // Single player - larger piece
-      case 2: return tileSize * 0.35; // Two players - medium pieces
-      case 3: return tileSize * 0.3;  // Three players
-      case 4: return tileSize * 0.25; // Four players
-      case 5: return tileSize * 0.2;  // Five players - smallest pieces
-      default: return tileSize * 0.3; // Default size
+      case 1:
+        return tileSize * 0.45; // Single player - larger piece
+      case 2:
+        return tileSize * 0.35; // Two players - medium pieces
+      case 3:
+        return tileSize * 0.3; // Three players
+      case 4:
+        return tileSize * 0.25; // Four players
+      case 5:
+        return tileSize * 0.2; // Five players - smallest pieces
+      default:
+        return tileSize * 0.3; // Default size
     }
   }
-  
+
   /**
    * Calculates the margin for a piece based on its position among others
    * 
@@ -189,56 +182,51 @@ public class GamePiece {
       return new Insets(0, 0, 0, 0);
     } else if (playerCount == 2) {
       // Two players - side by side
-      return new Insets(0, 
-          playerIndex == 0 ? 10 : -10, 0, 
+      return new Insets(0,
+          playerIndex == 0 ? 10 : -10, 0,
           playerIndex == 0 ? -10 : 10);
     } else if (playerCount == 3) {
       // Three players - triangle formation
       switch (playerIndex) {
-        case 0: return new Insets(-10, 0, 0, 0);    // Top
-        case 1: return new Insets(5, -10, 0, 0);    // Bottom left
-        case 2: return new Insets(5, 10, 0, 0);     // Bottom right
-        default: return new Insets(0, 0, 0, 0);
+        case 0:
+          return new Insets(-10, 0, 0, 0); // Top
+        case 1:
+          return new Insets(5, -10, 0, 0); // Bottom left
+        case 2:
+          return new Insets(5, 10, 0, 0); // Bottom right
+        default:
+          return new Insets(0, 0, 0, 0);
       }
     } else if (playerCount == 4) {
       // Four players - diamond formation
       switch (playerIndex) {
-        case 0: return new Insets(-10, 0, 0, 0);    // Top
-        case 1: return new Insets(0, -10, 0, 0);    // Left
-        case 2: return new Insets(0, 10, 0, 0);     // Right
-        case 3: return new Insets(10, 0, 0, 0);     // Bottom
-        default: return new Insets(0, 0, 0, 0);
+        case 0:
+          return new Insets(-10, 0, 0, 0); // Top
+        case 1:
+          return new Insets(0, -10, 0, 0); // Left
+        case 2:
+          return new Insets(0, 10, 0, 0); // Right
+        case 3:
+          return new Insets(10, 0, 0, 0); // Bottom
+        default:
+          return new Insets(0, 0, 0, 0);
       }
     } else {
       // Five players - spread across the tile
       switch (playerIndex) {
-        case 0: return new Insets(-10, 0, 0, 0);    // Top center
-        case 1: return new Insets(-5, -10, 0, 0);   // Top left
-        case 2: return new Insets(-5, 10, 0, 0);    // Top right
-        case 3: return new Insets(10, -10, 0, 0);   // Bottom left
-        case 4: return new Insets(10, 10, 0, 0);    // Bottom right
-        default: return new Insets(0, 0, 0, 0);
+        case 0:
+          return new Insets(-10, 0, 0, 0); // Top center
+        case 1:
+          return new Insets(-5, -10, 0, 0); // Top left
+        case 2:
+          return new Insets(-5, 10, 0, 0); // Top right
+        case 3:
+          return new Insets(10, -10, 0, 0); // Bottom left
+        case 4:
+          return new Insets(10, 10, 0, 0); // Bottom right
+        default:
+          return new Insets(0, 0, 0, 0);
       }
-    }
-  }
-  
-  /**
-   * Gets a default color based on player index
-   * 
-   * @param playerIndex Player index
-   * @return A default color
-   */
-  private Color getDefaultColor(int playerIndex) {
-    switch (playerIndex % 8) {
-      case 0: return Color.RED;
-      case 1: return Color.BLUE;
-      case 2: return Color.GREEN;
-      case 3: return Color.PURPLE;
-      case 4: return Color.ORANGE;
-      case 5: return Color.BROWN;
-      case 6: return Color.GRAY;
-      case 7: return Color.YELLOW;
-      default: return Color.BLACK;
     }
   }
 
@@ -252,14 +240,14 @@ public class GamePiece {
   public void addPlayerToTile(Player player, int position, StackPane tile) {
     // Preserve labels first
     preserveLabels(tile);
-    
+
     // Create container for player pieces
     StackPane playerContainer = new StackPane();
     playerContainer.setMaxSize(tileSize, tileSize);
-    
+
     // Add all players at this position
     addAllPlayersToContainer(playerContainer, position);
-    
+
     // Only add if there are pieces to display
     if (!playerContainer.getChildren().isEmpty()) {
       tile.getChildren().add(playerContainer);
@@ -268,65 +256,42 @@ public class GamePiece {
 
   /**
    * Creates an ImageView for a player piece for animation
-   * For both image-based and shape-based pieces
    *
    * @param playerIndex the index of the player
    * @return the created ImageView or null if creation fails
    */
-  public ImageView createAnimationPiece(int playerIndex) {
+  public javafx.scene.image.ImageView createAnimationPiece(int playerIndex) {
     Player player = players.get(playerIndex);
-    String pieceType = player.getPieceType();
-    
-    // Check if piece type indicates an image file
-    if (pieceType.endsWith(".png")) {
-      try {
-        String imagePath = "/boardPieces/" + pieceType;
-        Image playerImage = new Image(getClass().getResourceAsStream(imagePath));
-        ImageView playerPiece = new ImageView(playerImage);
-        
-        // Use a fixed size for animation
-        double size = tileSize * 0.35;
-        playerPiece.setFitHeight(size);
-        playerPiece.setFitWidth(size);
-        playerPiece.setPreserveRatio(true);
-        
-        return playerPiece;
-      } catch (Exception e) {
-        System.err.println("Error loading player image: " + e.getMessage());
-        e.printStackTrace();
-        // Fall through to shape creation
-      }
-    }
-    
-    // For non-image pieces, create a temporary ImageView with a snapshot of the shape
+
     try {
+      // Use the same color method to ensure consistency
+      Color pieceColor = getPlayerColor(player, playerIndex);
+
       // Create a shape equivalent to what would be displayed on the board
       Circle circle = new Circle(tileSize * 0.15);
-      Color pieceColor = COLOR_MAP.getOrDefault(pieceType, getDefaultColor(playerIndex));
       circle.setFill(pieceColor);
       circle.setStroke(Color.BLACK);
       circle.setStrokeWidth(1);
-      
-      // Create a StackPane to hold the circle with transparent background
+
+      // Create a StackPane with transparent background
       StackPane shapeContainer = new StackPane(circle);
       shapeContainer.setPrefSize(tileSize * 0.35, tileSize * 0.35);
-      shapeContainer.setBackground(javafx.scene.layout.Background.EMPTY);  // Set transparent background
-      
+      shapeContainer.setBackground(javafx.scene.layout.Background.EMPTY);
+
       // Create snapshot parameters with transparent background
       javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
-      params.setFill(javafx.scene.paint.Color.TRANSPARENT);  // Make snapshot background transparent
-      
-      // Take a snapshot of the shape with transparent background
+      params.setFill(javafx.scene.paint.Color.TRANSPARENT);
+
+      // Take a snapshot
       javafx.scene.image.WritableImage snapshot = shapeContainer.snapshot(params, null);
-      
+
       // Create an ImageView from the snapshot
-      ImageView shapeView = new ImageView(snapshot);
+      javafx.scene.image.ImageView shapeView = new javafx.scene.image.ImageView(snapshot);
       shapeView.setFitWidth(tileSize * 0.35);
       shapeView.setFitHeight(tileSize * 0.35);
-      
+
       return shapeView;
     } catch (Exception e) {
-      System.err.println("Error creating shape animation: " + e.getMessage());
       e.printStackTrace();
       return null;
     }
