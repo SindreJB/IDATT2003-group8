@@ -55,16 +55,18 @@ public class MainMenu extends Application {
 
     // Create menu buttons
     Button newGameButton = new Button("New Game");
+    Button playTreasure = new Button("Play Treasure");
     Button loadPlayersButton = new Button("Load Players from CSV");
     Button createPlayersButton = new Button("Create new Players");
     Button exitButton = new Button("Exit");
 
     // Style the buttons
     VBox div = new VBox();
-    div.getChildren().addAll(newGameButton, loadPlayersButton, createPlayersButton, exitButton);
+    div.getChildren().addAll(newGameButton, playTreasure, loadPlayersButton, createPlayersButton, exitButton);
     div.getStyleClass().addAll(
         "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
     newGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    playTreasure.getStyleClass().addAll("btn", "btn-primary", "w-full");
     loadPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     createPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
@@ -81,6 +83,7 @@ public class MainMenu extends Application {
       edu.ntnu.idi.idatt.ui.components.CreatePlayer.display();
     });
     exitButton.setOnAction(e -> Platform.exit());
+    playTreasure.setOnAction(e -> Platform.exit());
 
     // Create layout for menu
     menuLayout.setAlignment(Pos.CENTER);
