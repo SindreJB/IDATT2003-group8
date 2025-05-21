@@ -8,6 +8,7 @@ import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
+import edu.ntnu.idi.idatt.ui.TreasureGameBoardUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -327,18 +328,20 @@ public class PlayerSelectionModal {
     alert.showAndWait();
   }
 
-  /**
-   * Starts the game with the selected players
-   * 
-   * @param players The selected players
-   */
   private void startGame(List<Player> players) {
     try {
-      LadderGameBoardUI gameBoard = new LadderGameBoardUI();
-      Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
-      primaryStage.setScene(gameScene);
-      primaryStage.setTitle("Snakes and Ladders - " + boardType);
-    } catch (LadderGameException e) {
+      if (boardType.equals("treasure")) {
+        TreasureGameBoardUI gameBoard = new TreasureGameBoardUI();
+        Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
+        primaryStage.setScene(gameScene);
+        primaryStage.setTitle("Star of Africa - " + boardType);
+      } else {
+        LadderGameBoardUI gameBoard = new LadderGameBoardUI();
+        Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
+        primaryStage.setScene(gameScene);
+        primaryStage.setTitle("Snakes and Ladders - " + boardType);
+      }
+    } catch (Exception e) {
       showAlert("Error starting game: " + e.getMessage());
       System.err.println("Error starting game: " + e.getMessage());
       e.printStackTrace();

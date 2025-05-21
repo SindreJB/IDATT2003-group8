@@ -23,6 +23,8 @@ public class GamesMenu {
     titleLabel.getStyleClass().add("title-label");
 
     // Create game selection buttons
+    Button treasureButton = createGameButton("Treasure Hunt", "Find the treasure on the board",
+        primaryStage, "treasure");
     Button standardButton = createGameButton("Standard", "Classic Snakes and Ladders board",
         primaryStage, "standard");
     Button emptyButton = createGameButton("Empty", "Board with no snakes or ladders",
@@ -44,7 +46,7 @@ public class GamesMenu {
     // Create layout
     VBox buttonContainer = new VBox(20);
     buttonContainer.setAlignment(Pos.CENTER);
-    buttonContainer.getChildren().addAll(titleLabel, standardButton, emptyButton, customButton, wormholeButton,
+    buttonContainer.getChildren().addAll(treasureButton, standardButton, emptyButton, customButton, wormholeButton,
         backButton);
     buttonContainer.setPadding(new Insets(50));
 
