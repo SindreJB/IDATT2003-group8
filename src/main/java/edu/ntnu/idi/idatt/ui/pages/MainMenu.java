@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
+import edu.ntnu.idi.idatt.ui.components.CreatePlayer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -43,7 +44,7 @@ public class MainMenu extends Application {
     this.primaryStage = primaryStage;
 
     // Create background
-    VBox menuLayout = new VBox(20);
+    VBox menuLayout = new VBox(30);
 
     // Set up the scene
     Scene scene = new Scene(menuLayout, 600, 400);
@@ -78,13 +79,12 @@ public class MainMenu extends Application {
 
     loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
     createPlayersButton.setOnAction(e -> {
-      edu.ntnu.idi.idatt.ui.components.CreatePlayer.display();
+      CreatePlayer.display();
     });
     exitButton.setOnAction(e -> Platform.exit());
 
     // Create layout for menu
     menuLayout.setAlignment(Pos.CENTER);
-    menuLayout.setPadding(new Insets(40));
     menuLayout.getChildren().addAll(titleLabel, div);
     menuLayout.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -112,7 +112,6 @@ public class MainMenu extends Application {
         }
       } catch (IOException e) {
         showAlert("Error loading players: " + e.getMessage());
-        e.printStackTrace();
       }
     }
   }
