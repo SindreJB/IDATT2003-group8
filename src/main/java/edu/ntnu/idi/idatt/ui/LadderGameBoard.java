@@ -124,9 +124,6 @@ public class LadderGameBoard implements GameObserver {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
     root.setPadding(new Insets(30));
-    primaryStage.setMinWidth(1080);
-    primaryStage.setMinHeight(920);
-    primaryStage.setResizable(false);
 
     // Register this view as an observer before loading board and players
     gameController.registerObserver(this, "PLAYER_MOVED", "TURN_CHANGED", "GAME_WON", "DICE_ROLLED");

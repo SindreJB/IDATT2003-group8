@@ -6,21 +6,24 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class GamesMenu {
 
-  private BorderPane root;
+  private VBox root;
 
   public Scene createGamesMenuScene(Stage primaryStage) {
-    root = new BorderPane();
-    root.setStyle("-fx-background-color: #F0EFEB;");
+    root = new VBox(30);
+    root.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
     // Create header
     Label titleLabel = new Label("Select Game Type");
-    titleLabel.getStyleClass().add("title-label");
+    titleLabel.getStyleClass().addAll("text-2xl", "font-bold", "text-black", "p-2");
 
     // Create game selection buttons
     Button standardButton = createGameButton("Standard", "Classic Snakes and Ladders board",
@@ -29,12 +32,15 @@ public class GamesMenu {
         primaryStage, "empty");
     Button customButton = createGameButton("Custom", "Custom board configuration",
         primaryStage, "custom");
-    Button wormholeButton = createGameButton("Wormhole", "Board with wormholes, snakes, and ladders",
-        primaryStage, "wormhole");
+
+    // Set button styles
+    standardButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    emptyButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    customButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
 
     // Back button
     Button backButton = new Button("Back to Menu");
-    backButton.getStyleClass().add("menu-button");
+    backButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
     backButton.setOnAction(e -> {
       MainMenu mainMenu = new MainMenu();
       Scene mainMenuScene = mainMenu.createMainMenuScene(primaryStage);
@@ -44,13 +50,14 @@ public class GamesMenu {
     // Create layout
     VBox buttonContainer = new VBox(20);
     buttonContainer.setAlignment(Pos.CENTER);
-    buttonContainer.getChildren().addAll(titleLabel, standardButton, emptyButton, customButton, wormholeButton,
+    buttonContainer.getChildren().addAll(standardButton, emptyButton, customButton,
         backButton);
-    buttonContainer.setPadding(new Insets(50));
+    buttonContainer.getStyleClass().addAll(
+        "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
+    root.getChildren().addAll(titleLabel, buttonContainer);
+    root.setAlignment(Pos.CENTER);
 
-    root.setCenter(buttonContainer);
-
-    Scene scene = new Scene(root, 800, 600);
+    Scene scene = new Scene(root);
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     return scene;
@@ -58,9 +65,6 @@ public class GamesMenu {
 
   private Button createGameButton(String name, String description, Stage primaryStage, String boardType) {
     Button button = new Button(name);
-    button.getStyleClass().add("game-select-button");
-    button.setMaxWidth(300);
-    button.setMinHeight(60);
 
     // Set tooltip with description
     button.setTooltip(new javafx.scene.control.Tooltip(description));
