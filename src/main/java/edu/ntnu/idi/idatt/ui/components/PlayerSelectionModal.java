@@ -83,16 +83,12 @@ public class PlayerSelectionModal {
       if (availablePieces.isEmpty()) {
         // Fallback option if CSV is empty
 
-        availablePieces.add(new PlayerConfig("Sindre", "SindreImage.png"));
-        availablePieces.add(new PlayerConfig("Stian", "StianImage.png"));
+        availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
+        availablePieces.add(new PlayerConfig("Stian", "#000000"));
       }
     } catch (IOException e) {
-      System.err.println("Error loading player pieces: " + e.getMessage());
-      e.printStackTrace();
-
-      // Fallback option if CSV loading fails
-      availablePieces.add(new PlayerConfig("Sindre", "SindreImage.png"));
-      availablePieces.add(new PlayerConfig("Stian", "StianImage.png"));
+      availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
+      availablePieces.add(new PlayerConfig("Stian", "#000000"));
     }
   }
 
@@ -101,10 +97,9 @@ public class PlayerSelectionModal {
    */
   public void showModal() {
     Stage window = new Stage();
-    window.setMinWidth(300);
-    window.setMinHeight(400);
     window.setWidth(300);
     window.setHeight(400);
+    window.setResizable(false);
     window.initModality(Modality.APPLICATION_MODAL);
     window.setTitle("Player Selection");
 

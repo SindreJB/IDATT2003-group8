@@ -23,7 +23,9 @@ public class CreatePlayer {
     Stage window = new Stage();
     window.initModality(Modality.APPLICATION_MODAL);
     window.setTitle("Create New Player");
-    window.setMinWidth(300);
+    window.setWidth(300);
+    window.setHeight(400);
+    window.setResizable(false);
 
     GridPane grid = new GridPane();
     grid.setPadding(new Insets(10, 10, 10, 10));
@@ -98,14 +100,16 @@ public class CreatePlayer {
    */
   private static void savePlayersToCsv(List<Player> players) {
 
-    String savePath = "src/main/resources/data/players.csv";
+    String savePath = "data/players/players.csv";
     try {
       CsvHandler.savePlayersToCsv(players, savePath);
-      // showAlert("Successfully saved players to players.csv");
-      // return;
+
     } catch (IOException e) {
-      // showAlert("Error saving players: " + e.getMessage());
-      // return;
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("Save Failed");
+      alert.setContentText("Failed to save players: " + e.getMessage());
+      alert.showAndWait();
     }
   }
 }
