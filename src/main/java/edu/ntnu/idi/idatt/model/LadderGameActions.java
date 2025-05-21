@@ -1,7 +1,7 @@
 package edu.ntnu.idi.idatt.model;
 
 import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
-import edu.ntnu.idi.idatt.ui.LadderGameBoard;
+import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
 import edu.ntnu.idi.idatt.ui.pages.MainMenu;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -14,14 +14,14 @@ import javafx.stage.Stage;
  */
 public class LadderGameActions implements GameActions {
 
-  private final LadderGameBoard gameBoard;
+  private final LadderGameBoardUI gameBoard;
 
   /**
    * Constructs a new LadderGameActionsImpl with a reference to the game board.
    * 
    * @param gameBoard The ladder game board that will be controlled
    */
-  public LadderGameActions(LadderGameBoard gameBoard) {
+  public LadderGameActions(LadderGameBoardUI gameBoard) {
     this.gameBoard = gameBoard;
   }
 

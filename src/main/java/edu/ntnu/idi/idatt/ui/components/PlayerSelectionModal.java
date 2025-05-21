@@ -7,7 +7,7 @@ import java.util.List;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
-import edu.ntnu.idi.idatt.ui.LadderGameBoard;
+import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -334,7 +334,7 @@ public class PlayerSelectionModal {
    */
   private void startGame(List<Player> players) {
     try {
-      LadderGameBoard gameBoard = new LadderGameBoard();
+      LadderGameBoardUI gameBoard = new LadderGameBoardUI();
       Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
       primaryStage.setScene(gameScene);
       primaryStage.setTitle("Snakes and Ladders - " + boardType);
