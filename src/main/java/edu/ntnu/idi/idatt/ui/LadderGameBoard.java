@@ -42,7 +42,7 @@ import javafx.stage.Stage;
  */
 public class LadderGameBoard implements GameObserver {
 
-  private static final int TILE_SIZE = 100;
+  private static final int TILE_SIZE = 80;
 
   // UI components
   private final Map<Integer, StackPane> tilesMap = new HashMap<>();
