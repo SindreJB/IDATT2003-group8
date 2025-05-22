@@ -5,26 +5,21 @@ import java.util.List;
 import java.util.Map;
 
 import edu.ntnu.idi.idatt.controller.TreasureGameController;
-import edu.ntnu.idi.idatt.model.Die;
 import edu.ntnu.idi.idatt.model.GameActions;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.TreasureBoard;
 import edu.ntnu.idi.idatt.model.TreasureGameActions;
 import edu.ntnu.idi.idatt.model.TreasureGameTile;
 import edu.ntnu.idi.idatt.ui.components.AnimationManager;
-import edu.ntnu.idi.idatt.ui.components.GameAlert;
 import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -88,11 +83,9 @@ public class TreasureGameBoardUI {
         gamePiece.setupPlayerPieces(startTile);
 
 //        // Set up event handlers
-//        setupEventHandlers();
-
-        // Create scene
+//        setupEventHandlers();        // Create scene
         Scene scene = new Scene(root, 900, 700);
-        scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
+        // Remove stylesheet - using inline styles only
 
         return scene;
     }
