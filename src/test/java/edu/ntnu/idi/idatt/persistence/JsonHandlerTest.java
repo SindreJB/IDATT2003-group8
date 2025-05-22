@@ -24,16 +24,15 @@ class JsonHandlerTest {
   Path tempDir;
 
   private Path validJsonPath;
-  private Path nestedDirPath;
   private Path nonExistentPath;
   private Path invalidJsonPath;
   private Path readOnlyPath;
 
   // Test data classes
   static class TestPerson {
-    private String name;
-    private int age;
-    private List<String> hobbies;
+    private final String name;
+    private final int age;
+    private final List<String> hobbies;
 
     public TestPerson(String name, int age, List<String> hobbies) {
       this.name = name;
@@ -149,7 +148,7 @@ class JsonHandlerTest {
   }
 
   @Test
-  void readFromJson_IncompatibleTypes_ShouldThrowException() throws FileWriteException, IOException {
+  void readFromJson_IncompatibleTypes_ShouldThrowException() throws FileWriteException, FileReadException, IOException {
     // Arrange
     JsonHandler.writeToJson(testPerson, validJsonPath.toString());
 
