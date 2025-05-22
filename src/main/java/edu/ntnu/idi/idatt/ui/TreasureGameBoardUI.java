@@ -30,6 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class TreasureGameBoardUI implements GameObserver {
+    
     private BorderPane root;
     private TreasureGameController controller;
     private InfoTable infoTable;
@@ -137,7 +138,9 @@ private void setupPlayerPiecesOnBoard(List<Player> players) {
             }
         }
     }
-}    private TreasureBoard createCustomBoard() {
+}    
+
+private TreasureBoard createCustomBoard() {
         TreasureBoard board = new TreasureBoard(config.ROWS, config.COLUMNS);
 
         // Clear existing tiles
@@ -164,7 +167,9 @@ private void setupPlayerPiecesOnBoard(List<Player> players) {
         }
 
         return board;
-    }    private GridPane createBoardGrid() {
+    }    
+    
+    private GridPane createBoardGrid() {
         GridPane boardGrid = new GridPane();
         boardGrid.setAlignment(Pos.CENTER);
         boardGrid.setHgap(5);
@@ -221,7 +226,9 @@ private void setupPlayerPiecesOnBoard(List<Player> players) {
         tile.getChildren().addAll(background, tileLabel);
 
         return tile;
-    }    private StackPane findStartTile() {
+    }    
+    
+    private StackPane findStartTile() {
         // Use the config to find the start position
         int startTileId = config.findStartPosition();
         if (tilesMap.containsKey(startTileId)) {
