@@ -1,22 +1,27 @@
 package edu.ntnu.idi.idatt.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
 
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.TreasureBoard;
 import edu.ntnu.idi.idatt.model.TreasureGameTile;
 import edu.ntnu.idi.idatt.observer.GameEvent;
 
-public class TreasureGameController extends GameController {
-
-    // Track if treasure has been found
-    private boolean treasureFound = false;
+public class TreasureGameController extends GameController {    private boolean treasureFound = false;
+    private int moveCounter = 0;
+    private boolean isMoving = false;
+    private Runnable onStepComplete;
+    private int currentPlayerIndex = 0;
+    private Player currentPlayer;
+    private boolean manualMovementMode = true; // Enable manual movement by default
+    
+    // Movement animation delay in milliseconds
+    private static final int MOVE_DELAY_MS = 500;
 
     public TreasureGameController() {
-        super();
+        super(1); // Use only 1 die for treasure game
         loadBoard(new TreasureBoard(10, 10));
     }
 
@@ -28,76 +33,174 @@ public class TreasureGameController extends GameController {
     public TreasureBoard getGameBoard() {
         return (TreasureBoard) super.getGameBoard();
     }
-
+    
     /**
-     * Roll dice and move player
+     * Sets the callback to be called when a step movement is complete
+     * 
+     * @param onStepComplete The callback to call
+     */
+    public void setOnStepComplete(Runnable onStepComplete) {
+        this.onStepComplete = onStepComplete;
+    }
+    
+    /**
+     * Gets the current move counter value
+     * 
+     * @return The number of moves remaining
+     */
+    public int getMoveCounter() {
+        return moveCounter;
+    }
+    
+    /**
+     * Checks if player is currently in the middle of a move sequence
+     * 
+     * @return True if player is moving, false otherwise
+     */
+    public boolean isMoving() {
+        return isMoving;
+    }    /**
+     * Roll dice and start step-by-step movement
      * @return The dice roll value
      */
     public int rollDiceAndMove() {
+        // Prevent multiple rolls while moving
+        if (isMoving) {
+            return 0;
+        }
+        
         // Roll the dice
         int diceValue = rollDice();
-
-        // Get player's current position
-        Player currentPlayer = getCurrentPlayer();
-        int oldPosition = currentPlayer.getTileId();
-
-        // Calculate new position
-        int newPosition = findNextPosition(oldPosition, diceValue);
-
-        // Move player to new position
-        movePlayer(currentPlayer, oldPosition, newPosition);
-
-        // Process tile actions
-        processTileActions(currentPlayer, newPosition);
-
-        // Check for victory
-        boolean hasWon = checkVictory(currentPlayer);
-
-        if (!hasWon) {
-            // Switch to next player
-            switchToNextPlayer();
+        moveCounter = diceValue;
+        isMoving = true;
+        
+        // Notify observers about move counter
+        notifyObservers(new GameEvent("MOVE_COUNTER_UPDATED", moveCounter));
+        
+        // If in manual mode, don't start automatic movement
+        if (!manualMovementMode) {
+            // Start step-by-step movement
+            executeNextStep();
         }
-
+        
         return diceValue;
     }
-
-    /**
-     * Find the next valid position based on the board layout
+      /**
+     * Execute the next step in the movement sequence
      */
-    private int findNextPosition(int currentPosition, int moves) {
+    public void executeNextStep() {
+        // Check if we have moves remaining
+        if (moveCounter <= 0) {
+            finishMovement();
+            return;
+        }
+          // Get player's current position
+        Player currentPlayer = getCurrentPlayer();
+        if (currentPlayer == null) {
+            // Safety check - if currentPlayer is null, initialize it
+            if (!players.isEmpty()) {
+                currentPlayer = players.get(0);
+                this.currentPlayer = currentPlayer;
+                this.currentPlayerIndex = 0;
+            } else {
+                // No players available
+                finishMovement();
+                return;
+            }
+        }
+          int oldPosition = currentPlayer.getTileId();
+        
+        // Find next valid position (one step)
+        int newPosition = findNextPosition(oldPosition);
+        
+        // If no valid move is found, end movement
+        if (newPosition == oldPosition) {
+            finishMovement();
+            return;
+        }
+        
+        // Move player to new position
+        movePlayer(currentPlayer, oldPosition, newPosition);
+        
+        // Process any special tile actions
+        processTileActions(currentPlayer, newPosition);
+        
+        // Decrement move counter
+        moveCounter--;
+        notifyObservers(new GameEvent("MOVE_COUNTER_UPDATED", moveCounter));
+        
+        // Check for victory after each step
+        boolean hasWon = checkVictory(currentPlayer);
+        if (hasWon) {
+            notifyObservers(new GameEvent("GAME_WON", currentPlayer));
+            isMoving = false;
+            return;
+        }
+        
+        // Call step complete callback if set
+        if (onStepComplete != null) {
+            onStepComplete.run();
+        }
+    }
+      /**
+     * Finish the movement sequence and pass to next player
+     */    private void finishMovement() {
+        isMoving = false;
+        moveCounter = 0;
+        notifyObservers(new GameEvent("MOVE_COUNTER_UPDATED", moveCounter));
+        
+        // If player hasn't won, switch to next player
+        if (!treasureFound) {
+            Player current = getCurrentPlayer();
+            // Check if player found a treasure on their last move
+            if (current != null) {
+                TreasureBoard board = getGameBoard();
+                TreasureGameTile tile = board.getTile(current.getTileId());
+                if (tile != null && tile.getTileType() == 2) {
+                    treasureFound = true;
+                    notifyObservers(new GameEvent("TREASURE_FOUND", 
+                        Map.of("player", current, "position", current.getTileId())));
+                    return;
+                }
+            }
+            switchToNextPlayer();
+        }
+    }/**
+     * Find the next valid position based on the board layout
+     * For step-by-step movement, only adjacent tiles are considered
+     * 
+     * @param currentPosition The current position
+     * @return The next valid position
+     */
+    private int findNextPosition(int currentPosition) {
         TreasureBoard board = getGameBoard();
 
         // Calculate row and column of current position
         int row = (currentPosition - 1) / 10;
         int col = (currentPosition - 1) % 10;
 
-        // Simple movement implementation
-        // In a more complete implementation, this would search for valid paths
-        int maxMoves = Math.min(moves, 3); // Limit moves to 3 for simplicity
-
-        // Find a walkable tile in the vicinity
-        for (int i = 1; i <= maxMoves; i++) {
-            // Try to move in different directions
-            int[][] directions = {{0,1}, {1,0}, {0,-1}, {-1,0}}; // right, down, left, up
-
-            for (int[] dir : directions) {
-                int newRow = row + dir[0];
-                int newCol = col + dir[1];
-
-                // Check if in bounds
-                if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10) {
-                    // Calculate new tile id
-                    int newTileId = newRow * 10 + newCol + 1;
-
-                    // Get tile type
-                    TreasureGameTile tile = board.getTile(newTileId);
-                    if (tile != null && tile.getTileType() > 0) { // Type > 0 means walkable
-                        return newTileId;
-                    }
+        // For step movement, we only want to move to adjacent tiles
+        // Define possible directions (right, down, left, up)
+        int[][] directions = {{0,1}, {1,0}, {0,-1}, {-1,0}};
+        
+        // Try each direction
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            
+            // Check if in bounds
+            if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10) {
+                // Calculate new tile id
+                int newTileId = newRow * 10 + newCol + 1;
+                
+                // Get tile type
+                TreasureGameTile tile = board.getTile(newTileId);
+                if (tile != null && tile.getTileType() > 0) { // Type > 0 means walkable
+                    return newTileId;
                 }
             }
         }
-
+        
         // If no valid move is found, stay in place
         return currentPosition;
     }
@@ -120,21 +223,169 @@ public class TreasureGameController extends GameController {
     @Override
     public boolean checkVictory(Player player) {
         return treasureFound;
-    }
-
-    public boolean isTileWalkable(int tileId) {
+    }    public boolean isTileWalkable(int tileId) {
         TreasureBoard board = getGameBoard();
         TreasureGameTile tile = board.getTile(tileId);
         return tile != null && tile.getTileType() > 0;
     }
-
-    public boolean isTreasureLocation(int tileId) {
-        TreasureBoard board = getGameBoard();
-        TreasureGameTile tile = board.getTile(tileId);
-        return tile != null && tile.getTileType() == 2;
+    
+    /**
+     * Checks if a move to the specified position is valid for the current player
+     * 
+     * @param direction Direction string: "UP", "DOWN", "LEFT", "RIGHT"
+     * @return The new position if valid, -1 if invalid
+     */    public int getValidPositionInDirection(String direction) {
+        if (moveCounter <= 0) {
+            return -1; // No moves left
+        }
+          Player player = getCurrentPlayer();
+        int currentPosition = player.getTileId();
+        
+        // Debug current position
+        System.out.println("Getting valid position from " + currentPosition + " in direction " + direction);
+        
+        // Calculate row and column of current position
+        int row = (currentPosition - 1) / 10;
+        int col = (currentPosition - 1) % 10;
+        
+        System.out.println("Calculated row=" + row + ", col=" + col);
+        
+        // Determine new position based on direction
+        int newRow = row;
+        int newCol = col;
+        
+        switch (direction) {
+            case "UP":
+                newRow = row - 1;
+                break;
+            case "DOWN":
+                newRow = row + 1;
+                break;
+            case "LEFT":
+                newCol = col - 1;
+                break;
+            case "RIGHT":
+                newCol = col + 1;
+                break;
+        }
+        
+        // Check if new position is in bounds
+        if (newRow < 0 || newRow >= 10 || newCol < 0 || newCol >= 10) {
+            System.out.println("Out of bounds: row=" + newRow + ", col=" + newCol);
+            return -1;
+        }
+        
+        // Calculate new tile ID
+        int newTileId = newRow * 10 + newCol + 1;
+        
+        System.out.println("New tile ID: " + newTileId + ", walkable: " + isTileWalkable(newTileId));
+        
+        // Check if the tile is walkable
+        if (isTileWalkable(newTileId)) {
+            return newTileId;
+        }
+        
+        return -1; // Invalid move
     }
+    
+    /**
+     * Manually move the current player in the specified direction
+     * 
+     * @param direction Direction string: "UP", "DOWN", "LEFT", "RIGHT"
+     * @return true if the move was successful, false otherwise
+     */    public boolean movePlayerInDirection(String direction) {
+        if (!isMoving || moveCounter <= 0) {
+            System.out.println("Can't move: isMoving=" + isMoving + ", moveCounter=" + moveCounter);
+            return false;
+        }
+        
+        System.out.println("Current player: " + getCurrentPlayer().getName() + " at position " + getCurrentPlayer().getTileId());
+        
+        int newPosition = getValidPositionInDirection(direction);
+        if (newPosition == -1) {
+            System.out.println("Invalid move in direction: " + direction);
+            return false; // Invalid move
+        }
+        
+        Player currentPlayer = getCurrentPlayer();
+        int oldPosition = currentPlayer.getTileId();
+        
+        // Move player to new position
+        movePlayer(currentPlayer, oldPosition, newPosition);
+        
+        // Process any special tile actions
+        processTileActions(currentPlayer, newPosition);
+        
+        // Decrement move counter
+        moveCounter--;
+        notifyObservers(new GameEvent("MOVE_COUNTER_UPDATED", moveCounter));
+        
+        // Check for victory
+        boolean hasWon = checkVictory(currentPlayer);
+        if (hasWon) {
+            notifyObservers(new GameEvent("GAME_WON", currentPlayer));
+            isMoving = false;
+            return true;
+        }
+        
+        // If no more moves left, finish movement
+        if (moveCounter <= 0) {
+            finishMovement();
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Sets whether the game is in manual movement mode
+     * 
+     * @param manualMode true for manual movement, false for automatic
+     */
+    public void setManualMovementMode(boolean manualMode) {
+        this.manualMovementMode = manualMode;
+    }
+    
+    /**
+     * Checks if the game is in manual movement mode
+     * 
+     * @return true if in manual mode, false if in automatic mode
+     */
+    public boolean isManualMovementMode() {
+        return manualMovementMode;
+    }@Override
+    public Player getCurrentPlayer() {
+        if (this.currentPlayer == null && !players.isEmpty()) {
+            this.currentPlayer = players.get(0);
+            this.currentPlayerIndex = 0;
+        }
+        return this.currentPlayer;
+    }
+    
+    @Override
+    public void switchToNextPlayer() {
+        if (players.isEmpty()) return;
+        
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        currentPlayer = players.get(currentPlayerIndex);
+        
+        notifyObservers(new GameEvent("TURN_CHANGED", currentPlayer));
+    }
+      @Override
+    public void setupGame(List<Player> players) {
+        if (players != null && !players.isEmpty()) {
+            this.players = new ArrayList<>(players);
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
+            // Ensure all players start at position 95 (the start tile)
+            for (Player player : this.players) {
+                player.setTileId(95);
+            }
+
+            // Set first player as current
+            this.currentPlayerIndex = 0;
+            this.currentPlayer = this.players.get(0);
+
+            // Notify observers about game setup
+            notifyObservers(new GameEvent("GAME_SETUP", this.players));
+        }
     }
 }
