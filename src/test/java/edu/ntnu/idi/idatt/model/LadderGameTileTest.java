@@ -69,7 +69,6 @@ public class LadderGameTileTest {
   @Test
   public void tileShouldSupportMultipleActions() {
     LadderGameTile snakeTile = new LadderGameTile(5);
-    LadderGameTile ladderTile = new LadderGameTile(25);
 
     tile.setSnake(snakeTile);
     tile.setWormhole(destinationTile);
