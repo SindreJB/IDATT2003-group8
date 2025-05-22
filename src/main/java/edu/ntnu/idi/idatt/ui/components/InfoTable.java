@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 public class InfoTable {
   private Label statusLabel;
   private Label gameInfoLabel;
+  private Label moveCounterLabel; 
   private DiceUI diceView;
 
   /**
@@ -18,6 +19,8 @@ public class InfoTable {
   public InfoTable() {
     statusLabel = new Label();
     gameInfoLabel = new Label();
+    moveCounterLabel = new Label();
+    moveCounterLabel.setVisible(false);
     diceView = new DiceUI();
   }
 
@@ -31,8 +34,12 @@ public class InfoTable {
     VBox panel = new VBox(15);
     panel.setStyle("-fx-padding: 20; -fx-alignment: top-center; -fx-spacing: 15;");
 
+    // Style the move counter label
+    moveCounterLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1976d2;");
+
     panel.getChildren().addAll(
         createStatusDisplay(),
+        moveCounterLabel,
         diceView.createDicePanel(rollAction),
         createGameInfoArea());
 
@@ -99,7 +106,6 @@ public class InfoTable {
   public void updateDiceDisplay(int value) {
     diceView.displayDiceValue(value);
   }
-
   /**
    * Enables or disables the roll button
    * 
@@ -107,5 +113,35 @@ public class InfoTable {
    */
   public void setRollEnabled(boolean enabled) {
     diceView.setRollEnabled(enabled);
+  }
+  
+  /**
+   * Updates the move counter display
+   * 
+   * @param remaining Number of moves remaining
+   */
+  public void updateMoveCounter(int remaining) {
+    if (remaining > 0) {
+      moveCounterLabel.setText("Moves remaining: " + remaining);
+      moveCounterLabel.setVisible(true);
+    } else {
+      moveCounterLabel.setVisible(false);
+    }
+  }
+
+  public void updateCurrentPlayer(int playerIndex) {
+    statusLabel.setText("Current Player: " + (playerIndex + 1));
+  }
+  public void updateDiceResult(int result) {
+    diceView.displayDiceValue(result);
+  }
+  
+  /**
+   * Sets the action to be executed when the roll button is clicked
+   * 
+   * @param action The event handler for the roll button
+   */
+  public void setRollButtonAction(javafx.event.EventHandler<javafx.event.ActionEvent> action) {
+    diceView.getRollButton().setOnAction(action);
   }
 }

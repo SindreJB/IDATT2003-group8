@@ -55,8 +55,8 @@ public class LadderGameActions implements GameActions {
       stage.setTitle("Boardgame Menu");
 
       // Adjust stage size to match main menu
-      stage.setWidth(600);
-      stage.setHeight(400);
+      stage.setWidth(1200);
+      stage.setHeight(920);
       stage.centerOnScreen();
     } catch (Exception e) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
