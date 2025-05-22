@@ -41,7 +41,7 @@ import javafx.stage.Stage;
  * Ladders game. It supports 1-5 players with customizable game pieces.
  * Implements GameObserver to receive updates from the game model.
  */
-public class LadderGameBoard implements GameObserver {
+public class LadderGameBoardUI implements GameObserver {
 
   private static final int TILE_SIZE = 80;
 
@@ -60,7 +60,7 @@ public class LadderGameBoard implements GameObserver {
   /**
    * Creates a new LadderGameBoard instance
    */
-  public LadderGameBoard() {
+  public LadderGameBoardUI() {
     // Initialize the game controller
     this.gameController = new LadderGameController();
 

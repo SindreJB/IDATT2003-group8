@@ -19,28 +19,57 @@ public class GamesMenu {
 
   public Scene createGamesMenuScene(Stage primaryStage) {
     root = new VBox(30);
-    root.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+    root.setStyle("-fx-alignment: center; -fx-background-color: lightblue;");
 
     // Create header
     Label titleLabel = new Label("Select Game Type");
-    titleLabel.getStyleClass().addAll("text-2xl", "font-bold", "text-black", "p-2");
+    titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #000000; -fx-padding: 8;");
 
     // Create game selection buttons
+    Button treasureButton = createGameButton("Treasure Hunt", "Find the treasure on the board",
+        primaryStage, "treasure");
     Button standardButton = createGameButton("Standard", "Classic Snakes and Ladders board",
         primaryStage, "standard");
-    Button emptyButton = createGameButton("Empty", "Board with no snakes or ladders",
-        primaryStage, "empty");
-    Button customButton = createGameButton("Custom", "Custom board configuration",
-        primaryStage, "custom");
+    Button wormholeButton = createGameButton("Wormhole", "Board with wormholes",
+        primaryStage, "wormhole");
 
     // Set button styles
-    standardButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    emptyButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    customButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
+    String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                               "-fx-background-color: #1976d2; -fx-text-fill: white; -fx-pref-width: Infinity;";
+    
+    standardButton.setStyle(primaryButtonStyle);
+    treasureButton.setStyle(primaryButtonStyle);
+    wormholeButton.setStyle(primaryButtonStyle);
+    
+    // Add hover effects to primary buttons
+    treasureButton.setOnMouseEntered(e -> treasureButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    treasureButton.setOnMouseExited(e -> treasureButton.setStyle(primaryButtonStyle));
+    
+    standardButton.setOnMouseEntered(e -> standardButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    standardButton.setOnMouseExited(e -> standardButton.setStyle(primaryButtonStyle));
+    
+    wormholeButton.setOnMouseEntered(e -> wormholeButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    wormholeButton.setOnMouseExited(e -> wormholeButton.setStyle(primaryButtonStyle));
 
     // Back button
     Button backButton = new Button("Back to Menu");
-    backButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
+    String destructiveButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                                   "-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: Infinity;";
+    
+    backButton.setStyle(destructiveButtonStyle);
+    
+    // Add hover and pressed effects to destructive button
+    backButton.setOnMouseEntered(e -> backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#d32f2f")));
+    backButton.setOnMouseExited(e -> backButton.setStyle(destructiveButtonStyle));
+    backButton.setOnMousePressed(e -> backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#c62828")));
+    backButton.setOnMouseReleased(e -> {
+        if (backButton.isHover()) {
+            backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#d32f2f"));
+        } else {
+            backButton.setStyle(destructiveButtonStyle);
+        }
+    });
+    
     backButton.setOnAction(e -> {
       MainMenu mainMenu = new MainMenu();
       Scene mainMenuScene = mainMenu.createMainMenuScene(primaryStage);
@@ -49,17 +78,15 @@ public class GamesMenu {
 
     // Create layout
     VBox buttonContainer = new VBox(20);
-    buttonContainer.setAlignment(Pos.CENTER);
-    buttonContainer.getChildren().addAll(standardButton, emptyButton, customButton,
-        backButton);
-    buttonContainer.getStyleClass().addAll(
-        "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
+    buttonContainer.setStyle("-fx-alignment: center; -fx-max-width: 200px; -fx-pref-height: 100%; " + 
+                            "-fx-padding: 16; -fx-spacing: 8;");
+    VBox.setMargin(buttonContainer, new Insets(16, 0, 0, 0)); // For margin-top
+    
+    buttonContainer.getChildren().addAll(treasureButton, standardButton, wormholeButton, backButton);
     root.getChildren().addAll(titleLabel, buttonContainer);
-    root.setAlignment(Pos.CENTER);
 
+    // Create scene without stylesheet
     Scene scene = new Scene(root);
-    scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
-
     return scene;
   }
 

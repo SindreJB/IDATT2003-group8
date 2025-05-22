@@ -125,20 +125,29 @@ public class BoardManager {
         "A 10x10 board with wormholes, snakes, and ladders",
         10, 10);
 
-    // Add ladders (start -> end)
-    wormholeBoard.addLadder(4, 25);
-    wormholeBoard.addLadder(13, 46);
-    wormholeBoard.addLadder(50, 69);
+    // Add custom ladders (start -> end)
+    wormholeBoard.addLadder(4, 23);
+    wormholeBoard.addLadder(14, 35);
+    wormholeBoard.addLadder(28, 49);
+    wormholeBoard.addLadder(37, 65);
+    wormholeBoard.addLadder(48, 68);
+    wormholeBoard.addLadder(57, 82);
+    wormholeBoard.addLadder(79, 96);
 
-    // Add snakes (head -> tail)
-    wormholeBoard.addSnake(54, 31);
-    wormholeBoard.addSnake(89, 53);
-    wormholeBoard.addSnake(99, 41);
+    // Add custom snakes (head -> tail)
+    wormholeBoard.addSnake(24, 6);
+    wormholeBoard.addSnake(39, 18);
+    wormholeBoard.addSnake(52, 31);
+    wormholeBoard.addSnake(63, 42);
+    wormholeBoard.addSnake(75, 54);
+    wormholeBoard.addSnake(88, 67);
+    wormholeBoard.addSnake(97, 78);
 
-    // Add wormholes (entrance -> exit)
-    wormholeBoard.addWormhole(22);
-    wormholeBoard.addWormhole(77);
-    wormholeBoard.addWormhole(63);
+    // add wormholes (entrance)
+    wormholeBoard.addWormhole(10);
+    wormholeBoard.addWormhole(20);
+    wormholeBoard.addWormhole(30);
+    wormholeBoard.addWormhole(40);
 
     Path boardPath = getBoardsDirectory().resolve("wormhole.json");
     JsonHandler.writeToJson(wormholeBoard, boardPath.toString());

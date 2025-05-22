@@ -12,6 +12,8 @@ import javafx.scene.layout.VBox;
 public class DiceUI {
   private HBox diceContainer;
   private Button rollButton;
+  private final String rollButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                                        "-fx-background-color: #1976d2; -fx-text-fill: white;";
 
   /**
    * Creates a new DiceView
@@ -25,6 +27,13 @@ public class DiceUI {
     diceContainer.setPrefHeight(60);
     diceContainer.setPrefWidth(100);
     diceContainer.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f8f8f8;");
+    
+    // Style the roll button
+    rollButton.setStyle(rollButtonStyle);
+    
+    // Add hover effect to roll button
+    rollButton.setOnMouseEntered(e -> rollButton.setStyle(rollButtonStyle.replace("#1976d2", "#1565c0")));
+    rollButton.setOnMouseExited(e -> rollButton.setStyle(rollButtonStyle));
   }
 
   /**
@@ -35,7 +44,7 @@ public class DiceUI {
    */
   public VBox createDicePanel(Runnable rollAction) {
     VBox dicePanel = new VBox(10);
-    dicePanel.setAlignment(Pos.CENTER);
+    dicePanel.setStyle("-fx-alignment: center; -fx-spacing: 10;");
 
     // Set up roll button action
     rollButton.setOnAction(e -> {
@@ -56,10 +65,9 @@ public class DiceUI {
   public void displayDiceValue(int value) {
     diceContainer.getChildren().clear();
     Label diceLabel = new Label(Integer.toString(value));
-    diceLabel.setStyle("-fx-font-size: 24px;");
+    diceLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
     diceContainer.getChildren().add(diceLabel);
   }
-
   /**
    * Gets the dice container
    * 
@@ -68,6 +76,15 @@ public class DiceUI {
   public HBox getDiceContainer() {
     return diceContainer;
   }
+  
+  /**
+   * Gets the roll button
+   * 
+   * @return The roll button
+   */
+  public Button getRollButton() {
+    return rollButton;
+  }
 
   /**
    * Enables or disables the roll button
@@ -75,6 +92,11 @@ public class DiceUI {
    * @param enabled True to enable, false to disable
    */
   public void setRollEnabled(boolean enabled) {
+    if (!enabled) {
+      rollButton.setStyle(rollButtonStyle + "-fx-opacity: 0.7;");
+    } else {
+      rollButton.setStyle(rollButtonStyle);
+    }
     rollButton.setDisable(!enabled);
   }
 }

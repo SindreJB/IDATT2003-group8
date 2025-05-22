@@ -4,7 +4,7 @@ public class InitializeLadderGameException extends GameInitializationException {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Constructs a new InitialIzeLadderGameException with the specified detail
+   * Constructs a new InitializeLadderGameException with the specified detail
    * message.
    *
    * @param message The detail message

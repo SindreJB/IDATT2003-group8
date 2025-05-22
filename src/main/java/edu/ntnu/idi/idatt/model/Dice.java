@@ -51,7 +51,6 @@ public class Dice {
   public int rollDice() {
     return dice.stream().mapToInt(Die::roll).sum();
   }
-
   /**
    * Returns the list of dice.
    *
@@ -59,5 +58,14 @@ public class Dice {
    */
   public List<Die> getDice() {
     return dice;
+  }
+  
+  /**
+   * Returns the number of dice in this collection.
+   *
+   * @return the number of dice
+   */
+  public int getDiceCount() {
+    return dice.size();
   }
 }
