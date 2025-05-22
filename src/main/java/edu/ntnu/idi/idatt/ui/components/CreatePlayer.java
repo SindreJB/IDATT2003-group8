@@ -45,11 +45,25 @@ public class CreatePlayer {
     GridPane.setConstraints(colorLabel, 0, 1);
 
     ColorPicker colorPicker = new ColorPicker(Color.RED);
-    GridPane.setConstraints(colorPicker, 1, 1);
-
-    // Buttons
+    GridPane.setConstraints(colorPicker, 1, 1);    // Buttons
     Button saveButton = new Button("Save");
     Button cancelButton = new Button("Cancel");
+    
+    // Style buttons
+    String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                               "-fx-background-color: #1976d2; -fx-text-fill: white;";
+    String secondaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                                 "-fx-background-color: #424242; -fx-text-fill: white;";
+    
+    saveButton.setStyle(primaryButtonStyle);
+    cancelButton.setStyle(secondaryButtonStyle);
+    
+    // Add hover effects
+    saveButton.setOnMouseEntered(e -> saveButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    saveButton.setOnMouseExited(e -> saveButton.setStyle(primaryButtonStyle));
+    
+    cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(secondaryButtonStyle.replace("#424242", "#323232")));
+    cancelButton.setOnMouseExited(e -> cancelButton.setStyle(secondaryButtonStyle));
 
     saveButton.setOnAction(e -> {
       if (nameInput.getText().trim().isEmpty()) {
