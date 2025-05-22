@@ -15,5 +15,4 @@ public class TreasureGameTile extends Tile {
   public int getTileType() {
     return tileType;
   }
-
 }
