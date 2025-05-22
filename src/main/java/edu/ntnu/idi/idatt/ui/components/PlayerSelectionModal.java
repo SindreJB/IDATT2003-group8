@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
+import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
@@ -357,9 +359,8 @@ public class PlayerSelectionModal {
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("Snakes and Ladders - " + boardType);
       }
-    } catch (Exception e) {
+    } catch (FileWriteException | LadderGameException e) {
       showAlert("Error starting game: " + e.getMessage());
-
     }
   }
 }
