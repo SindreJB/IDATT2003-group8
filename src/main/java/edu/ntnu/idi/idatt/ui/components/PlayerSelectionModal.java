@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
-import edu.ntnu.idi.idatt.ui.LadderGameBoard;
+import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
+import edu.ntnu.idi.idatt.ui.TreasureGameBoardUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -109,12 +109,12 @@ public class PlayerSelectionModal {
 
     // Show the player count panel
     VBox mainLayout = new VBox(20);
-    mainLayout.setPadding(new Insets(20));
-    mainLayout.setAlignment(Pos.CENTER);
+    mainLayout.setStyle("-fx-padding: 20; -fx-alignment: center;");
     mainLayout.getChildren().add(playerCountPanel);
 
     Scene scene = new Scene(mainLayout);
-    scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
+    // Remove stylesheet
+    // scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     window.setScene(scene);
     window.showAndWait();
@@ -127,10 +127,10 @@ public class PlayerSelectionModal {
    */
   private void createPlayerCountPanel(Stage window) {
     playerCountPanel = new VBox(20);
-    playerCountPanel.setAlignment(Pos.CENTER);
+    playerCountPanel.setStyle("-fx-alignment: center;");
 
     Label titleLabel = new Label("How many players?");
-    titleLabel.getStyleClass().addAll("text-xl", "font-bold");
+    titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
     // Player count spinner (1-5 players)
     playerCountSpinner = new Spinner<>();
@@ -140,7 +140,15 @@ public class PlayerSelectionModal {
 
     // Continue button
     Button continueButton = new Button("Continue");
-    continueButton.getStyleClass().addAll("btn", "btn-primary");
+    String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                               "-fx-background-color: #1976d2; -fx-text-fill: white;";
+    continueButton.setStyle(primaryButtonStyle);
+    
+    // Add hover effect
+    continueButton.setOnMouseEntered(e -> 
+        continueButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    continueButton.setOnMouseExited(e -> 
+        continueButton.setStyle(primaryButtonStyle));
 
     continueButton.setOnAction(e -> {
       // Switch to player selection panel
@@ -163,10 +171,10 @@ public class PlayerSelectionModal {
    */
   private void createPlayerSelectionPanel(Stage window) {
     playerSelectionPanel = new VBox(20);
-    playerSelectionPanel.setAlignment(Pos.CENTER);
+    playerSelectionPanel.setStyle("-fx-alignment: center;");
 
     Label titleLabel = new Label("Select Player Pieces");
-    titleLabel.getStyleClass().addAll("text-xl", "font-bold");
+    titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
     GridPane playerGrid = new GridPane();
     playerGrid.setHgap(15);
@@ -195,11 +203,27 @@ public class PlayerSelectionModal {
     }
 
     // Buttons
+    String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                               "-fx-background-color: #1976d2; -fx-text-fill: white;";
     Button startButton = new Button("Start Game");
-    startButton.getStyleClass().addAll("btn", "btn-primary");
+    startButton.setStyle(primaryButtonStyle);
+    
+    // Add hover effect
+    startButton.setOnMouseEntered(e -> 
+        startButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    startButton.setOnMouseExited(e -> 
+        startButton.setStyle(primaryButtonStyle));
 
+    String secondaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
+                                 "-fx-background-color: #424242; -fx-text-fill: white;";
     Button backButton = new Button("Back");
-    backButton.getStyleClass().addAll("btn", "btn-secondary");
+    backButton.setStyle(secondaryButtonStyle);
+    
+    // Add hover effect
+    backButton.setOnMouseEntered(e -> 
+        backButton.setStyle(secondaryButtonStyle.replace("#424242", "#323232")));
+    backButton.setOnMouseExited(e -> 
+        backButton.setStyle(secondaryButtonStyle));
 
     HBox buttonBox = new HBox(10);
     buttonBox.setAlignment(Pos.CENTER);
@@ -327,18 +351,20 @@ public class PlayerSelectionModal {
     alert.showAndWait();
   }
 
-  /**
-   * Starts the game with the selected players
-   * 
-   * @param players The selected players
-   */
   private void startGame(List<Player> players) {
     try {
-      LadderGameBoard gameBoard = new LadderGameBoard();
-      Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
-      primaryStage.setScene(gameScene);
-      primaryStage.setTitle("Snakes and Ladders - " + boardType);
-    } catch (LadderGameException e) {
+      if (boardType.equals("treasure")) {
+        TreasureGameBoardUI gameBoard = new TreasureGameBoardUI();
+        Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
+        primaryStage.setScene(gameScene);
+        primaryStage.setTitle("Star of Africa - " + boardType);
+      } else {
+        LadderGameBoardUI gameBoard = new LadderGameBoardUI();
+        Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
+        primaryStage.setScene(gameScene);
+        primaryStage.setTitle("Snakes and Ladders - " + boardType);
+      }
+    } catch (Exception e) {
       showAlert("Error starting game: " + e.getMessage());
       System.err.println("Error starting game: " + e.getMessage());
       e.printStackTrace();

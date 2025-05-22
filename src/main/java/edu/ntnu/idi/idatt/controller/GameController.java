@@ -20,21 +20,38 @@ import edu.ntnu.idi.idatt.persistence.CsvHandler;
  * dice rolling, and observer pattern implementation.
  */
 public abstract class GameController {
-  private AbstractBoard<? extends Tile> gameBoard;
-  private List<Player> players;
-  private Player currentPlayer;
+  public AbstractBoard<? extends Tile> gameBoard;
+  public List<Player> players;  private Player currentPlayer;
   private int currentPlayerIndex;
   private final Dice dice;
   private final Map<GameObserver, List<String>> observerEventTypes;
 
   /**
-   * Creates a new game controller
+   * Creates a new game controller with default configuration
    */
   public GameController() {
+    this(2); // Default to 2 dice for backward compatibility
+  }
+  
+  /**
+   * Creates a new game controller with specified number of dice
+   * 
+   * @param diceCount The number of dice to use in the game
+   */
+  public GameController(int diceCount) {
     this.players = new ArrayList<>();
-    this.dice = new Dice(2);
+    this.dice = new Dice(diceCount);
     this.currentPlayerIndex = 0;
     this.observerEventTypes = new HashMap<>();
+  }
+
+  /**
+   * Gets the number of dice used in this game
+   * 
+   * @return The number of dice
+   */
+  public int getDiceCount() {
+    return dice.getDiceCount();
   }
 
   /**
