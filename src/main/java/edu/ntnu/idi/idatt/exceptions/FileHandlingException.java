@@ -2,14 +2,15 @@ package edu.ntnu.idi.idatt.exceptions;
 
 public class FileHandlingException extends Exception {
   /**
-   * This class represents an exception that occurs during the execution of an
-   * action in the game.
-   * It extends the LadderGameException class.
+   * This class represents an exception that occurs during file handling
+   * operations,
+   * such as reading or writing files.
+   * It extends the Exception class.
    */
   private static final long serialVersionUID = 1L;
 
   /**
-   * Constructs a new ActionException with the specified detail message.
+   * Constructs a new FileHandlingException with the specified detail message.
    *
    * @param message The detail message
    */
@@ -18,7 +19,8 @@ public class FileHandlingException extends Exception {
   }
 
   /**
-   * Constructs a new ActionException with the specified detail message and cause.
+   * Constructs a new FileHandlingException with the specified detail message and
+   * cause.
    *
    * @param message The detail message
    * @param cause   The cause of the exception
