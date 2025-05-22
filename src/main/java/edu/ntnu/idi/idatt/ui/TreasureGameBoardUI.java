@@ -20,6 +20,7 @@ import edu.ntnu.idi.idatt.ui.components.GamePiece;
 import edu.ntnu.idi.idatt.ui.components.InfoTable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -265,13 +266,20 @@ private TreasureBoard createCustomBoard() {
         infoTable.updateMoveCounter(0);
         infoTable.setRollEnabled(true);
         }
-    }
-
-    private void clearTile(StackPane tile) {
-        // Keep only the first two children (background and label)
-        if (tile.getChildren().size() > 2) {
-            tile.getChildren().remove(2, tile.getChildren().size());
+    }    private void clearTile(StackPane tile) {
+        // We need to keep the background rectangle and the label
+        // and only remove player pieces (contained in StackPanes)
+        List<Node> nodesToRemove = new ArrayList<>();
+        
+        for (Node node : tile.getChildren()) {
+            // Remove only StackPane containers that contain player pieces
+            if (node instanceof StackPane && node != tile) {
+                nodesToRemove.add(node);
+            }
         }
+        
+        // Remove just the player containers
+        tile.getChildren().removeAll(nodesToRemove);
     }
 
     public TreasureGameController getController() {
