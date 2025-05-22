@@ -1,7 +1,6 @@
 package edu.ntnu.idi.idatt.persistence;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.Player;
 
 public class CsvHandlerTest {
@@ -77,7 +78,7 @@ public class CsvHandlerTest {
   // POSITIVE TESTS
 
   @Test
-  void loadPlayersFromCsv_ValidFile_ShouldLoadAllPlayers() throws IOException {
+  void loadPlayersFromCsv_ValidFile_ShouldLoadAllPlayers() throws FileReadException {
     // Act
     List<Player> players = CsvHandler.loadPlayersFromCsv(validCsvPath.toString());
 
@@ -89,7 +90,7 @@ public class CsvHandlerTest {
   }
 
   @Test
-  void loadPlayersFromCsv_EmptyFile_ShouldReturnEmptyList() throws IOException {
+  void loadPlayersFromCsv_EmptyFile_ShouldReturnEmptyList() throws FileReadException {
     // Act
     List<Player> players = CsvHandler.loadPlayersFromCsv(emptyFilePath.toString());
 
@@ -98,7 +99,7 @@ public class CsvHandlerTest {
   }
 
   @Test
-  void loadPlayersFromCsv_InvalidFormat_ShouldSkipInvalidLines() throws IOException {
+  void loadPlayersFromCsv_InvalidFormat_ShouldSkipInvalidLines() throws FileReadException {
     // Act
     List<Player> players = CsvHandler.loadPlayersFromCsv(invalidFormatPath.toString());
 
@@ -108,7 +109,7 @@ public class CsvHandlerTest {
   }
 
   @Test
-  void savePlayersToCsv_ValidData_ShouldSaveAllPlayers() throws IOException {
+  void savePlayersToCsv_ValidData_ShouldSaveAllPlayers() throws FileWriteException, IOException {
     // Act
     CsvHandler.savePlayersToCsv(testPlayers, outputPath.toString());
 
@@ -120,7 +121,7 @@ public class CsvHandlerTest {
   }
 
   @Test
-  void savePlayersToCsv_EmptyList_ShouldCreateEmptyFile() throws IOException {
+  void savePlayersToCsv_EmptyList_ShouldCreateEmptyFile() throws FileWriteException, IOException {
     // Act
     CsvHandler.savePlayersToCsv(new ArrayList<>(), outputPath.toString());
 
@@ -131,7 +132,7 @@ public class CsvHandlerTest {
   }
 
   @Test
-  void loadAndSavePlayersToCsv_ShouldPreservePlayerData() throws IOException {
+  void loadAndSavePlayersToCsv_ShouldPreservePlayerData() throws FileWriteException, IOException, FileReadException {
     // Act - first save
     CsvHandler.savePlayersToCsv(testPlayers, outputPath.toString());
 
@@ -151,10 +152,10 @@ public class CsvHandlerTest {
   // NEGATIVE TESTS
 
   @Test
-  void loadPlayersFromCsv_FileNotFound_ShouldThrowFileNotFoundException() {
+  void loadPlayersFromCsv_FileNotFound_ShouldThrowFileReadException() {
     // Act & Assert
-    assertThrows(FileNotFoundException.class, () -> CsvHandler.loadPlayersFromCsv(nonExistentPath.toString()),
-        "Should throw FileNotFoundException for non-existent file");
+    assertThrows(FileReadException.class, () -> CsvHandler.loadPlayersFromCsv(nonExistentPath.toString()),
+        "Should throw FileReadException for non-existent file");
   }
 
   @Test
@@ -179,17 +180,17 @@ public class CsvHandlerTest {
   }
 
   @Test
-  void savePlayersToCsv_InvalidPath_ShouldThrowIOException() {
+  void savePlayersToCsv_InvalidPath_ShouldThrowFileWriteException() {
     // Arrange
     String invalidPath = tempDir.resolve("nonexistent_dir/output.csv").toString();
 
     // Act & Assert
-    assertThrows(IOException.class, () -> CsvHandler.savePlayersToCsv(testPlayers, invalidPath),
-        "Should throw IOException for invalid path");
+    assertThrows(FileWriteException.class, () -> CsvHandler.savePlayersToCsv(testPlayers, invalidPath),
+        "Should throw FileWriteException for invalid path");
   }
 
   @Test
-  void savePlayersToCsv_ReadOnlyLocation_ShouldThrowIOException() throws IOException {
+  void savePlayersToCsv_ReadOnlyLocation_ShouldThrowFileWriteException() throws IOException {
     // Arrange - create a file and make it read-only
     Path readOnlyPath = tempDir.resolve("readonly.csv");
     Files.createFile(readOnlyPath);
@@ -197,7 +198,7 @@ public class CsvHandlerTest {
     readOnlyFile.setReadOnly();
 
     // Act & Assert
-    assertThrows(IOException.class, () -> CsvHandler.savePlayersToCsv(testPlayers, readOnlyPath.toString()),
-        "Should throw IOException when writing to read-only file");
+    assertThrows(FileWriteException.class, () -> CsvHandler.savePlayersToCsv(testPlayers, readOnlyPath.toString()),
+        "Should throw FileWriteException when writing to read-only file");
   }
 }

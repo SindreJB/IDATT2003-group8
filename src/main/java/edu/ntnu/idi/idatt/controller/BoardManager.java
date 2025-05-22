@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.BoardConfig;
 import edu.ntnu.idi.idatt.persistence.JsonHandler;
 
@@ -30,12 +32,12 @@ public class BoardManager {
       Path boardPath = getBoardsDirectory().resolve("empty.json");
       JsonHandler.writeToJson(emptyBoard, boardPath.toString());
       System.out.println("Empty board saved to: " + boardPath);
-    } catch (IOException e) {
+    } catch (FileWriteException e) {
       System.err.println("Error saving empty board: " + e.getMessage());
     }
   }
 
-  public static void createStandardBoard() {
+  public static void createStandardBoard() throws FileWriteException {
     BoardConfig standardBoard = new BoardConfig(
         "Standard Board",
         "Classic 9x10 Snakes and Ladders board with traditional placement",
@@ -61,13 +63,9 @@ public class BoardManager {
     standardBoard.addWormhole(13);
     standardBoard.addWormhole(45);
 
-    try {
-      Path boardPath = getBoardsDirectory().resolve("standard.json");
-      JsonHandler.writeToJson(standardBoard, boardPath.toString());
-      System.out.println("Standard board saved to: " + boardPath);
-    } catch (IOException e) {
-      System.err.println("Error saving standard board: " + e.getMessage());
-    }
+    Path boardPath = getBoardsDirectory().resolve("standard.json");
+    JsonHandler.writeToJson(standardBoard, boardPath.toString());
+
   }
 
   /**
@@ -77,7 +75,7 @@ public class BoardManager {
    * @return The path to the created JSON file
    * @throws IOException if there's an error writing the file
    */
-  public static Path createCustomBoard(String boardName) throws IOException {
+  public static Path createCustomBoard(String boardName) throws FileWriteException {
     BoardConfig customBoard = new BoardConfig(
         "Custom Board",
         "A 10x10 board with custom snake and ladder placement",
@@ -120,7 +118,7 @@ public class BoardManager {
    * @return The path to the created JSON file
    * @throws IOException if there's an error writing the file
    */
-  public static Path createWormholeBoard() throws IOException {
+  public static Path createWormholeBoard() throws FileWriteException {
     BoardConfig wormholeBoard = new BoardConfig(
         "Wormhole Board",
         "A 10x10 board with wormholes, snakes, and ladders",
@@ -148,7 +146,7 @@ public class BoardManager {
     return boardPath;
   }
 
-  public static BoardConfig loadBoard(String boardName) throws IOException {
+  public static BoardConfig loadBoard(String boardName) throws FileReadException {
     Path boardPath = getBoardsDirectory().resolve(boardName + ".json");
     return JsonHandler.readFromJson(boardPath.toString(), BoardConfig.class);
   }

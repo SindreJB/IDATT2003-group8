@@ -1,9 +1,10 @@
 package edu.ntnu.idi.idatt.ui.components;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
@@ -86,7 +87,7 @@ public class PlayerSelectionModal {
         availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
         availablePieces.add(new PlayerConfig("Stian", "#000000"));
       }
-    } catch (IOException e) {
+    } catch (FileReadException e) {
       availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
       availablePieces.add(new PlayerConfig("Stian", "#000000"));
     }
@@ -338,10 +339,9 @@ public class PlayerSelectionModal {
       Scene gameScene = gameBoard.createGameScene(boardType, primaryStage, players);
       primaryStage.setScene(gameScene);
       primaryStage.setTitle("Snakes and Ladders - " + boardType);
-    } catch (LadderGameException e) {
+    } catch (LadderGameException | FileWriteException e) {
       showAlert("Error starting game: " + e.getMessage());
-      System.err.println("Error starting game: " + e.getMessage());
-      e.printStackTrace();
+
     }
   }
 }

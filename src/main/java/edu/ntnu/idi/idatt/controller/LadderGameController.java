@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.factory.LadderGameFactory;
 import edu.ntnu.idi.idatt.model.LadderBoard;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
@@ -48,8 +49,9 @@ public class LadderGameController extends GameController {
    * 
    * @param boardType The type of board to load
    * @return True if loading was successful
+   * @throws FileWriteException If there is an error writing to a file
    */
-  public boolean loadBoard(String boardType) {
+  public boolean loadBoard(String boardType) throws FileWriteException {
     Optional<LadderBoard> loadedBoard = LadderGameFactory.tryCreateBoard(boardType);
     if (loadedBoard.isPresent()) {
       loadBoard(loadedBoard.get());

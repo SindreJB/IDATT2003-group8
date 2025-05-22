@@ -18,6 +18,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.google.gson.JsonSyntaxException;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
+
 class JsonHandlerTest {
 
   @TempDir
@@ -85,7 +88,7 @@ class JsonHandlerTest {
   // POSITIVE TESTS
 
   @Test
-  void writeToJson_ValidObject_ShouldCreateFile() throws IOException {
+  void writeToJson_ValidObject_ShouldCreateFile() throws FileWriteException, IOException {
     // Act
     JsonHandler.writeToJson(testPerson, validJsonPath.toString());
 
@@ -98,7 +101,7 @@ class JsonHandlerTest {
   }
 
   @Test
-  void writeToJson_CreatesNestedDirectories_ShouldCreateDirectories() throws IOException {
+  void writeToJson_CreatesNestedDirectories_ShouldCreateDirectories() throws FileWriteException, IOException {
     // Act
     JsonHandler.writeToJson(testPerson, nestedDirPath.toString());
 
@@ -108,7 +111,7 @@ class JsonHandlerTest {
   }
 
   @Test
-  void writeToJson_ExistingFile_ShouldOverwrite() throws IOException {
+  void writeToJson_ExistingFile_ShouldOverwrite() throws FileWriteException, IOException {
     // Arrange
     TestPerson initialPerson = new TestPerson("Initial Person", 25, Arrays.asList("Gaming"));
     JsonHandler.writeToJson(initialPerson, validJsonPath.toString());
@@ -123,7 +126,7 @@ class JsonHandlerTest {
   }
 
   @Test
-  void readFromJson_ValidFile_ShouldDeserializeObject() throws IOException {
+  void readFromJson_ValidFile_ShouldDeserializeObject() throws FileWriteException, FileReadException, IOException {
     // Arrange
     JsonHandler.writeToJson(testPerson, validJsonPath.toString());
 
@@ -138,7 +141,7 @@ class JsonHandlerTest {
   }
 
   @Test
-  void roundTrip_WriteAndRead_ShouldPreserveData() throws IOException {
+  void roundTrip_WriteAndRead_ShouldPreserveData() throws FileWriteException, FileReadException, IOException {
     // Arrange
     List<TestPerson> people = Arrays.asList(
         new TestPerson("Alice", 28, Arrays.asList("Swimming")),
@@ -224,7 +227,7 @@ class JsonHandlerTest {
   }
 
   @Test
-  void readFromJson_IncompatibleTypes_ShouldThrowException() throws IOException {
+  void readFromJson_IncompatibleTypes_ShouldThrowException() throws FileWriteException, IOException {
     // Arrange
     JsonHandler.writeToJson(testPerson, validJsonPath.toString());
 

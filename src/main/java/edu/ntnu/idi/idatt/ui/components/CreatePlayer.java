@@ -1,8 +1,8 @@
 package edu.ntnu.idi.idatt.ui.components;
 
-import java.io.IOException;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import javafx.geometry.Insets;
@@ -104,7 +104,7 @@ public class CreatePlayer {
     try {
       CsvHandler.savePlayersToCsv(players, savePath);
 
-    } catch (IOException e) {
+    } catch (FileWriteException e) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Error");
       alert.setHeaderText("Save Failed");
