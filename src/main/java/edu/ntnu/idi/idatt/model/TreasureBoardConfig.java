@@ -14,7 +14,7 @@ public class TreasureBoardConfig {
      * 2 = Treasure location
      * 3 = Start position
      */
-    public static final int[][] STANDARD_LAYOUT = {
+    public final int[][] STANDARD_LAYOUT = {
         {0, 2, 1, 1, 2, 1, 2, 1, 0, 0}, // Row 0 (tiles 1-10)
         {1, 1, 0, 0, 0, 1, 0, 1, 1, 2}, // Row 1 (tiles 11-20)
         {1, 0, 0, 0, 0, 1, 0, 0, 0, 1}, // Row 2 (tiles 21-30)
@@ -27,8 +27,8 @@ public class TreasureBoardConfig {
         {0, 0, 0, 0, 3, 0, 0, 0, 0, 0}  // Row 9 (tiles 91-100) - Start at tile 95
     };
     
-    public static final int ROWS = 10;
-    public static final int COLUMNS = 10;
+    public final int ROWS = 10;
+    public final int COLUMNS = 10;
     
     /**
      * Gets the tile type for a specific tile ID
@@ -36,7 +36,7 @@ public class TreasureBoardConfig {
      * @param tileId The tile ID (1-100)
      * @return The tile type (0=void, 1=path, 2=treasure, 3=start)
      */
-    public static int getTileType(int tileId) {
+    public int getTileType(int tileId) {
         if (tileId < 1 || tileId > 100) {
             return 0; // Invalid tile
         }
@@ -54,7 +54,7 @@ public class TreasureBoardConfig {
      * @param tileId The tile ID to check
      * @return True if the tile is walkable (type > 0)
      */
-    public static boolean isWalkable(int tileId) {
+    public boolean isWalkable(int tileId) {
         return getTileType(tileId) > 0;
     }
     
@@ -63,7 +63,7 @@ public class TreasureBoardConfig {
      * 
      * @return The tile ID of the start position
      */
-    public static int findStartPosition() {
+    public int findStartPosition() {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLUMNS; col++) {
                 if (STANDARD_LAYOUT[row][col] == 3) {
@@ -80,7 +80,7 @@ public class TreasureBoardConfig {
      * @param tileId The tile ID (1-100)
      * @return Array with [row, col] or null if invalid
      */
-    public static int[] getCoordinates(int tileId) {
+    public int[] getCoordinates(int tileId) {
         if (tileId < 1 || tileId > 100) {
             return null;
         }
@@ -98,7 +98,7 @@ public class TreasureBoardConfig {
      * @param col The column (0-9)
      * @return The tile ID (1-100) or -1 if invalid
      */
-    public static int getTileId(int row, int col) {
+    public int getTileId(int row, int col) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLUMNS) {
             return -1;
         }
