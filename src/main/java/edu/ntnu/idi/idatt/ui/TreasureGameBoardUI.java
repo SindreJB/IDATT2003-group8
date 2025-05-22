@@ -30,7 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class TreasureGameBoardUI implements GameObserver {
-    
+
     private BorderPane root;
     private TreasureGameController controller;
     private InfoTable infoTable;
@@ -264,8 +264,8 @@ private TreasureBoard createCustomBoard() {
         infoTable.updateDiceResult(0);
         infoTable.updateMoveCounter(0);
         infoTable.setRollEnabled(true);
+        }
     }
-}
 
     private void clearTile(StackPane tile) {
         // Keep only the first two children (background and label)
