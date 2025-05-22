@@ -20,8 +20,8 @@ import edu.ntnu.idi.idatt.persistence.CsvHandler;
  * dice rolling, and observer pattern implementation.
  */
 public abstract class GameController {
-  private AbstractBoard<? extends Tile> gameBoard;
-  private List<Player> players;
+  public AbstractBoard<? extends Tile> gameBoard;
+  public List<Player> players;
   private Player currentPlayer;
   private int currentPlayerIndex;
   private final Dice dice;

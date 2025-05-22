@@ -30,17 +30,11 @@ public class GamesMenu {
         primaryStage, "treasure");
     Button standardButton = createGameButton("Standard", "Classic Snakes and Ladders board",
         primaryStage, "standard");
-    Button emptyButton = createGameButton("Empty", "Board with no snakes or ladders",
-        primaryStage, "empty");
-    Button customButton = createGameButton("Custom", "Custom board configuration",
-        primaryStage, "custom");
     Button wormholeButton = createGameButton("Wormhole", "Board with wormholes",
         primaryStage, "wormhole");
 
     // Set button styles
     standardButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    emptyButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    customButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     treasureButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     wormholeButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
 
@@ -56,7 +50,7 @@ public class GamesMenu {
     // Create layout
     VBox buttonContainer = new VBox(20);
     buttonContainer.setAlignment(Pos.CENTER);
-    buttonContainer.getChildren().addAll(treasureButton, standardButton, emptyButton, customButton, wormholeButton,
+    buttonContainer.getChildren().addAll(treasureButton, standardButton, wormholeButton,
         backButton);
     buttonContainer.getStyleClass().addAll(
         "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
@@ -64,6 +58,7 @@ public class GamesMenu {
     root.setAlignment(Pos.CENTER);
 
     Scene scene = new Scene(root);
+
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     return scene;
@@ -71,9 +66,6 @@ public class GamesMenu {
 
   private Button createGameButton(String name, String description, Stage primaryStage, String boardType) {
     Button button = new Button(name);
-    button.getStyleClass().add("game-select-button");
-    button.setMaxWidth(300);
-    button.setMinHeight(60);
 
     // Set tooltip with description
     button.setTooltip(new javafx.scene.control.Tooltip(description));

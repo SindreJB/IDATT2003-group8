@@ -47,7 +47,7 @@ public class MainMenu extends Application {
     VBox menuLayout = new VBox(30);
 
     // Set up the scene
-    Scene scene = new Scene(menuLayout, 600, 400);
+    Scene scene = new Scene(menuLayout);
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     // Set up the main title
