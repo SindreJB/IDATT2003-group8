@@ -75,13 +75,10 @@ public class JsonHandler {
     try (Reader reader = new FileReader(filePath)) {
       T result = gson.fromJson(reader, classOfT);
       if (result == null) {
-        LOGGER.warning("Failed to deserialize JSON from: " + filePath);
         throw new IOException("Failed to deserialize JSON content");
       }
       return result;
-    } catch (JsonSyntaxException e) {
-      throw new FileReadException("Invalid JSON format", e);
-    } catch (IOException e) {
+    } catch (JsonSyntaxException | IOException e) {
       throw new FileReadException("Invalid JSON format", e);
     }
   }
