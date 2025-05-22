@@ -27,21 +27,6 @@ public class BoardManager {
     return dataDir;
   }
 
-  public static void createEmptyBoard() {
-    BoardConfig emptyBoard = new BoardConfig(
-        "Empty Board",
-        "An empty 9x10 Snakes and Ladders board",
-        10, 9);
-
-    try {
-      Path boardPath = getBoardsDirectory().resolve("empty.json");
-      JsonHandler.writeToJson(emptyBoard, boardPath.toString());
-    } catch (FileWriteException e) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Error");
-    }
-  }
-
   public static void createStandardBoard() throws FileWriteException {
     BoardConfig standardBoard = new BoardConfig(
         "Standard Board",
@@ -70,47 +55,6 @@ public class BoardManager {
     Path boardPath = getBoardsDirectory().resolve("standard.json");
     JsonHandler.writeToJson(standardBoard, boardPath.toString());
 
-  }
-
-  /**
-   * Creates a hardcoded custom board and saves it to a JSON file
-   *
-   * @param boardName the name for the saved board
-   * @return The path to the created JSON file
-   * @throws IOException if there's an error writing the file
-   */
-  public static Path createCustomBoard(String boardName) throws FileWriteException {
-    BoardConfig customBoard = new BoardConfig(
-        "Custom Board",
-        "A 10x10 board with custom snake and ladder placement",
-        10, 10);
-
-    // Add custom ladders (start -> end)
-    customBoard.addLadder(4, 23);
-    customBoard.addLadder(14, 35);
-    customBoard.addLadder(28, 49);
-    customBoard.addLadder(37, 65);
-    customBoard.addLadder(48, 68);
-    customBoard.addLadder(57, 82);
-
-    // Add custom snakes (head -> tail)
-    customBoard.addSnake(24, 6);
-    customBoard.addSnake(39, 18);
-    customBoard.addSnake(52, 31);
-    customBoard.addSnake(63, 42);
-    customBoard.addSnake(75, 54);
-    customBoard.addSnake(88, 67);
-    customBoard.addSnake(97, 78);
-
-    // add wormholes (entrance)
-    customBoard.addWormhole(10);
-    customBoard.addWormhole(20);
-    customBoard.addWormhole(30);
-    customBoard.addWormhole(40);
-
-    Path boardPath = getBoardsDirectory().resolve(boardName + ".json");
-    JsonHandler.writeToJson(customBoard, boardPath.toString());
-    return boardPath;
   }
 
   /**

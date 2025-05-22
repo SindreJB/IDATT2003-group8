@@ -11,13 +11,6 @@ import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 public class BoardManagerTest {
 
   @Test
-  public void createEmptyBoardTest() {
-    BoardManager.createEmptyBoard();
-    Path boardPath = BoardManager.getBoardsDirectory().resolve("empty.json");
-    assertTrue(Files.exists(boardPath));
-  }
-
-  @Test
   public void createBoardTest() throws FileWriteException {
     BoardManager.createStandardBoard();
     Path boardPath = BoardManager.getBoardsDirectory().resolve("standard.json");
