@@ -65,9 +65,33 @@ public class CsvHandler {
     Path path = Paths.get(filePath);
     List<String> lines = new ArrayList<>();
 
+    // Read existing lines from the file if it exists
+    if (Files.exists(path)) {
+      try {
+        lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+      } catch (IOException e) {
+        throw new FileWriteException("Error reading existing file: " + filePath, e);
+      }
+    }
+
     for (Player player : players) {
       String line = player.getName() + "," + player.getPieceType();
-      lines.add(line);
+      // Check if the player name already exists in the lines list
+      boolean nameExists = false;
+      for (int i = 0; i < lines.size(); i++) {
+        String existingLine = lines.get(i);
+        String existingName = existingLine.split(",")[0];
+        if (existingName.equals(player.getName())) {
+          // Update the piece type for this player
+          lines.set(i, line);
+          nameExists = true;
+          break;
+        }
+      }
+      // If name doesn't exist, add as a new entry
+      if (!nameExists) {
+        lines.add(line);
+      }
     }
     try {
       Files.write(path, lines, StandardCharsets.UTF_8);

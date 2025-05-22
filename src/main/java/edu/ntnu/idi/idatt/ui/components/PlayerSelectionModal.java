@@ -1,5 +1,6 @@
 package edu.ntnu.idi.idatt.ui.components;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,9 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -76,6 +79,29 @@ public class PlayerSelectionModal {
   private void loadPlayerPieces() {
     try {
       List<Player> csvPlayers = CsvHandler.loadPlayersFromCsv("src/main/resources/players/players.csv");
+
+      for (Player player : csvPlayers) {
+        availablePieces.add(new PlayerConfig(player.getName(), player.getPieceType()));
+      }
+
+      if (availablePieces.isEmpty()) {
+        // Fallback option if CSV is empty
+
+        availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
+        availablePieces.add(new PlayerConfig("Stian", "#000000"));
+      }
+    } catch (FileReadException e) {
+      availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
+      availablePieces.add(new PlayerConfig("Stian", "#000000"));
+    }
+  }
+
+  /**
+   * Loads player pieces from the CSV file
+   */
+  private void loadPlayerPieces(String path) {
+    try {
+      List<Player> csvPlayers = CsvHandler.loadPlayersFromCsv(path);
 
       for (Player player : csvPlayers) {
         availablePieces.add(new PlayerConfig(player.getName(), player.getPieceType()));
@@ -232,6 +258,14 @@ public class PlayerSelectionModal {
       mainLayout.getChildren().add(playerCountPanel);
     });
 
+    Button loadPlayersButton = new Button("Load Players from CSV");
+    loadPlayersButton.setStyle(primaryButtonStyle);
+    loadPlayersButton
+        .setOnMouseEntered(e -> loadPlayersButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    loadPlayersButton.setOnMouseExited(e -> loadPlayersButton.setStyle(primaryButtonStyle));
+    loadPlayersButton.setOnAction(e -> loadPlayersFromCsv());
+    VBox.setVgrow(loadPlayersButton, Priority.ALWAYS);
+
     startButton.setOnAction(e -> {
       if (validatePlayerSelections()) {
         // Create players and start the game
@@ -241,7 +275,7 @@ public class PlayerSelectionModal {
       }
     });
 
-    playerSelectionPanel.getChildren().addAll(titleLabel, playerGrid, buttonBox);
+    playerSelectionPanel.getChildren().addAll(titleLabel, playerGrid, loadPlayersButton, buttonBox);
   }
 
   /**
@@ -361,6 +395,44 @@ public class PlayerSelectionModal {
       }
     } catch (FileWriteException | LadderGameException e) {
       showAlert("Error starting game: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Opens a file chooser dialog to load players from a CSV file
+   */
+  private void loadPlayersFromCsv() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Load Players");
+    fileChooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+
+    File selectedFile = fileChooser.showOpenDialog(primaryStage);
+    if (selectedFile != null) {
+
+      loadPlayerPieces(selectedFile.getAbsolutePath());
+      // updatePlayerSelectionPanel(playerCountSpinner.getValue());
+      // Clear existing items in all combo boxes
+      for (ComboBox<String> selector : playerSelectors) {
+        selector.getItems().clear();
+      }
+
+      // Add the newly loaded pieces to all combo boxes
+      for (PlayerConfig piece : availablePieces) {
+        for (ComboBox<String> selector : playerSelectors) {
+          selector.getItems().add(piece.name);
+        }
+      }
+
+      // Set default selections for visible player selectors
+      int playerCount = playerCountSpinner.getValue();
+      for (int i = 0; i < playerCount && i < availablePieces.size(); i++) {
+        playerSelectors.get(i).setValue(availablePieces.get(i).name);
+      }
+
+      // Show success message
+      showAlert("Players loaded successfully from " + selectedFile.getName());
+
     }
   }
 }
