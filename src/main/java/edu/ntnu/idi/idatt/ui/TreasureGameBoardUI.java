@@ -317,8 +317,7 @@ private TreasureBoard createCustomBoard() {
                     );
                 }
                 break;
-                
-            case "TREASURE_FOUND":
+                  case "TREASURE_FOUND":
                 @SuppressWarnings("unchecked")
                 Map<String, Object> treasureData = (Map<String, Object>) data;
                 Player finder = (Player) treasureData.get("player");
@@ -329,6 +328,20 @@ private TreasureBoard createCustomBoard() {
                     finder.getName() + " has found the treasure and won the game!",
                     gameActions
                 );
+                break;
+                
+            case "TREASURE_TILE":
+                @SuppressWarnings("unchecked")
+                Map<String, Object> treasureTileData = (Map<String, Object>) data;
+                Player nearTreasure = (Player) treasureTileData.get("player");
+                int movesLeft = (Integer) treasureTileData.get("movesLeft");
+                
+                // Just update the info label to show the player has found a treasure but has moves left
+                if (infoTable != null) {
+                    infoTable.getGameInfoLabel().setText(
+                        nearTreasure.getName() + " found a treasure but has " + 
+                        movesLeft + " moves left. Move to another tile or use all moves to win!");
+                }
                 break;
                 
             case "TURN_CHANGED":
