@@ -54,7 +54,6 @@ public class BoardManager {
     standardBoard.addSnake(47, 26);
     standardBoard.addSnake(62, 43);
     standardBoard.addSnake(87, 61);
-    standardBoard.addSnake(95, 73);
 
     // Add wormholes (entrance)
     standardBoard.addWormhole(5);
