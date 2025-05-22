@@ -246,7 +246,7 @@ public class TreasureGameController extends GameController {
         // Use the config class for walkability check to ensure consistency
         return config.isWalkable(tileId);
     }
-    
+
       /**
      * Checks if a move to the specified position is valid for the current player
      * 
@@ -255,14 +255,12 @@ public class TreasureGameController extends GameController {
      */    
     public int getValidPositionInDirection(String direction) {
         if (moveCounter <= 0) {
-            return -1; // No moves left
+            return -1; 
         }
         
         Player player = getCurrentPlayer();
         int currentPosition = player.getTileId();
-        
     
-        // Get coordinates using the config
         int[] coords = config.getCoordinates(currentPosition);
         if (coords == null) {
             return -1;
@@ -271,7 +269,6 @@ public class TreasureGameController extends GameController {
         int row = coords[0];
         int col = coords[1];
                 
-        // Determine new position based on direction
         int newRow = row;
         int newCol = col;
         
@@ -290,18 +287,16 @@ public class TreasureGameController extends GameController {
                 break;
         }
         
-        // Get new tile ID using the config
         int newTileId = config.getTileId(newRow, newCol);
         if (newTileId == -1) {
             return -1;
         }
                 
-        // Check if the tile is walkable using the config
         if (config.isWalkable(newTileId)) {
             return newTileId;
         }
         
-        return -1; // Invalid move
+        return -1; 
     }
     
     /**

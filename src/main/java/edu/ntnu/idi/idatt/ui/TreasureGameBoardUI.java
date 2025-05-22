@@ -22,7 +22,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -187,19 +186,20 @@ private TreasureBoard createCustomBoard() {
         }
 
         return boardGrid;
-    }
-
-    private StackPane createTile(int tileId, int tileType) {
+    }    private StackPane createTile(int tileId, int tileType) {
         StackPane tile = new StackPane();
         tile.setPrefSize(TILE_SIZE, TILE_SIZE);
 
+        // For type 0 tiles (void), make them completely invisible
+        if (tileType == 0) {
+            tile.setVisible(false);
+            return tile;
+        }
+        
         // Create different tile appearances based on type
         Rectangle background = new Rectangle(TILE_SIZE, TILE_SIZE);
 
         switch (tileType) {
-            case 0: // Void - cannot move here
-                background.setFill(Color.TRANSPARENT);
-                break;
             case 1: // Path - can move here
                 background.setFill(Color.LIGHTGREEN);
                 break;
@@ -211,19 +211,17 @@ private TreasureBoard createCustomBoard() {
                 break;
             default:
                 background.setFill(Color.WHITE);
+                break;
         }
 
         background.setStroke(Color.BLACK);
         background.setStrokeWidth(1);
 
-        // Add tile number label
-        Label tileLabel = new Label(String.valueOf(tileId));
-        tileLabel.setStyle("-fx-font-weight: bold;");
-
-        tile.getChildren().addAll(background, tileLabel);
+        // No tile numbers as per requirement
+        tile.getChildren().add(background);
 
         return tile;
-    }    
+    }
     
     private StackPane findStartTile() {
         // Use the config to find the start position
@@ -263,7 +261,7 @@ private TreasureBoard createCustomBoard() {
         infoTable.setRollEnabled(true);
         }
     }    private void clearTile(StackPane tile) {
-        // We need to keep the background rectangle and the label
+        // We need to keep the background rectangle
         // and only remove player pieces (contained in StackPanes)
         List<Node> nodesToRemove = new ArrayList<>();
         
@@ -281,103 +279,90 @@ private TreasureBoard createCustomBoard() {
     public TreasureGameController getController() {
         return controller;
     }
-    
-    @Override
+      @Override
     public void update(GameEvent event) {
         String eventType = event.getType();
         Object data = event.getData();
         
-        switch (eventType) {
-            case "DICE_ROLLED":
-                int diceValue = (Integer) data;
-                if (infoTable != null) {
-                    infoTable.updateDiceDisplay(diceValue);
-                }
-                break;
-                
-            case "MOVE_COUNTER_UPDATED":
-                int moveCounter = (Integer) data;
-                if (infoTable != null) {
-                    infoTable.updateMoveCounter(moveCounter);
-                }
-                break;
-                
-            case "PLAYER_MOVED":
-                @SuppressWarnings("unchecked")
-                Map<String, Object> moveData = (Map<String, Object>) data;
-                Player player = (Player) moveData.get("player");
-                int fromPosition = (Integer) moveData.get("from");
-                int toPosition = (Integer) moveData.get("to");
-                
-                // Animate player movement
-                if (animationManager != null) {
-                    animationManager.animatePlayerMove(
-                        player,
-                        controller.getPlayers(),
-                        fromPosition,
-                        toPosition,
-                        controller.checkVictory(player)
-                    );
-                }
-                break;                  case "TREASURE_FOUND":
-                @SuppressWarnings("unchecked")
-                Map<String, Object> treasureData = (Map<String, Object>) data;
-                Player finder = (Player) treasureData.get("player");
-                boolean realTreasure = treasureData.containsKey("realTreasure") ? 
-                    (Boolean) treasureData.get("realTreasure") : true;
-                
-                if (realTreasure) {
-                    // Show real treasure found message - Star of Africa
-                    new GameAlert().showGameAlert(
-                        "Star of Africa Found!",
-                        finder.getName() + " dug up the Star of Africa and won the game!",
-                        gameActions
-                    );
-                } else {
-                    // Show just dirt message
-                    if (infoTable != null) {
-                        infoTable.getGameInfoLabel().setText(
-                            finder.getName() + " dug up nothing but dirt.");
-                    }
-                    // Continue the game after a short delay
-                    controller.switchToNextPlayer();
-                }
-                break;
-                
-            case "TREASURE_TILE":
-                @SuppressWarnings("unchecked")
-                Map<String, Object> treasureTileData = (Map<String, Object>) data;
-                Player nearTreasure = (Player) treasureTileData.get("player");
-                int movesLeft = (Integer) treasureTileData.get("movesLeft");
-                
-                // Just update the info label to show the player has found a treasure but has moves left
-                if (infoTable != null) {
-                    infoTable.getGameInfoLabel().setText(
-                        nearTreasure.getName() + " found a treasure but has " + 
-                        movesLeft + " moves left. Move to another tile or use all moves to win!");
-                }
-                break;
-                
-            case "TURN_CHANGED":
-                Player currentPlayer = (Player) data;
-                if (infoTable != null) {
-                    infoTable.getStatusLabel().setText(currentPlayer.getName() + "'s turn");
-                    infoTable.setRollEnabled(true); // Re-enable roll button
-                }
-                break;
-                
-            case "GAME_WON":
-                Player winner = (Player) data;
+        if ("DICE_ROLLED".equals(eventType)) {
+            int diceValue = (Integer) data;
+            if (infoTable != null) {
+                infoTable.updateDiceDisplay(diceValue);
+            }
+        } else if ("MOVE_COUNTER_UPDATED".equals(eventType)) {
+            int moveCounter = (Integer) data;
+            if (infoTable != null) {
+                infoTable.updateMoveCounter(moveCounter);
+            }
+        } else if ("PLAYER_MOVED".equals(eventType)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> moveData = (Map<String, Object>) data;
+            Player player = (Player) moveData.get("player");
+            int fromPosition = (Integer) moveData.get("from");
+            int toPosition = (Integer) moveData.get("to");
+            
+            // Animate player movement
+            if (animationManager != null) {
+                animationManager.animatePlayerMove(
+                    player,
+                    controller.getPlayers(),
+                    fromPosition,
+                    toPosition,
+                    controller.checkVictory(player)
+                );
+            }
+        } else if ("TREASURE_FOUND".equals(eventType)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> treasureData = (Map<String, Object>) data;
+            Player finder = (Player) treasureData.get("player");
+            
+            // Check if realTreasure exists and safely unbox it
+            Object realTreasureObj = treasureData.get("realTreasure");
+            boolean realTreasure = realTreasureObj != null ? (Boolean) realTreasureObj : true;
+            
+            if (realTreasure) {
+                // Show real treasure found message - Star of Africa
                 new GameAlert().showGameAlert(
-                    "Game Over",
-                    winner.getName() + " has won the game by finding the treasure!",
+                    "Star of Africa Found!",
+                    finder.getName() + " dug up the Star of Africa and won the game!",
                     gameActions
                 );
-                break;
+            } else {
+                // Show just dirt message
+                if (infoTable != null) {
+                    infoTable.getGameInfoLabel().setText(
+                        finder.getName() + " dug up nothing but dirt.");
+                }
+                // Continue the game after a short delay
+                controller.switchToNextPlayer();
+            }
+        } else if ("TREASURE_TILE".equals(eventType)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> treasureTileData = (Map<String, Object>) data;
+            Player nearTreasure = (Player) treasureTileData.get("player");
+            int movesLeft = (Integer) treasureTileData.get("movesLeft");
+            
+            // Just update the info label to show the player has found a treasure but has moves left
+            if (infoTable != null) {
+                infoTable.getGameInfoLabel().setText(
+                    nearTreasure.getName() + " found a treasure but has " + 
+                    movesLeft + " moves left. Move to another tile or use all moves to win!");
+            }
+        } else if ("TURN_CHANGED".equals(eventType)) {
+            Player currentPlayer = (Player) data;
+            if (infoTable != null) {
+                infoTable.getStatusLabel().setText(currentPlayer.getName() + "'s turn");
+                infoTable.setRollEnabled(true); // Re-enable roll button
+            }
+        } else if ("GAME_WON".equals(eventType)) {
+            Player winner = (Player) data;
+            new GameAlert().showGameAlert(
+                "Game Over",
+                winner.getName() + " has won the game by finding the treasure!",
+                gameActions
+            );
         }
-    }
-
-    /**
+    }    /**
      * Set up keyboard event handling for manual movement
      * 
      * @param scene The game scene to attach event handlers to
@@ -389,6 +374,7 @@ private TreasureBoard createCustomBoard() {
             }
             
             String direction = null;
+            
             switch (event.getCode()) {
                 case UP:
                     direction = "UP";
@@ -406,12 +392,14 @@ private TreasureBoard createCustomBoard() {
                     return; // Ignore other keys
             }
             
-            boolean moved = controller.movePlayerInDirection(direction);
-            
-            if (!moved) {
-                int moveCounter = controller.getMoveCounter();
-                if (moveCounter > 0) {
-                    infoTable.getGameInfoLabel().setText("Can't move that way. Try another direction.");
+            if (direction != null) {
+                boolean moved = controller.movePlayerInDirection(direction);
+                
+                if (!moved) {
+                    int moveCounter = controller.getMoveCounter();
+                    if (moveCounter > 0) {
+                        infoTable.getGameInfoLabel().setText("Can't move that way. Try another direction.");
+                    }
                 }
             }
         });
