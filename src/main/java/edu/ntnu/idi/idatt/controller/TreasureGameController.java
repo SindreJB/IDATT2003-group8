@@ -16,14 +16,13 @@ public class TreasureGameController extends GameController {
     private Runnable onStepComplete;
     private int currentPlayerIndex = 0;
     private Player currentPlayer;
-    private boolean manualMovementMode = true; // Enable manual movement by default
+    private boolean manualMovementMode = true;
     private TreasureBoardConfig config;
     
-    // Movement animation delay in milliseconds
     private static final int MOVE_DELAY_MS = 500;
 
     public TreasureGameController() {
-        super(1); // Use only 1 die for treasure game
+        super(1);
         this.config = new TreasureBoardConfig();
         loadBoard(new TreasureBoard(config.ROWS, config.COLUMNS));
     }
@@ -62,7 +61,9 @@ public class TreasureGameController extends GameController {
      */
     public boolean isMoving() {
         return isMoving;
-    }    /**
+    }    
+    
+    /**
      * Roll dice and start step-by-step movement
      * @return The dice roll value
      */
@@ -88,7 +89,8 @@ public class TreasureGameController extends GameController {
         
         return diceValue;
     }
-      /**
+     
+    /**
      * Execute the next step in the movement sequence
      */
     public void executeNextStep() {
@@ -144,7 +146,9 @@ public class TreasureGameController extends GameController {
         if (onStepComplete != null) {
             onStepComplete.run();
         }
-    }    /**
+    }   
+    
+    /**
      * Finish the movement sequence and pass to next player
      */    
     private void finishMovement() {
@@ -205,7 +209,9 @@ public class TreasureGameController extends GameController {
         
         // If no valid move is found, stay in place
         return currentPosition;
-    }    @Override
+    }   
+    
+    @Override
     public int processTileActions(Player player, int tileId) {
         // Check if this is a treasure location (type 2)
         if (config.getTileType(tileId) == 2) {
@@ -240,9 +246,7 @@ public class TreasureGameController extends GameController {
         Player player = getCurrentPlayer();
         int currentPosition = player.getTileId();
         
-        // Debug current position
-        System.out.println("Getting valid position from " + currentPosition + " in direction " + direction);
-        
+    
         // Get coordinates using the config
         int[] coords = config.getCoordinates(currentPosition);
         if (coords == null) {
@@ -251,9 +255,7 @@ public class TreasureGameController extends GameController {
         
         int row = coords[0];
         int col = coords[1];
-        
-        System.out.println("Calculated row=" + row + ", col=" + col);
-        
+                
         // Determine new position based on direction
         int newRow = row;
         int newCol = col;
@@ -276,12 +278,9 @@ public class TreasureGameController extends GameController {
         // Get new tile ID using the config
         int newTileId = config.getTileId(newRow, newCol);
         if (newTileId == -1) {
-            System.out.println("Out of bounds: row=" + newRow + ", col=" + newCol);
             return -1;
         }
-        
-        System.out.println("New tile ID: " + newTileId + ", walkable: " + config.isWalkable(newTileId));
-        
+                
         // Check if the tile is walkable using the config
         if (config.isWalkable(newTileId)) {
             return newTileId;
@@ -297,15 +296,11 @@ public class TreasureGameController extends GameController {
      * @return true if the move was successful, false otherwise
      */    public boolean movePlayerInDirection(String direction) {
         if (!isMoving || moveCounter <= 0) {
-            System.out.println("Can't move: isMoving=" + isMoving + ", moveCounter=" + moveCounter);
             return false;
         }
         
-        System.out.println("Current player: " + getCurrentPlayer().getName() + " at position " + getCurrentPlayer().getTileId());
-        
         int newPosition = getValidPositionInDirection(direction);
         if (newPosition == -1) {
-            System.out.println("Invalid move in direction: " + direction);
             return false; // Invalid move
         }
         
@@ -354,7 +349,9 @@ public class TreasureGameController extends GameController {
      */
     public boolean isManualMovementMode() {
         return manualMovementMode;
-    }@Override
+    }
+    
+    @Override
     public Player getCurrentPlayer() {
         if (this.currentPlayer == null && !players.isEmpty()) {
             this.currentPlayer = players.get(0);
@@ -371,7 +368,9 @@ public class TreasureGameController extends GameController {
         currentPlayer = players.get(currentPlayerIndex);
         
         notifyObservers(new GameEvent("TURN_CHANGED", currentPlayer));
-    }    @Override
+    }   
+    
+    @Override
     public void setupGame(List<Player> players) {
         if (players != null && !players.isEmpty()) {
             this.players = new ArrayList<>(players);
@@ -391,7 +390,9 @@ public class TreasureGameController extends GameController {
             // Notify observers about game setup
             notifyObservers(new GameEvent("GAME_SETUP", this.players));
         }
-    }    @Override
+    }   
+    
+    @Override
     public void resetGame() {
         // Find the correct start position
         int startPosition = config.findStartPosition();
