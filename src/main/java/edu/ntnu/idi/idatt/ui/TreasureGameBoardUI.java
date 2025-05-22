@@ -155,13 +155,6 @@ private TreasureBoard createCustomBoard() {
                 int tileType = config.STANDARD_LAYOUT[row][col];
                 tile.setTileType(tileType);
                 
-                // Debug for specific tiles we're interested in
-                if (tileNumber == 85 || tileNumber == 95) {
-                    System.out.println("Creating tile " + tileNumber + 
-                                      " at row=" + row + ", col=" + col + 
-                                      " with type=" + tileType);
-                }
-                
                 board.getTiles().add(tile);
                 tileNumber++;
             }
@@ -342,6 +335,7 @@ private TreasureBoard createCustomBoard() {
                 Player currentPlayer = (Player) data;
                 if (infoTable != null) {
                     infoTable.getStatusLabel().setText(currentPlayer.getName() + "'s turn");
+                    infoTable.setRollEnabled(true); // Re-enable roll button
                 }
                 break;
                 
