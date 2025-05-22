@@ -68,7 +68,6 @@ public class DiceUI {
     diceLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
     diceContainer.getChildren().add(diceLabel);
   }
-
   /**
    * Gets the dice container
    * 
@@ -76,6 +75,15 @@ public class DiceUI {
    */
   public HBox getDiceContainer() {
     return diceContainer;
+  }
+  
+  /**
+   * Gets the roll button
+   * 
+   * @return The roll button
+   */
+  public Button getRollButton() {
+    return rollButton;
   }
 
   /**
