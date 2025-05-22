@@ -3,11 +3,11 @@ package edu.ntnu.idi.idatt.ui.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
 import edu.ntnu.idi.idatt.ui.TreasureGameBoardUI;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
