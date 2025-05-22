@@ -61,7 +61,6 @@ class JsonHandlerTest {
   void setUp() throws IOException {
     // Set up paths
     validJsonPath = tempDir.resolve("valid.json");
-    nestedDirPath = tempDir.resolve("nested/dir/file.json");
     nonExistentPath = tempDir.resolve("nonexistent.json");
     invalidJsonPath = tempDir.resolve("invalid.json");
     readOnlyPath = tempDir.resolve("readonly.json");
