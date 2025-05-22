@@ -8,7 +8,6 @@ import edu.ntnu.idi.idatt.model.Player;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -123,7 +122,6 @@ public class AnimationManager {
 
     transition.play();
   }
-
   /**
    * Removes all player pieces from the given tile.
    * The player pieces are removed from the tile to prepare for the next move.
@@ -131,17 +129,19 @@ public class AnimationManager {
    * @param tile The tile from which player pieces are to be removed
    */
   private void removePlayerFromTile(StackPane tile) {
-    List<Node> toKeep = new ArrayList<>();
-
-    // Keep only label (tile number)
+    // We only want to remove the player pieces (StackPane containers),
+    // but keep the background rectangle and label
+    List<Node> nodesToRemove = new ArrayList<>();
+    
     for (Node node : tile.getChildren()) {
-      if (node instanceof Label) {
-        toKeep.add(node);
+      // Only remove StackPane containers (which contain player pieces)
+      // and preserve everything else (rectangle background and label)
+      if (node instanceof StackPane) {
+        nodesToRemove.add(node);
       }
     }
-
-    // Clear tile completely
-    tile.getChildren().clear();
-    tile.getChildren().addAll(toKeep);
+    
+    // Remove only the player containers
+    tile.getChildren().removeAll(nodesToRemove);
   }
 }
