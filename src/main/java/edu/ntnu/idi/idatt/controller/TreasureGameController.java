@@ -210,14 +210,17 @@ public class TreasureGameController extends GameController {
         // If no valid move is found, stay in place
         return currentPosition;
     }   
-    
-    @Override
+      @Override
     public int processTileActions(Player player, int tileId) {
-        // Check if this is a treasure location (type 2)
-        if (config.getTileType(tileId) == 2) {
+        // Check if this is a treasure location (type 2) AND we have 0 moves left
+        if (config.getTileType(tileId) == 2 && moveCounter == 0) {
             notifyObservers(new GameEvent("TREASURE_FOUND",
                     Map.of("player", player, "position", tileId)));
             treasureFound = true;
+        } else if (config.getTileType(tileId) == 2) {
+            // Player is on a treasure tile but has moves left
+            notifyObservers(new GameEvent("TREASURE_TILE",
+                    Map.of("player", player, "position", tileId, "movesLeft", moveCounter)));
         }
 
         return tileId;
@@ -226,7 +229,7 @@ public class TreasureGameController extends GameController {
     @Override
     public boolean checkVictory(Player player) {
         return treasureFound;
-    }    
+    }
     
     public boolean isTileWalkable(int tileId) {
         // Use the config class for walkability check to ensure consistency
