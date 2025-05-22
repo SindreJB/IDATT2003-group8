@@ -160,8 +160,11 @@ private TreasureBoard createCustomBoard() {
             }
         }
 
+        // Assign the treasure to one random type 2 tile
+        board.assignRandomTreasure();
+
         return board;
-    }    
+    }
     
     private GridPane createBoardGrid() {
         GridPane boardGrid = new GridPane();
@@ -316,18 +319,29 @@ private TreasureBoard createCustomBoard() {
                         controller.checkVictory(player)
                     );
                 }
-                break;
-                  case "TREASURE_FOUND":
+                break;                  case "TREASURE_FOUND":
                 @SuppressWarnings("unchecked")
                 Map<String, Object> treasureData = (Map<String, Object>) data;
                 Player finder = (Player) treasureData.get("player");
+                boolean realTreasure = treasureData.containsKey("realTreasure") ? 
+                    (Boolean) treasureData.get("realTreasure") : true;
                 
-                // Show treasure found message
-                new GameAlert().showGameAlert(
-                    "Treasure Found!",
-                    finder.getName() + " has found the treasure and won the game!",
-                    gameActions
-                );
+                if (realTreasure) {
+                    // Show real treasure found message - Star of Africa
+                    new GameAlert().showGameAlert(
+                        "Star of Africa Found!",
+                        finder.getName() + " dug up the Star of Africa and won the game!",
+                        gameActions
+                    );
+                } else {
+                    // Show just dirt message
+                    if (infoTable != null) {
+                        infoTable.getGameInfoLabel().setText(
+                            finder.getName() + " dug up nothing but dirt.");
+                    }
+                    // Continue the game after a short delay
+                    controller.switchToNextPlayer();
+                }
                 break;
                 
             case "TREASURE_TILE":

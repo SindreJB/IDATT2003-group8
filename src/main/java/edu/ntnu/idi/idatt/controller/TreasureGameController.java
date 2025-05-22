@@ -7,6 +7,7 @@ import java.util.Map;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.model.TreasureBoard;
 import edu.ntnu.idi.idatt.model.TreasureBoardConfig;
+import edu.ntnu.idi.idatt.model.TreasureGameTile;
 import edu.ntnu.idi.idatt.observer.GameEvent;
 
 public class TreasureGameController extends GameController {    
@@ -29,6 +30,7 @@ public class TreasureGameController extends GameController {
 
     public void loadBoard(TreasureBoard board) {
         this.gameBoard = board;
+        board.initializeBoardWithTreasure();
     }
 
     @Override
@@ -94,15 +96,12 @@ public class TreasureGameController extends GameController {
      * Execute the next step in the movement sequence
      */
     public void executeNextStep() {
-        // Check if we have moves remaining
         if (moveCounter <= 0) {
             finishMovement();
             return;
         }
-          // Get player's current position
         Player currentPlayer = getCurrentPlayer();
         if (currentPlayer == null) {
-            // Safety check - if currentPlayer is null, initialize it
             if (!players.isEmpty()) {
                 currentPlayer = players.get(0);
                 this.currentPlayer = currentPlayer;
@@ -115,26 +114,20 @@ public class TreasureGameController extends GameController {
         }
           int oldPosition = currentPlayer.getTileId();
         
-        // Find next valid position (one step)
         int newPosition = findNextPosition(oldPosition);
         
-        // If no valid move is found, end movement
         if (newPosition == oldPosition) {
             finishMovement();
             return;
         }
         
-        // Move player to new position
         movePlayer(currentPlayer, oldPosition, newPosition);
         
-        // Process any special tile actions
         processTileActions(currentPlayer, newPosition);
         
-        // Decrement move counter
         moveCounter--;
         notifyObservers(new GameEvent("MOVE_COUNTER_UPDATED", moveCounter));
         
-        // Check for victory after each step
         boolean hasWon = checkVictory(currentPlayer);
         if (hasWon) {
             notifyObservers(new GameEvent("GAME_WON", currentPlayer));
@@ -142,13 +135,11 @@ public class TreasureGameController extends GameController {
             return;
         }
         
-        // Call step complete callback if set
         if (onStepComplete != null) {
             onStepComplete.run();
         }
     }   
-    
-    /**
+      /**
      * Finish the movement sequence and pass to next player
      */    
     private void finishMovement() {
@@ -163,9 +154,20 @@ public class TreasureGameController extends GameController {
             if (current != null) {
                 int tileId = current.getTileId();
                 if (config.getTileType(tileId) == 2) {
-                    treasureFound = true;
-                    notifyObservers(new GameEvent("TREASURE_FOUND", 
-                        Map.of("player", current, "position", tileId)));
+                    // Check if this is the tile with the real treasure
+                    TreasureBoard board = getGameBoard();
+                    TreasureGameTile tile = board.getTile(tileId);
+                    
+                    if (tile.hasTreasure()) {
+                        // Player found the real treasure (Star of Africa)!
+                        treasureFound = true;
+                        notifyObservers(new GameEvent("TREASURE_FOUND", 
+                            Map.of("player", current, "position", tileId, "realTreasure", true)));
+                    } else {
+                        // Player dug up nothing but dirt
+                        notifyObservers(new GameEvent("TREASURE_FOUND", 
+                            Map.of("player", current, "position", tileId, "realTreasure", false)));
+                    }
                     return;
                 }
             }
@@ -209,14 +211,23 @@ public class TreasureGameController extends GameController {
         
         // If no valid move is found, stay in place
         return currentPosition;
-    }   
-      @Override
+    }       @Override
     public int processTileActions(Player player, int tileId) {
         // Check if this is a treasure location (type 2) AND we have 0 moves left
         if (config.getTileType(tileId) == 2 && moveCounter == 0) {
-            notifyObservers(new GameEvent("TREASURE_FOUND",
-                    Map.of("player", player, "position", tileId)));
-            treasureFound = true;
+            TreasureBoard board = getGameBoard();
+            TreasureGameTile tile = board.getTile(tileId);
+            
+            if (tile.hasTreasure()) {
+                // Player found the real treasure (Star of Africa)!
+                notifyObservers(new GameEvent("TREASURE_FOUND",
+                        Map.of("player", player, "position", tileId, "realTreasure", true)));
+                treasureFound = true;
+            } else {
+                // Player dug up nothing but dirt
+                notifyObservers(new GameEvent("TREASURE_FOUND",
+                        Map.of("player", player, "position", tileId, "realTreasure", false)));
+            }
         } else if (config.getTileType(tileId) == 2) {
             // Player is on a treasure tile but has moves left
             notifyObservers(new GameEvent("TREASURE_TILE",
@@ -235,6 +246,7 @@ public class TreasureGameController extends GameController {
         // Use the config class for walkability check to ensure consistency
         return config.isWalkable(tileId);
     }
+    
       /**
      * Checks if a move to the specified position is valid for the current player
      * 
@@ -394,8 +406,7 @@ public class TreasureGameController extends GameController {
             notifyObservers(new GameEvent("GAME_SETUP", this.players));
         }
     }   
-    
-    @Override
+      @Override
     public void resetGame() {
         // Find the correct start position
         int startPosition = config.findStartPosition();
@@ -405,6 +416,7 @@ public class TreasureGameController extends GameController {
             player.setTileId(startPosition);
         }
 
+        // Reset game state
         treasureFound = false;
         moveCounter = 0;
         isMoving = false;
@@ -413,6 +425,20 @@ public class TreasureGameController extends GameController {
         if (!players.isEmpty()) {
             currentPlayer = players.get(0);
         }
+        
+        // Reset the treasure position by reassigning it randomly
+        TreasureBoard board = getGameBoard();
+        
+        // Reset all tiles to not have treasure
+        for (int i = 1; i <= 100; i++) {
+            TreasureGameTile tile = board.getTile(i);
+            if (tile != null) {
+                tile.setHasTreasure(false);
+            }
+        }
+        
+        // Assign a new random treasure
+        board.assignRandomTreasure();
 
         notifyObservers(new GameEvent("GAME_RESET", players));
     }
