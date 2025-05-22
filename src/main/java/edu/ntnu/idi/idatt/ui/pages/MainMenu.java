@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -52,13 +53,19 @@ public class MainMenu extends Application {
 
     // Set up the main title
     Label titleLabel = new Label("Boardie");
-    titleLabel.getStyleClass().addAll("text-2xl", "font-bold", "text-black", "p-2");
+    titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #000000; -fx-padding: 8;");
 
     // Create menu buttons
     Button newGameButton = new Button("New Game");
     Button loadPlayersButton = new Button("Load Players from CSV");
     Button createPlayersButton = new Button("Create new Players");
     Button exitButton = new Button("Exit");
+
+    String baseButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;";
+    // Apply to newGameButton, loadPlayersButton, createPlayersButton
+    String primaryButtonStyle = baseButtonStyle + "-fx-background-color: #1976d2; -fx-text-fill: white; -fx-pref-width: Infinity;";
+    // Apply to exitButton
+    String destructiveButtonStyle = baseButtonStyle + "-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: Infinity;";
 
     // Style the buttons
     VBox div = new VBox();
@@ -69,6 +76,15 @@ public class MainMenu extends Application {
     loadPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     createPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
     exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
+
+    exitButton.setStyle(destructiveButtonStyle);
+    VBox.setVgrow(exitButton, Priority.ALWAYS);
+
+    div.setStyle("-fx-alignment: center; -fx-max-width: 200px; -fx-pref-height: 100%; -fx-padding: 16; -fx-spacing: 8;");
+    div.setSpacing(8); 
+    div.setPadding(new Insets(16)); 
+
+    VBox.setMargin(div, new Insets(16, 0, 0, 0));
 
     // Add actions to buttons
     newGameButton.setOnAction(e -> {
@@ -82,6 +98,11 @@ public class MainMenu extends Application {
       CreatePlayer.display();
     });
     exitButton.setOnAction(e -> Platform.exit());
+
+    // Set HBox.hgrow property for buttons
+    VBox.setVgrow(newGameButton, Priority.ALWAYS);
+    VBox.setVgrow(loadPlayersButton, Priority.ALWAYS);
+    VBox.setVgrow(createPlayersButton, Priority.ALWAYS);
 
     // Create layout for menu
     menuLayout.setAlignment(Pos.CENTER);
