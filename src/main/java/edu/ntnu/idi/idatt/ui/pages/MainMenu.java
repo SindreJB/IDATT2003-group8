@@ -45,12 +45,10 @@ public class MainMenu extends Application {
     this.primaryStage = primaryStage;
 
     // Create background
-    VBox menuLayout = new VBox(30);
-
-    // Set up the scene
+    VBox menuLayout = new VBox(30);    // Set up the scene
     Scene scene = new Scene(menuLayout);
-    scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
-
+    // Remove stylesheet reference - using inline styles only
+    
     // Set up the main title
     Label titleLabel = new Label("Boardie");
     titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #000000; -fx-padding: 8;");
@@ -65,19 +63,29 @@ public class MainMenu extends Application {
     // Apply to newGameButton, loadPlayersButton, createPlayersButton
     String primaryButtonStyle = baseButtonStyle + "-fx-background-color: #1976d2; -fx-text-fill: white; -fx-pref-width: Infinity;";
     // Apply to exitButton
-    String destructiveButtonStyle = baseButtonStyle + "-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: Infinity;";
-
-    // Style the buttons
+    String destructiveButtonStyle = baseButtonStyle + "-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: Infinity;";    // Style the buttons
     VBox div = new VBox();
     div.getChildren().addAll(newGameButton, loadPlayersButton, createPlayersButton, exitButton);
-    div.getStyleClass().addAll(
-        "items-center", "w-200", "h-full", "mt-4", "p-4", "space-y-2");
-    newGameButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    loadPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    createPlayersButton.getStyleClass().addAll("btn", "btn-primary", "w-full");
-    exitButton.getStyleClass().addAll("btn", "btn-destructive", "w-full");
-
+    
+    // Apply inline styles to buttons
+    newGameButton.setStyle(primaryButtonStyle);
+    loadPlayersButton.setStyle(primaryButtonStyle);
+    createPlayersButton.setStyle(primaryButtonStyle);
     exitButton.setStyle(destructiveButtonStyle);
+    
+    // Add hover effects
+    newGameButton.setOnMouseEntered(e -> newGameButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    newGameButton.setOnMouseExited(e -> newGameButton.setStyle(primaryButtonStyle));
+    
+    loadPlayersButton.setOnMouseEntered(e -> loadPlayersButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    loadPlayersButton.setOnMouseExited(e -> loadPlayersButton.setStyle(primaryButtonStyle));
+    
+    createPlayersButton.setOnMouseEntered(e -> createPlayersButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    createPlayersButton.setOnMouseExited(e -> createPlayersButton.setStyle(primaryButtonStyle));
+    
+    exitButton.setOnMouseEntered(e -> exitButton.setStyle(destructiveButtonStyle.replace("#f44336", "#d32f2f")));
+    exitButton.setOnMouseExited(e -> exitButton.setStyle(destructiveButtonStyle));
+    
     VBox.setVgrow(exitButton, Priority.ALWAYS);
 
     div.setStyle("-fx-alignment: center; -fx-max-width: 200px; -fx-pref-height: 100%; -fx-padding: 16; -fx-spacing: 8;");
