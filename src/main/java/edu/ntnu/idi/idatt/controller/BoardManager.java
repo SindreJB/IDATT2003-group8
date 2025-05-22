@@ -9,6 +9,7 @@ import edu.ntnu.idi.idatt.exceptions.FileReadException;
 import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.BoardConfig;
 import edu.ntnu.idi.idatt.persistence.JsonHandler;
+import javafx.scene.control.Alert;
 
 public class BoardManager {
 
@@ -17,7 +18,11 @@ public class BoardManager {
     try {
       Files.createDirectories(dataDir);
     } catch (IOException e) {
-      System.err.println("Failed to create boards directory: " + e.getMessage());
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("Failed to create data directory");
+      alert.setContentText("Could not create the data directory for boards.");
+      alert.showAndWait();
     }
     return dataDir;
   }
@@ -31,9 +36,9 @@ public class BoardManager {
     try {
       Path boardPath = getBoardsDirectory().resolve("empty.json");
       JsonHandler.writeToJson(emptyBoard, boardPath.toString());
-      System.out.println("Empty board saved to: " + boardPath);
     } catch (FileWriteException e) {
-      System.err.println("Error saving empty board: " + e.getMessage());
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
     }
   }
 
@@ -56,7 +61,6 @@ public class BoardManager {
     standardBoard.addSnake(47, 26);
     standardBoard.addSnake(62, 43);
     standardBoard.addSnake(87, 61);
-    standardBoard.addSnake(95, 73);
 
     // Add wormholes (entrance)
     standardBoard.addWormhole(5);
@@ -88,7 +92,6 @@ public class BoardManager {
     customBoard.addLadder(37, 65);
     customBoard.addLadder(48, 68);
     customBoard.addLadder(57, 82);
-    customBoard.addLadder(79, 96);
 
     // Add custom snakes (head -> tail)
     customBoard.addSnake(24, 6);
