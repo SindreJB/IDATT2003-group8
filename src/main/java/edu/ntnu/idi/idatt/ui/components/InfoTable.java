@@ -1,7 +1,5 @@
 package edu.ntnu.idi.idatt.ui.components;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
@@ -31,8 +29,7 @@ public class InfoTable {
    */
   public VBox createControlPanel(Runnable rollAction) {
     VBox panel = new VBox(15);
-    panel.setPadding(new Insets(20));
-    panel.setAlignment(Pos.TOP_CENTER);
+    panel.setStyle("-fx-padding: 20; -fx-alignment: top-center; -fx-spacing: 15;");
 
     panel.getChildren().addAll(
         createStatusDisplay(),
@@ -62,7 +59,8 @@ public class InfoTable {
     gameInfoLabel.setPrefWidth(200);
     gameInfoLabel.setPrefHeight(100);
     gameInfoLabel.setStyle(
-        "-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 5; -fx-background-color: #f8f8f8;");
+        "-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 5; " +
+        "-fx-background-color: #f8f8f8; -fx-font-size: 14px;");
     return gameInfoLabel;
   }
 
