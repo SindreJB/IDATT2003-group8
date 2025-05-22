@@ -110,8 +110,6 @@ public class BoardManager {
 
     Path boardPath = getBoardsDirectory().resolve(boardName + ".json");
     JsonHandler.writeToJson(customBoard, boardPath.toString());
-    System.out.println("Custom board saved to: " + boardPath);
-
     return boardPath;
   }
 
@@ -144,7 +142,6 @@ public class BoardManager {
 
     Path boardPath = getBoardsDirectory().resolve("wormhole.json");
     JsonHandler.writeToJson(wormholeBoard, boardPath.toString());
-    System.out.println("Wormhole board saved to: " + boardPath);
 
     return boardPath;
   }
