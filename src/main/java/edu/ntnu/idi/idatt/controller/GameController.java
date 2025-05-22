@@ -1,11 +1,12 @@
 package edu.ntnu.idi.idatt.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.AbstractBoard;
 import edu.ntnu.idi.idatt.model.Dice;
 import edu.ntnu.idi.idatt.model.Player;
@@ -188,12 +189,12 @@ public abstract class GameController {
    * @param filePath The path to save the CSV file
    * @return True if successful
    */
-  public boolean savePlayersToFile(String filePath) {
+  public boolean savePlayersToFile(String filePath) throws FileWriteException {
     try {
       CsvHandler.savePlayersToCsv(players, filePath);
       notifyObservers(new GameEvent("PLAYERS_SAVED", filePath));
       return true;
-    } catch (IOException e) {
+    } catch (FileWriteException e) {
       notifyObservers(new GameEvent("ERROR", "Error saving players: " + e.getMessage()));
       return false;
     }
@@ -205,7 +206,7 @@ public abstract class GameController {
    * @param filePath The path to the CSV file
    * @return True if successful
    */
-  public boolean loadPlayersFromFile(String filePath) {
+  public boolean loadPlayersFromFile(String filePath) throws FileReadException {
     try {
       List<Player> loadedPlayers = CsvHandler.loadPlayersFromCsv(filePath);
 
@@ -220,7 +221,7 @@ public abstract class GameController {
 
       notifyObservers(new GameEvent("PLAYERS_LOADED", loadedPlayers));
       return true;
-    } catch (IOException e) {
+    } catch (FileReadException e) {
       notifyObservers(new GameEvent("ERROR", "Error loading players: " + e.getMessage()));
       return false;
     }

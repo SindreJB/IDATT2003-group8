@@ -79,7 +79,6 @@ public class AnimationManager {
     ImageView playerPiece = gamePiece.createAnimationPiece(playerIndex);
     if (playerPiece == null) {
       // Skip animation if piece creation fails, but still handle the move
-      System.err.println("Animation piece creation failed for " + player.getName());
       gamePiece.addPlayerToTile(player, toPosition, toTile);
 
       // Re-enable roll button

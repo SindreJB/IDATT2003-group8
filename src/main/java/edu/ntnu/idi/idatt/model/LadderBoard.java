@@ -66,6 +66,9 @@ public class LadderBoard extends AbstractBoard<LadderGameTile> {
    */
   @Override
   public LadderGameTile getTile(int number) {
+    if (number < 1 || number > rows * columns) {
+      throw new IllegalArgumentException("Invalid tile number: " + number);
+    }
     return super.getTile(number);
   }
 

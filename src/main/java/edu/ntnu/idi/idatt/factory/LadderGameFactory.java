@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Random;
 
 import edu.ntnu.idi.idatt.controller.BoardManager;
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.BoardConfig;
 import edu.ntnu.idi.idatt.model.LadderBoard;
 import edu.ntnu.idi.idatt.model.LadderGameTile;
@@ -24,7 +26,7 @@ public class LadderGameFactory {
    * @return the created board
    * @throws IOException if there's an error reading or writing files
    */
-  public static LadderBoard createBoard(String boardName) throws IOException {
+  public static LadderBoard createBoard(String boardName) throws FileWriteException, FileReadException {
     // Check if the board configuration file exists
     Path boardPath = BoardManager.getBoardsDirectory().resolve(boardName + ".json");
 
@@ -132,16 +134,14 @@ public class LadderGameFactory {
    * @param boardName the name of the board configuration file
    * @return the created board, or empty if creation fails
    */
-  public static Optional<LadderBoard> tryCreateBoard(String boardName) {
+  public static Optional<LadderBoard> tryCreateBoard(String boardName) throws FileWriteException {
     try {
       return Optional.of(createBoard(boardName));
-    } catch (IOException | IllegalArgumentException e) {
-      System.err.println("Could not load board '" + boardName + "': " + e.getMessage());
+    } catch (FileWriteException | FileReadException e) {
       try {
         return Optional.of(createBoard("standard"));
-      } catch (IOException ex) {
-        System.err.println("Could not create standard board: " + ex.getMessage());
-        return Optional.empty();
+      } catch (FileReadException ex) {
+        throw new FileWriteException("Failed to create board: " + e.getMessage(), e);
       }
     }
   }

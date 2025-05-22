@@ -4,7 +4,10 @@ import java.util.List;
 
 import edu.ntnu.idi.idatt.model.Player;
 import javafx.geometry.Insets;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -260,7 +263,7 @@ public class GamePiece {
    * @param playerIndex the index of the player
    * @return the created ImageView or null if creation fails
    */
-  public javafx.scene.image.ImageView createAnimationPiece(int playerIndex) {
+  public ImageView createAnimationPiece(int playerIndex) {
     Player player = players.get(playerIndex);
 
     try {
@@ -279,20 +282,20 @@ public class GamePiece {
       shapeContainer.setBackground(javafx.scene.layout.Background.EMPTY);
 
       // Create snapshot parameters with transparent background
-      javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
+      SnapshotParameters params = new javafx.scene.SnapshotParameters();
       params.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
       // Take a snapshot
-      javafx.scene.image.WritableImage snapshot = shapeContainer.snapshot(params, null);
+      WritableImage snapshot = shapeContainer.snapshot(params, null);
 
       // Create an ImageView from the snapshot
-      javafx.scene.image.ImageView shapeView = new javafx.scene.image.ImageView(snapshot);
+      ImageView shapeView = new javafx.scene.image.ImageView(snapshot);
       shapeView.setFitWidth(tileSize * 0.35);
       shapeView.setFitHeight(tileSize * 0.35);
 
       return shapeView;
     } catch (Exception e) {
-      e.printStackTrace();
+
       return null;
     }
   }

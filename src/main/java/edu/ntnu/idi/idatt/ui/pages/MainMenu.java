@@ -1,9 +1,9 @@
 package edu.ntnu.idi.idatt.ui.pages;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import edu.ntnu.idi.idatt.ui.components.CreatePlayer;
@@ -139,7 +139,7 @@ public class MainMenu extends Application {
         } else {
           showAlert("Successfully loaded " + loadedPlayers.size() + " players.");
         }
-      } catch (IOException e) {
+      } catch (FileReadException e) {
         showAlert("Error loading players: " + e.getMessage());
       }
     }

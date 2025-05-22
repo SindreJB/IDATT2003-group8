@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.ntnu.idi.idatt.controller.LadderGameController;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.exceptions.LadderGameException;
 import edu.ntnu.idi.idatt.model.LadderBoard;
@@ -120,7 +121,8 @@ public class LadderGameBoardUI implements GameObserver {
    * @return the created game scene
    * @throws LadderGameException if there's an issue creating the game board
    */
-  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players) throws LadderGameException {
+  public Scene createGameScene(String boardType, Stage primaryStage, List<Player> players)
+      throws LadderGameException, FileWriteException {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
     root.setPadding(new Insets(30));
@@ -333,7 +335,7 @@ public class LadderGameBoardUI implements GameObserver {
    * @return the created game scene
    * 
    */
-  public Scene createGameScene(String boardType, Stage primaryStage) throws LadderGameException {
+  public Scene createGameScene(String boardType, Stage primaryStage) throws LadderGameException, FileWriteException {
     // Create a single default player
     List<Player> defaultPlayers = new ArrayList<>();
     defaultPlayers.add(new Player("Player 1", "TopHat", 1));

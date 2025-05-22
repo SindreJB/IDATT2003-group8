@@ -1,6 +1,5 @@
 package edu.ntnu.idi.idatt.persistence;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,6 +8,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
+import edu.ntnu.idi.idatt.exceptions.FileWriteException;
 import edu.ntnu.idi.idatt.model.Player;
 
 /**
@@ -26,22 +27,25 @@ public class CsvHandler {
    * @return a list of Player objects loaded from the file
    * @throws IOException if an I/O error occurs
    */
-  public static List<Player> loadPlayersFromCsv(String filePath) throws IOException {
+  public static List<Player> loadPlayersFromCsv(String filePath) throws FileReadException {
     List<Player> players = new ArrayList<>();
     Path path = Paths.get(filePath);
 
     if (!Files.exists(path)) {
-      throw new FileNotFoundException("File not found: " + filePath);
+      throw new FileReadException("File not found: " + filePath);
     }
-
-    List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-    for (String line : lines) {
-      String[] parts = line.split(",");
-      if (parts.length == 2) {
-        String name = parts[0].trim();
-        String pieceType = parts[1].trim();
-        players.add(new Player(name, pieceType, 1));
+    try {
+      List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+      for (String line : lines) {
+        String[] parts = line.split(",");
+        if (parts.length == 2) {
+          String name = parts[0].trim();
+          String pieceType = parts[1].trim();
+          players.add(new Player(name, pieceType, 1));
+        }
       }
+    } catch (IOException e) {
+      throw new FileReadException("Error reading file: " + filePath, e);
     }
 
     return players;
@@ -57,7 +61,7 @@ public class CsvHandler {
    * @param filePath the path to the CSV file
    * @throws IOException if an I/O error occurs
    */
-  public static void savePlayersToCsv(List<Player> players, String filePath) throws IOException {
+  public static void savePlayersToCsv(List<Player> players, String filePath) throws FileWriteException {
     Path path = Paths.get(filePath);
     List<String> lines = new ArrayList<>();
 
@@ -65,8 +69,11 @@ public class CsvHandler {
       String line = player.getName() + "," + player.getPieceType();
       lines.add(line);
     }
-
-    Files.write(path, lines, StandardCharsets.UTF_8);
+    try {
+      Files.write(path, lines, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new FileWriteException("Error writing to file: " + filePath, e);
+    }
   }
 
 }

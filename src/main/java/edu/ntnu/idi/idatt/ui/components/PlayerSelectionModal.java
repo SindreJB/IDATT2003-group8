@@ -1,14 +1,13 @@
 package edu.ntnu.idi.idatt.ui.components;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntnu.idi.idatt.exceptions.FileReadException;
 import edu.ntnu.idi.idatt.model.Player;
 import edu.ntnu.idi.idatt.persistence.CsvHandler;
 import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
 import edu.ntnu.idi.idatt.ui.TreasureGameBoardUI;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -86,7 +85,7 @@ public class PlayerSelectionModal {
         availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
         availablePieces.add(new PlayerConfig("Stian", "#000000"));
       }
-    } catch (IOException e) {
+    } catch (FileReadException e) {
       availablePieces.add(new PlayerConfig("Sindre", "#ffffff"));
       availablePieces.add(new PlayerConfig("Stian", "#000000"));
     }
@@ -141,14 +140,12 @@ public class PlayerSelectionModal {
     // Continue button
     Button continueButton = new Button("Continue");
     String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
-                               "-fx-background-color: #1976d2; -fx-text-fill: white;";
+        "-fx-background-color: #1976d2; -fx-text-fill: white;";
     continueButton.setStyle(primaryButtonStyle);
-    
+
     // Add hover effect
-    continueButton.setOnMouseEntered(e -> 
-        continueButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
-    continueButton.setOnMouseExited(e -> 
-        continueButton.setStyle(primaryButtonStyle));
+    continueButton.setOnMouseEntered(e -> continueButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    continueButton.setOnMouseExited(e -> continueButton.setStyle(primaryButtonStyle));
 
     continueButton.setOnAction(e -> {
       // Switch to player selection panel
@@ -204,26 +201,22 @@ public class PlayerSelectionModal {
 
     // Buttons
     String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
-                               "-fx-background-color: #1976d2; -fx-text-fill: white;";
+        "-fx-background-color: #1976d2; -fx-text-fill: white;";
     Button startButton = new Button("Start Game");
     startButton.setStyle(primaryButtonStyle);
-    
+
     // Add hover effect
-    startButton.setOnMouseEntered(e -> 
-        startButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
-    startButton.setOnMouseExited(e -> 
-        startButton.setStyle(primaryButtonStyle));
+    startButton.setOnMouseEntered(e -> startButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
+    startButton.setOnMouseExited(e -> startButton.setStyle(primaryButtonStyle));
 
     String secondaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
-                                 "-fx-background-color: #424242; -fx-text-fill: white;";
+        "-fx-background-color: #424242; -fx-text-fill: white;";
     Button backButton = new Button("Back");
     backButton.setStyle(secondaryButtonStyle);
-    
+
     // Add hover effect
-    backButton.setOnMouseEntered(e -> 
-        backButton.setStyle(secondaryButtonStyle.replace("#424242", "#323232")));
-    backButton.setOnMouseExited(e -> 
-        backButton.setStyle(secondaryButtonStyle));
+    backButton.setOnMouseEntered(e -> backButton.setStyle(secondaryButtonStyle.replace("#424242", "#323232")));
+    backButton.setOnMouseExited(e -> backButton.setStyle(secondaryButtonStyle));
 
     HBox buttonBox = new HBox(10);
     buttonBox.setAlignment(Pos.CENTER);
@@ -366,8 +359,7 @@ public class PlayerSelectionModal {
       }
     } catch (Exception e) {
       showAlert("Error starting game: " + e.getMessage());
-      System.err.println("Error starting game: " + e.getMessage());
-      e.printStackTrace();
+
     }
   }
 }
