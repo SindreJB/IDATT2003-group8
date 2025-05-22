@@ -8,7 +8,7 @@ public class App extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     MainMenu page = new MainMenu();
-    primaryStage.setWidth(1080);
+    primaryStage.setWidth(1200);
     primaryStage.setHeight(920);
     primaryStage.setResizable(false);
     page.start(primaryStage);
