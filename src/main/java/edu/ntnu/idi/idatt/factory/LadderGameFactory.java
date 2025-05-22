@@ -35,7 +35,6 @@ public class LadderGameFactory {
       switch (boardName) {
         case "standard" -> BoardManager.createStandardBoard();
         case "wormhole" -> BoardManager.createWormholeBoard();
-        case "custom" -> BoardManager.createCustomBoard(boardName);
         default -> throw new IllegalArgumentException("Unknown board type: " + boardName);
       }
     }

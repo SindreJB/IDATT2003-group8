@@ -2,15 +2,10 @@ package edu.ntnu.idi.idatt.ui.pages;
 
 import edu.ntnu.idi.idatt.ui.components.PlayerSelectionModal;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class GamesMenu {
@@ -35,41 +30,41 @@ public class GamesMenu {
 
     // Set button styles
     String primaryButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
-                               "-fx-background-color: #1976d2; -fx-text-fill: white; -fx-pref-width: Infinity;";
-    
+        "-fx-background-color: #1976d2; -fx-text-fill: white; -fx-pref-width: Infinity;";
+
     standardButton.setStyle(primaryButtonStyle);
     treasureButton.setStyle(primaryButtonStyle);
     wormholeButton.setStyle(primaryButtonStyle);
-    
+
     // Add hover effects to primary buttons
     treasureButton.setOnMouseEntered(e -> treasureButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
     treasureButton.setOnMouseExited(e -> treasureButton.setStyle(primaryButtonStyle));
-    
+
     standardButton.setOnMouseEntered(e -> standardButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
     standardButton.setOnMouseExited(e -> standardButton.setStyle(primaryButtonStyle));
-    
+
     wormholeButton.setOnMouseEntered(e -> wormholeButton.setStyle(primaryButtonStyle.replace("#1976d2", "#1565c0")));
     wormholeButton.setOnMouseExited(e -> wormholeButton.setStyle(primaryButtonStyle));
 
     // Back button
     Button backButton = new Button("Back to Menu");
     String destructiveButtonStyle = "-fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand; " +
-                                   "-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: Infinity;";
-    
+        "-fx-background-color: #f44336; -fx-text-fill: white; -fx-pref-width: Infinity;";
+
     backButton.setStyle(destructiveButtonStyle);
-    
+
     // Add hover and pressed effects to destructive button
     backButton.setOnMouseEntered(e -> backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#d32f2f")));
     backButton.setOnMouseExited(e -> backButton.setStyle(destructiveButtonStyle));
     backButton.setOnMousePressed(e -> backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#c62828")));
     backButton.setOnMouseReleased(e -> {
-        if (backButton.isHover()) {
-            backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#d32f2f"));
-        } else {
-            backButton.setStyle(destructiveButtonStyle);
-        }
+      if (backButton.isHover()) {
+        backButton.setStyle(destructiveButtonStyle.replace("#f44336", "#d32f2f"));
+      } else {
+        backButton.setStyle(destructiveButtonStyle);
+      }
     });
-    
+
     backButton.setOnAction(e -> {
       MainMenu mainMenu = new MainMenu();
       Scene mainMenuScene = mainMenu.createMainMenuScene(primaryStage);
@@ -78,10 +73,10 @@ public class GamesMenu {
 
     // Create layout
     VBox buttonContainer = new VBox(20);
-    buttonContainer.setStyle("-fx-alignment: center; -fx-max-width: 200px; -fx-pref-height: 100%; " + 
-                            "-fx-padding: 16; -fx-spacing: 8;");
+    buttonContainer.setStyle("-fx-alignment: center; -fx-max-width: 200px; -fx-pref-height: 100%; " +
+        "-fx-padding: 16; -fx-spacing: 8;");
     VBox.setMargin(buttonContainer, new Insets(16, 0, 0, 0)); // For margin-top
-    
+
     buttonContainer.getChildren().addAll(treasureButton, standardButton, wormholeButton, backButton);
     root.getChildren().addAll(titleLabel, buttonContainer);
 
