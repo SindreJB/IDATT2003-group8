@@ -1,6 +1,5 @@
 package edu.ntnu.idi.idatt.model;
 
-import edu.ntnu.idi.idatt.exceptions.InitializeLadderGameException;
 import edu.ntnu.idi.idatt.ui.LadderGameBoardUI;
 import edu.ntnu.idi.idatt.ui.pages.MainMenu;
 import javafx.application.Platform;
@@ -15,26 +14,30 @@ import javafx.stage.Stage;
 public class LadderGameActions implements GameActions {
 
   private final LadderGameBoardUI gameBoard;
-
   /**
    * Constructs a new LadderGameActionsImpl with a reference to the game board.
    * 
    * @param gameBoard The ladder game board that will be controlled
+   * @throws NullPointerException if gameBoard is null
    */
   public LadderGameActions(LadderGameBoardUI gameBoard) {
+    if (gameBoard == null) {
+      throw new NullPointerException("gameBoard cannot be null");
+    }
     this.gameBoard = gameBoard;
   }
 
   @Override
   public void restartGame() {
     try {
-      gameBoard.resetGame();
-    } catch (InitializeLadderGameException e) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText("Game Initialization Error");
-      alert.setContentText("An error occurred while restarting the game: " + e.getMessage());
-      alert.showAndWait();
+        gameBoard.resetGame();
+    } catch (Exception e) {
+        // Handle exception without propagating it
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Failed to restart game");
+        alert.setContentText("An error occurred: " + e.getMessage());
+        alert.showAndWait();
     }
   }
 
