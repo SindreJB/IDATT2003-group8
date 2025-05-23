@@ -17,7 +17,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainMenu extends Application {
-  private Stage primaryStage;
 
   @Override
   public void start(Stage primaryStage) {
@@ -34,7 +33,6 @@ public class MainMenu extends Application {
    * @return the created scene
    */
   public Scene createMainMenuScene(Stage primaryStage) {
-    this.primaryStage = primaryStage;
 
     // Create background
     VBox menuLayout = new VBox(30); // Set up the scene

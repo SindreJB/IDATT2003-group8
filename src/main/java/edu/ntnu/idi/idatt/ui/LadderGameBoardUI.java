@@ -72,13 +72,6 @@ public class LadderGameBoardUI implements GameObserver {
    * Sets up callbacks from the GameController to update the UI
    */
   private void setupControllerCallbacks() {
-    // Update UI when player turn changes
-    // gameController.setOnTurnChanged(() -> {
-    // Player currentPlayer = gameController.getCurrentPlayer();
-    // if (statusLabel != null) {
-    // statusLabel.setText(currentPlayer.getName() + "'s turn");
-    // }
-    // });
 
     // Handle dice roll results with UI feedback
     gameController.setOnDiceRolled((diceValue, message, oldPosition, newPosition) -> {
@@ -125,7 +118,7 @@ public class LadderGameBoardUI implements GameObserver {
       throws LadderGameException, FileWriteException {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
-    root.setPadding(new Insets(30));
+    root.setPadding(new Insets(20));
 
     // Register this view as an observer before loading board and players
     gameController.registerObserver(this, "PLAYER_MOVED", "TURN_CHANGED", "GAME_WON", "DICE_ROLLED");
@@ -148,12 +141,9 @@ public class LadderGameBoardUI implements GameObserver {
 
     // Create and set up the game board UI
     GridPane boardGrid = createGameBoardUI(gameBoard);
-    StackPane gameBoardPane = new StackPane();
+    GridPane gameBoardPane = new GridPane();
     gameBoardPane.getChildren().add(boardGrid);
-    gameBoardPane.setAlignment(Pos.CENTER);
-    boardGrid.setAlignment(Pos.CENTER);
     drawSnakesAndLadders(gameBoardPane, gameBoard);
-    root.setCenter(gameBoardPane);
 
     // Add padding around the board
     BorderPane.setMargin(boardGrid, new Insets(20));
@@ -181,10 +171,14 @@ public class LadderGameBoardUI implements GameObserver {
     // Setup player pieces on the board
     gamePiece.setupPlayerPieces(tilesMap.get(1));
 
-    Scene scene = new Scene(root, 800, 600);
+    Scene scene = new Scene(root);
+
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
+    gameBoardPane.setAlignment(Pos.CENTER);
+    boardGrid.setAlignment(Pos.CENTER);
+    root.setCenter(gameBoardPane);
 
     return scene;
   }
@@ -201,89 +195,73 @@ public class LadderGameBoardUI implements GameObserver {
     if (event == null)
       return;
 
-    // Process events based on their type
+    // Process events based on their type using rule-based switch
     switch (event.getType()) {
-      case "DICE_ROLLED":
-        Platform.runLater(() -> {
-          if (infoTable != null && event.getData() instanceof Integer) {
-            infoTable.updateDiceDisplay((Integer) event.getData());
+      case "DICE_ROLLED" -> Platform.runLater(() -> {
+        if (infoTable != null && event.getData() instanceof Integer) {
+          infoTable.updateDiceDisplay((Integer) event.getData());
+        }
+      });
+
+      case "PLAYER_MOVED" -> Platform.runLater(() -> {
+        if (event.getData() instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) event.getData();
+          Player player = (Player) data.get("player");
+          int oldPosition = (Integer) data.get("from");
+          int newPosition = (Integer) data.get("to");
+          boolean checkVictory = (Boolean) data.getOrDefault("checkVictory", false);
+
+          // Use the existing animation system
+          animatePlayerMove(player, oldPosition, newPosition, checkVictory);
+        }
+      });
+
+      case "TURN_CHANGED" -> Platform.runLater(() -> {
+        if (statusLabel != null && event.getData() instanceof Player) {
+          Player player = (Player) event.getData();
+          statusLabel.setText(player.getName() + "'s turn");
+        }
+      });
+
+      case "GAME_WON" -> Platform.runLater(() -> {
+        if (event.getData() instanceof Player winner) {
+          String victoryMessage = winner.getName() + " has won the game!";
+
+          if (gameInfoLabel != null) {
+            gameInfoLabel.setText(victoryMessage);
           }
-        });
-        break;
 
-      case "PLAYER_MOVED":
-        Platform.runLater(() -> {
-          if (event.getData() instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> data = (Map<String, Object>) event.getData();
-            Player player = (Player) data.get("player");
-            int oldPosition = (Integer) data.get("from");
-            int newPosition = (Integer) data.get("to");
-            boolean checkVictory = (Boolean) data.getOrDefault("checkVictory", false);
-
-            // Use the existing animation system
-            animatePlayerMove(player, oldPosition, newPosition, checkVictory);
+          if (infoTable != null) {
+            infoTable.setRollEnabled(false);
           }
-        });
-        break;
 
-      case "TURN_CHANGED":
-        Platform.runLater(() -> {
-          if (statusLabel != null && event.getData() instanceof Player) {
-            Player player = (Player) event.getData();
-            statusLabel.setText(player.getName() + "'s turn");
-          }
-        });
-        break;
+          // Show victory alert
+          showGameOverAlert("Game Over", victoryMessage);
+        }
+      });
 
-      case "GAME_WON":
-        Platform.runLater(() -> {
-          if (event.getData() instanceof Player) {
-            Player winner = (Player) event.getData();
-            String victoryMessage = winner.getName() + " has won the game!";
-
-            if (gameInfoLabel != null) {
-              gameInfoLabel.setText(victoryMessage);
-            }
-
-            if (infoTable != null) {
-              infoTable.setRollEnabled(false);
-            }
-
-            // Show victory alert
-            showGameOverAlert("Game Over", victoryMessage);
-          }
-        });
-        break;
-
-      case "LADDER_CLIMBED":
-      case "SNAKE_SLIDE":
-      case "WORMHOLE_TELEPORT":
+      case "LADDER_CLIMBED", "SNAKE_SLIDE", "WORMHOLE_TELEPORT" -> {
         if (event.getData() instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, Object> data = (Map<String, Object>) event.getData();
           handleSpecialTileEvent(event.getType(), data);
         }
-        break;
+      }
 
-      case "BOARD_LOADED":
-        Platform.runLater(() -> {
-          if (event.getData() instanceof LadderBoard) {
-            LadderBoard board = (LadderBoard) event.getData();
-            if (gameInfoLabel != null) {
-              gameInfoLabel.setText("Board loaded: " + board.getName() + "\n" + board.getDescription());
-            }
+      case "BOARD_LOADED" -> Platform.runLater(() -> {
+        if (event.getData() instanceof LadderBoard board) {
+          if (gameInfoLabel != null) {
+            gameInfoLabel.setText("Board loaded: " + board.getName() + "\n" + board.getDescription());
           }
-        });
-        break;
+        }
+      });
 
-      case "ERROR":
-        Platform.runLater(() -> {
-          if (event.getData() != null) {
-            showAlert(event.getData().toString());
-          }
-        });
-        break;
+      case "ERROR" -> Platform.runLater(() -> {
+        if (event.getData() != null) {
+          showAlert(event.getData().toString());
+        }
+      });
     }
   }
 
@@ -302,25 +280,22 @@ public class LadderGameBoardUI implements GameObserver {
       int from = (Integer) data.get("from");
       int to = (Integer) data.get("to");
 
-      String message = "";
-      switch (eventType) {
-        case "LADDER_CLIMBED":
-          message = player.getName() + " climbed a ladder from " + from + " to " + to;
-          break;
-        case "SNAKE_SLIDE":
-          message = player.getName() + " slid down a snake from " + from + " to " + to;
-          break;
-        case "WORMHOLE_TELEPORT":
+      String message;
+      message = switch (eventType) {
+        case "LADDER_CLIMBED" -> player.getName() + " climbed a ladder from " + from + " to " + to;
+        case "SNAKE_SLIDE" -> player.getName() + " slid down a snake from " + from + " to " + to;
+        case "WORMHOLE_TELEPORT" -> {
           int movement = (Integer) data.get("movement");
           if (movement > 0) {
-            message = player.getName() + " was teleported forward " + movement + " spaces by a wormhole!";
+            yield player.getName() + " was teleported forward " + movement + " spaces by a wormhole!";
           } else if (movement < 0) {
-            message = player.getName() + " was teleported backward " + Math.abs(movement) + " spaces by a wormhole!";
+            yield player.getName() + " was teleported backward " + Math.abs(movement) + " spaces by a wormhole!";
           } else {
-            message = player.getName() + " entered a wormhole but came out in the same place!";
+            yield player.getName() + " entered a wormhole but came out in the same place!";
           }
-          break;
-      }
+        }
+        default -> "";
+      };
 
       gameInfoLabel.setText(message);
     });
@@ -422,7 +397,7 @@ public class LadderGameBoardUI implements GameObserver {
   /**
    * Draws snakes and ladders on the grid based on the loaded board configuration
    */
-  private void drawSnakesAndLadders(StackPane gridPane, LadderBoard gameBoard) {
+  private void drawSnakesAndLadders(GridPane gridPane, LadderBoard gameBoard) {
     // Draw ladders and snakes after all tiles are created
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
@@ -438,7 +413,7 @@ public class LadderGameBoardUI implements GameObserver {
   /**
    * Draws a connection (snake, ladder, or wormhole) between two tiles
    */
-  private void drawConnection(LadderGameTile tile, StackPane pane) {
+  private void drawConnection(LadderGameTile tile, GridPane pane) {
     StackPane startTile = tilesMap.get(tile.getNumber());
     StackPane endTile;
 

@@ -155,20 +155,14 @@ public class GamePiece {
    * @return The appropriate size for each piece
    */
   private double calculatePieceSize(int playerCount) {
-    switch (playerCount) {
-      case 1:
-        return tileSize * 0.45; // Single player - larger piece
-      case 2:
-        return tileSize * 0.35; // Two players - medium pieces
-      case 3:
-        return tileSize * 0.3; // Three players
-      case 4:
-        return tileSize * 0.25; // Four players
-      case 5:
-        return tileSize * 0.2; // Five players - smallest pieces
-      default:
-        return tileSize * 0.3; // Default size
-    }
+    return switch (playerCount) {
+      case 1 -> tileSize * 0.45; // Single player - larger piece
+      case 2 -> tileSize * 0.35; // Two players - medium pieces
+      case 3 -> tileSize * 0.3; // Three players
+      case 4 -> tileSize * 0.25; // Four players
+      case 5 -> tileSize * 0.2; // Five players - smallest pieces
+      default -> tileSize * 0.3; // Default size
+    };
   }
 
   /**
@@ -179,57 +173,46 @@ public class GamePiece {
    * @return The appropriate margin to position this piece
    */
   private Insets calculatePieceMargin(int playerIndex, int playerCount) {
-    if (playerCount == 1) {
-      // Single player - center
-      return new Insets(0, 0, 0, 0);
-    } else if (playerCount == 2) {
-      // Two players - side by side
-      return new Insets(0,
-          playerIndex == 0 ? 10 : -10, 0,
-          playerIndex == 0 ? -10 : 10);
-    } else if (playerCount == 3) {
-      // Three players - triangle formation
-      switch (playerIndex) {
-        case 0:
-          return new Insets(-10, 0, 0, 0); // Top
-        case 1:
-          return new Insets(5, -10, 0, 0); // Bottom left
-        case 2:
-          return new Insets(5, 10, 0, 0); // Bottom right
-        default:
-          return new Insets(0, 0, 0, 0);
+    return switch (playerCount) {
+      case 1 ->
+        // Single player - center
+        new Insets(0, 0, 0, 0);
+      case 2 ->
+        // Two players - side by side
+        new Insets(0,
+            playerIndex == 0 ? 10 : -10, 0,
+            playerIndex == 0 ? -10 : 10);
+      case 3 -> {
+        // Three players - triangle formation
+        yield switch (playerIndex) {
+          case 0 -> new Insets(-10, 0, 0, 0); // Top
+          case 1 -> new Insets(5, -10, 0, 0); // Bottom left
+          case 2 -> new Insets(5, 10, 0, 0); // Bottom right
+          default -> new Insets(0, 0, 0, 0);
+        };
       }
-    } else if (playerCount == 4) {
-      // Four players - diamond formation
-      switch (playerIndex) {
-        case 0:
-          return new Insets(-10, 0, 0, 0); // Top
-        case 1:
-          return new Insets(0, -10, 0, 0); // Left
-        case 2:
-          return new Insets(0, 10, 0, 0); // Right
-        case 3:
-          return new Insets(10, 0, 0, 0); // Bottom
-        default:
-          return new Insets(0, 0, 0, 0);
+      case 4 -> {
+        // Four players - diamond formation
+        yield switch (playerIndex) {
+          case 0 -> new Insets(-10, 0, 0, 0); // Top
+          case 1 -> new Insets(0, -10, 0, 0); // Left
+          case 2 -> new Insets(0, 10, 0, 0); // Right
+          case 3 -> new Insets(10, 0, 0, 0); // Bottom
+          default -> new Insets(0, 0, 0, 0);
+        };
       }
-    } else {
-      // Five players - spread across the tile
-      switch (playerIndex) {
-        case 0:
-          return new Insets(-10, 0, 0, 0); // Top center
-        case 1:
-          return new Insets(-5, -10, 0, 0); // Top left
-        case 2:
-          return new Insets(-5, 10, 0, 0); // Top right
-        case 3:
-          return new Insets(10, -10, 0, 0); // Bottom left
-        case 4:
-          return new Insets(10, 10, 0, 0); // Bottom right
-        default:
-          return new Insets(0, 0, 0, 0);
+      default -> {
+        // Five players - spread across the tile
+        yield switch (playerIndex) {
+          case 0 -> new Insets(-10, 0, 0, 0); // Top center
+          case 1 -> new Insets(-5, -10, 0, 0); // Top left
+          case 2 -> new Insets(-5, 10, 0, 0); // Top right
+          case 3 -> new Insets(10, -10, 0, 0); // Bottom left
+          case 4 -> new Insets(10, 10, 0, 0); // Bottom right
+          default -> new Insets(0, 0, 0, 0);
+        };
       }
-    }
+    };
   }
 
   /**
@@ -298,6 +281,7 @@ public class GamePiece {
       return null;
     }
   }
+
   /**
    * Preserves background and labels in a tile by removing only player pieces
    *
@@ -307,13 +291,13 @@ public class GamePiece {
     // Remove any StackPane containers (which contain player pieces)
     // but keep the background rectangle and labels
     java.util.List<javafx.scene.Node> nodesToRemove = new java.util.ArrayList<>();
-    
+
     for (javafx.scene.Node node : tile.getChildren()) {
       if (node instanceof StackPane && node != tile) {
         nodesToRemove.add(node);
       }
     }
-    
+
     // Remove only the player containers
     tile.getChildren().removeAll(nodesToRemove);
   }
