@@ -9,56 +9,56 @@ import javafx.stage.Stage;
 
 public class TreasureGameActions implements GameActions {
 
-    private final TreasureGameBoardUI gameBoard;
+  private final TreasureGameBoardUI gameBoard;
 
-    public TreasureGameActions(TreasureGameBoardUI gameBoard) {
-        this.gameBoard = gameBoard;
+  public TreasureGameActions(TreasureGameBoardUI gameBoard) {
+    this.gameBoard = gameBoard;
+  }
+
+  @Override
+  public void restartGame() {
+    try {
+      gameBoard.resetGame();
+    } catch (Exception e) {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("Game Initialization Error");
+      alert.setContentText("An error occurred while restarting the game: " + e.getMessage());
+      alert.showAndWait();
     }
+  }
 
-    @Override
-    public void restartGame() {
-        try {
-            gameBoard.resetGame();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Game Initialization Error");
-            alert.setContentText("An error occurred while restarting the game: " + e.getMessage());
-            alert.showAndWait();
-        }
+  @Override
+  public void startNewGame() {
+    try {
+      // Get the current stage from the game board's scene
+      Stage stage = (Stage) gameBoard.getRoot().getScene().getWindow();
+
+      // Create a new MainMenu instance
+      MainMenu mainMenu = new MainMenu();
+
+      // Create the main menu scene
+      Scene mainMenuScene = mainMenu.createMainMenuScene(stage);
+
+      // Set the main menu scene on the stage
+      stage.setScene(mainMenuScene);
+      stage.setTitle("Boardgame Menu");
+
+      // Adjust stage size to match main menu
+      stage.setWidth(1200);
+      stage.setHeight(920);
+      stage.centerOnScreen();
+    } catch (Exception e) {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("Navigation Error");
+      alert.setContentText("Unable to return to main menu: " + e.getMessage());
+      alert.showAndWait();
     }
+  }
 
-    @Override
-    public void startNewGame() {
-        try {
-            // Get the current stage from the game board's scene
-            Stage stage = (Stage) gameBoard.getRoot().getScene().getWindow();
-
-            // Create a new MainMenu instance
-            MainMenu mainMenu = new MainMenu();
-
-            // Create the main menu scene
-            Scene mainMenuScene = mainMenu.createMainMenuScene(stage);
-
-            // Set the main menu scene on the stage
-            stage.setScene(mainMenuScene);
-            stage.setTitle("Boardgame Menu");
-
-            // Adjust stage size to match main menu
-            stage.setWidth(1200);
-            stage.setHeight(920);
-            stage.centerOnScreen();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Navigation Error");
-            alert.setContentText("Unable to return to main menu: " + e.getMessage());
-            alert.showAndWait();
-        }
-    }
-
-    @Override
-    public void exitGame() {
-        Platform.exit();
-    }
+  @Override
+  public void exitGame() {
+    Platform.exit();
+  }
 }

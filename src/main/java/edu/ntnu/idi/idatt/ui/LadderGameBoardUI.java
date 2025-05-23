@@ -201,89 +201,73 @@ public class LadderGameBoardUI implements GameObserver {
     if (event == null)
       return;
 
-    // Process events based on their type
+    // Process events based on their type using rule-based switch
     switch (event.getType()) {
-      case "DICE_ROLLED":
-        Platform.runLater(() -> {
-          if (infoTable != null && event.getData() instanceof Integer) {
-            infoTable.updateDiceDisplay((Integer) event.getData());
+      case "DICE_ROLLED" -> Platform.runLater(() -> {
+        if (infoTable != null && event.getData() instanceof Integer) {
+          infoTable.updateDiceDisplay((Integer) event.getData());
+        }
+      });
+
+      case "PLAYER_MOVED" -> Platform.runLater(() -> {
+        if (event.getData() instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) event.getData();
+          Player player = (Player) data.get("player");
+          int oldPosition = (Integer) data.get("from");
+          int newPosition = (Integer) data.get("to");
+          boolean checkVictory = (Boolean) data.getOrDefault("checkVictory", false);
+
+          // Use the existing animation system
+          animatePlayerMove(player, oldPosition, newPosition, checkVictory);
+        }
+      });
+
+      case "TURN_CHANGED" -> Platform.runLater(() -> {
+        if (statusLabel != null && event.getData() instanceof Player) {
+          Player player = (Player) event.getData();
+          statusLabel.setText(player.getName() + "'s turn");
+        }
+      });
+
+      case "GAME_WON" -> Platform.runLater(() -> {
+        if (event.getData() instanceof Player winner) {
+          String victoryMessage = winner.getName() + " has won the game!";
+
+          if (gameInfoLabel != null) {
+            gameInfoLabel.setText(victoryMessage);
           }
-        });
-        break;
 
-      case "PLAYER_MOVED":
-        Platform.runLater(() -> {
-          if (event.getData() instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> data = (Map<String, Object>) event.getData();
-            Player player = (Player) data.get("player");
-            int oldPosition = (Integer) data.get("from");
-            int newPosition = (Integer) data.get("to");
-            boolean checkVictory = (Boolean) data.getOrDefault("checkVictory", false);
-
-            // Use the existing animation system
-            animatePlayerMove(player, oldPosition, newPosition, checkVictory);
+          if (infoTable != null) {
+            infoTable.setRollEnabled(false);
           }
-        });
-        break;
 
-      case "TURN_CHANGED":
-        Platform.runLater(() -> {
-          if (statusLabel != null && event.getData() instanceof Player) {
-            Player player = (Player) event.getData();
-            statusLabel.setText(player.getName() + "'s turn");
-          }
-        });
-        break;
+          // Show victory alert
+          showGameOverAlert("Game Over", victoryMessage);
+        }
+      });
 
-      case "GAME_WON":
-        Platform.runLater(() -> {
-          if (event.getData() instanceof Player) {
-            Player winner = (Player) event.getData();
-            String victoryMessage = winner.getName() + " has won the game!";
-
-            if (gameInfoLabel != null) {
-              gameInfoLabel.setText(victoryMessage);
-            }
-
-            if (infoTable != null) {
-              infoTable.setRollEnabled(false);
-            }
-
-            // Show victory alert
-            showGameOverAlert("Game Over", victoryMessage);
-          }
-        });
-        break;
-
-      case "LADDER_CLIMBED":
-      case "SNAKE_SLIDE":
-      case "WORMHOLE_TELEPORT":
+      case "LADDER_CLIMBED", "SNAKE_SLIDE", "WORMHOLE_TELEPORT" -> {
         if (event.getData() instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, Object> data = (Map<String, Object>) event.getData();
           handleSpecialTileEvent(event.getType(), data);
         }
-        break;
+      }
 
-      case "BOARD_LOADED":
-        Platform.runLater(() -> {
-          if (event.getData() instanceof LadderBoard) {
-            LadderBoard board = (LadderBoard) event.getData();
-            if (gameInfoLabel != null) {
-              gameInfoLabel.setText("Board loaded: " + board.getName() + "\n" + board.getDescription());
-            }
+      case "BOARD_LOADED" -> Platform.runLater(() -> {
+        if (event.getData() instanceof LadderBoard board) {
+          if (gameInfoLabel != null) {
+            gameInfoLabel.setText("Board loaded: " + board.getName() + "\n" + board.getDescription());
           }
-        });
-        break;
+        }
+      });
 
-      case "ERROR":
-        Platform.runLater(() -> {
-          if (event.getData() != null) {
-            showAlert(event.getData().toString());
-          }
-        });
-        break;
+      case "ERROR" -> Platform.runLater(() -> {
+        if (event.getData() != null) {
+          showAlert(event.getData().toString());
+        }
+      });
     }
   }
 
@@ -302,25 +286,22 @@ public class LadderGameBoardUI implements GameObserver {
       int from = (Integer) data.get("from");
       int to = (Integer) data.get("to");
 
-      String message = "";
-      switch (eventType) {
-        case "LADDER_CLIMBED":
-          message = player.getName() + " climbed a ladder from " + from + " to " + to;
-          break;
-        case "SNAKE_SLIDE":
-          message = player.getName() + " slid down a snake from " + from + " to " + to;
-          break;
-        case "WORMHOLE_TELEPORT":
+      String message;
+      message = switch (eventType) {
+        case "LADDER_CLIMBED" -> player.getName() + " climbed a ladder from " + from + " to " + to;
+        case "SNAKE_SLIDE" -> player.getName() + " slid down a snake from " + from + " to " + to;
+        case "WORMHOLE_TELEPORT" -> {
           int movement = (Integer) data.get("movement");
           if (movement > 0) {
-            message = player.getName() + " was teleported forward " + movement + " spaces by a wormhole!";
+            yield player.getName() + " was teleported forward " + movement + " spaces by a wormhole!";
           } else if (movement < 0) {
-            message = player.getName() + " was teleported backward " + Math.abs(movement) + " spaces by a wormhole!";
+            yield player.getName() + " was teleported backward " + Math.abs(movement) + " spaces by a wormhole!";
           } else {
-            message = player.getName() + " entered a wormhole but came out in the same place!";
+            yield player.getName() + " entered a wormhole but came out in the same place!";
           }
-          break;
-      }
+        }
+        default -> "";
+      };
 
       gameInfoLabel.setText(message);
     });
