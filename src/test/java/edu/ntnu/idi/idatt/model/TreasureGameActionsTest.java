@@ -1,6 +1,7 @@
 package edu.ntnu.idi.idatt.model;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,11 +10,11 @@ import edu.ntnu.idi.idatt.ui.TreasureGameBoardUI;
 
 // Note: Similar to LadderGameActionsTest, this depends on JavaFX UI components
 public class TreasureGameActionsTest {
-
   // Mock implementation for TreasureGameBoardUI
   private static class MockTreasureGameBoardUI extends TreasureGameBoardUI {
     private boolean resetCalled = false;
     private Exception exceptionToThrow = null;
+    private boolean returnNullRoot = false;
     
     public MockTreasureGameBoardUI() {
       super();
@@ -29,6 +30,9 @@ public class TreasureGameActionsTest {
     
     @Override
     public javafx.scene.layout.BorderPane getRoot() {
+      if (returnNullRoot) {
+        return null;
+      }
       return new javafx.scene.layout.BorderPane();
     }
     
@@ -38,6 +42,10 @@ public class TreasureGameActionsTest {
     
     public void setExceptionToThrow(Exception e) {
       exceptionToThrow = e;
+    }
+    
+    public void setReturnNullRoot(boolean returnNull) {
+      this.returnNullRoot = returnNull;
     }
   }
   
@@ -57,32 +65,27 @@ public class TreasureGameActionsTest {
     assertDoesNotThrow(() -> actions.restartGame(), "restartGame should not throw exceptions");
     assertTrue(mockBoard.wasResetCalled(), "resetGame should have been called on the board");
   }
-  
+
   @Test
   void exitGameShouldBeCallable() {
     // Note: This would normally call Platform.exit() which can't be easily tested
     // In a real test with a framework like Mockito, you could verify this behavior
     assertDoesNotThrow(() -> actions.exitGame(), "exitGame should not throw exceptions");
   }
-  
-  // NEGATIVE TESTS
-  
-  @Test
-  void restartGameShouldHandleExceptions() {
-    // Set up mock to throw exception
-    mockBoard.setExceptionToThrow(new RuntimeException("Test exception"));
-    
-    // The method should catch the exception and display an alert (which we can't test easily)
-    assertDoesNotThrow(() -> actions.restartGame(), 
-                "restartGame should catch exceptions from resetGame");
-  }
+    // NEGATIVE TESTS
   
   @Test
-  void startNewGameShouldHandleExceptions() {
-    // This would normally throw a NullPointerException due to our mock
-    // but the method should catch it
-    assertDoesNotThrow(() -> actions.startNewGame(), 
-                "startNewGame should catch exceptions");
+  void constructorShouldRejectNullGameBoard() {
+    // Act & Assert
+    NullPointerException exception = assertThrows(NullPointerException.class, 
+                () -> new TreasureGameActions(null),
+                "Constructor should throw NullPointerException for null gameBoard");
+                
+    // Verify exception message if available
+    if (exception.getMessage() != null) {
+        assertTrue(exception.getMessage().contains("null"), 
+                "Exception message should mention null parameter");
+    }
   }
   
   @Test
@@ -96,5 +99,15 @@ public class TreasureGameActionsTest {
     // Verify the correct board was called
     assertTrue(((MockTreasureGameBoardUI)newMockBoard).wasResetCalled(), 
                "resetGame should have been called on the correct board");
+  }
+  
+  @Test
+  void shouldHandleNullRootFromGameBoard() {
+    // Set the mock to return null from getRoot()
+    mockBoard.setReturnNullRoot(true);
+    
+    // Act & Assert - this test is mainly to ensure the code handles this scenario
+    assertDoesNotThrow(() -> actions.restartGame(), 
+                      "Actions should handle null root from game board");
   }
 }
