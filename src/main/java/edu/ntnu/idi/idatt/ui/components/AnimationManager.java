@@ -25,6 +25,7 @@ public class AnimationManager {
   private final GamePiece gamePiece;
   private final Map<Integer, StackPane> tilesMap;
   private final InfoTable infoTable;
+  private int millis = 500;
 
   /**
    * Creates a new AnimationManager.
@@ -37,6 +38,25 @@ public class AnimationManager {
    */
   public AnimationManager(BorderPane root, GamePiece gamePiece,
       Map<Integer, StackPane> tilesMap, InfoTable infoTable, int tileSize) {
+    this.root = root;
+    this.gamePiece = gamePiece;
+    this.tilesMap = tilesMap;
+    this.infoTable = infoTable;
+    this.TILE_SIZE = tileSize;
+  }
+
+  /**
+   * Creates a new AnimationManager.
+   *
+   * @param root      The root BorderPane of the game UI
+   * @param gamePiece The GamePiece component for creating player pieces
+   * @param tilesMap  Map of tile positions to StackPane UI elements
+   * @param infoTable The InfoTable for UI updates
+   * @param tileSize  The size of each tile
+   */
+  public AnimationManager(BorderPane root, GamePiece gamePiece,
+      Map<Integer, StackPane> tilesMap, InfoTable infoTable, int tileSize, int millis) {
+    this.millis = millis;
     this.root = root;
     this.gamePiece = gamePiece;
     this.tilesMap = tilesMap;
@@ -107,7 +127,7 @@ public class AnimationManager {
     double endY = toBounds.getMinY() + (toBounds.getHeight() - playerPiece.getFitHeight()) / 2;
 
     // Create animation
-    TranslateTransition transition = new TranslateTransition(Duration.millis(500), animationPane);
+    TranslateTransition transition = new TranslateTransition(Duration.millis(millis), animationPane);
     transition.setToX(endX);
     transition.setToY(endY);
 
@@ -122,6 +142,7 @@ public class AnimationManager {
 
     transition.play();
   }
+
   /**
    * Removes all player pieces from the given tile.
    * The player pieces are removed from the tile to prepare for the next move.
@@ -132,7 +153,7 @@ public class AnimationManager {
     // We only want to remove the player pieces (StackPane containers),
     // but keep the background rectangle and label
     List<Node> nodesToRemove = new ArrayList<>();
-    
+
     for (Node node : tile.getChildren()) {
       // Only remove StackPane containers (which contain player pieces)
       // and preserve everything else (rectangle background and label)
@@ -140,7 +161,7 @@ public class AnimationManager {
         nodesToRemove.add(node);
       }
     }
-    
+
     // Remove only the player containers
     tile.getChildren().removeAll(nodesToRemove);
   }

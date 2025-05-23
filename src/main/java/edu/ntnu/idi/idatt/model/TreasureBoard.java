@@ -21,7 +21,7 @@ public class TreasureBoard extends AbstractBoard<TreasureGameTile> {
     this.rows = rows;
     this.columns = columns;
   }
-  
+
   /**
    * Initialize the board with a random treasure location.
    * Should be called after board creation.
@@ -30,30 +30,30 @@ public class TreasureBoard extends AbstractBoard<TreasureGameTile> {
     initializeTiles();
     assignRandomTreasure();
   }
-    /**
+
+  /**
    * Assign a random treasure to one of the type 2 tiles.
    */
   public void assignRandomTreasure() {
     List<TreasureGameTile> treasureTiles = new ArrayList<>();
-    
+
     // Find all treasure tiles (type 2)
     for (TreasureGameTile tile : tiles) {
       if (tile.getTileType() == 2) {
         treasureTiles.add(tile);
       }
     }
-    
+
     if (!treasureTiles.isEmpty()) {
       Random random = new Random();
       int randomIndex = random.nextInt(treasureTiles.size());
       TreasureGameTile chosenTile = treasureTiles.get(randomIndex);
       chosenTile.setHasTreasure(true);
       treasureTileId = chosenTile.getNumber();
-      
-      System.out.println("DEBUG: Treasure placed at tile " + treasureTileId);
+
     }
   }
-  
+
   /**
    * Initialize tiles in a tree-like pattern.
    * Uses TreasureBoardConfig for tile type information.
@@ -66,17 +66,17 @@ public class TreasureBoard extends AbstractBoard<TreasureGameTile> {
 
     for (int i = 0; i < totalTiles; i++) {
       int tileId = i + 1;
-      
+
       TreasureGameTile tile = new TreasureGameTile(tileId);
       // Set the tile type from the board configuration
       int tileType = config.getTileType(tileId);
       tile.setTileType(tileType);
-      
+
       // Add to the list of all tiles
       tiles.add(tile);
     }
   }
-  
+
   /**
    * Gets the ID of the tile that contains the real treasure
    * 
@@ -85,7 +85,7 @@ public class TreasureBoard extends AbstractBoard<TreasureGameTile> {
   public int getTreasureTileId() {
     return treasureTileId;
   }
-  
+
   @Override
   public TreasureGameTile getTile(int number) {
     return super.getTile(number);
