@@ -181,7 +181,7 @@ public class LadderGameBoardUI implements GameObserver {
     // Setup player pieces on the board
     gamePiece.setupPlayerPieces(tilesMap.get(1));
 
-    Scene scene = new Scene(root, 800, 600);
+    Scene scene = new Scene(root);
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
