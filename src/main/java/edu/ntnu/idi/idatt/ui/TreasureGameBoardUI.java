@@ -197,11 +197,19 @@ private TreasureBoard createCustomBoard() {
 
         switch (tileType) {
             case 1:
-                tile.setStyle("-fx-background-color:rgba(130, 85, 0, 0.5);" +
-                    "-fx-padding: 5px 8px;"+
-                    " -fx-background-radius: 6px;"+
-                    "-fx-border-radius: 6px;"+
-                    " -fx-alignment: center;");
+                tile.setAlignment(Pos.CENTER);   
+
+                StackPane smallTile = new StackPane();
+                int smallerSize = TILE_SIZE / 2;
+                smallTile.setPrefSize(smallerSize, smallerSize);
+                smallTile.setMaxSize(smallerSize, smallerSize);
+                smallTile.setMinSize(smallerSize, smallerSize);
+                smallTile.setStyle("-fx-background-color: red;" +
+                "-fx-padding: 2px;" +
+                "-fx-background-radius: " + (smallerSize / 4) + "px;" +
+                "-fx-border-radius: " + (smallerSize / 4) + "px;" +
+                "-fx-alignment: center;");
+                tile.getChildren().add(smallTile);
                 break;
             case 2:
                 tile.setStyle("-fx-background-color:rgb(212,175,25);" +
