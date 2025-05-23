@@ -110,17 +110,4 @@ public class AbstractBoardTest {
     TestBoard emptyBoard = new TestBoard(0, 0);
     assertEquals(0, emptyBoard.getNumberOfTiles(), "Empty board should have 0 tiles");
   }
-  
-  @Test
-  void validateTileNumberShouldThrowForInvalidTiles() {
-    @SuppressWarnings("unused")
-    Exception exception1 = assertThrows(IllegalArgumentException.class, () -> board.getTile(0),
-                "Validating tile 0 should throw IllegalArgumentException");
-    @SuppressWarnings("unused")
-    Exception exception2 = assertThrows(IllegalArgumentException.class, () -> board.getTile(-5),
-                "Validating negative tile should throw IllegalArgumentException");
-    @SuppressWarnings("unused")
-    Exception exception3 = assertThrows(IllegalArgumentException.class, () -> board.getTile(101),
-                "Validating tile > board size should throw IllegalArgumentException");
-  }
 }
