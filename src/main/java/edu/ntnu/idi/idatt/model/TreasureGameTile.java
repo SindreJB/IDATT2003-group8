@@ -2,10 +2,12 @@ package edu.ntnu.idi.idatt.model;
 
 public class TreasureGameTile extends Tile {
   private int tileType;
+  private boolean hasTreasure;
 
   public TreasureGameTile(int number) {
     super(number);
-    this.tileType = 0; // Default value
+    this.tileType = 0; 
+    this.hasTreasure = false; 
   }
 
   public void setTileType(int tileType) {
@@ -14,5 +16,13 @@ public class TreasureGameTile extends Tile {
 
   public int getTileType() {
     return tileType;
+  }
+  
+  public void setHasTreasure(boolean hasTreasure) {
+    this.hasTreasure = hasTreasure;
+  }
+  
+  public boolean hasTreasure() {
+    return hasTreasure;
   }
 }
