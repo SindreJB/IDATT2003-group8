@@ -1,17 +1,24 @@
 package edu.ntnu.idi.idatt.model;
 
 import edu.ntnu.idi.idatt.ui.TreasureGameBoardUI;
+import edu.ntnu.idi.idatt.ui.pages.MainMenu;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import edu.ntnu.idi.idatt.ui.pages.MainMenu;
 
-public class TreasureGameActions implements GameActions {
+public class TreasureGameActions implements GameActions {    private final TreasureGameBoardUI gameBoard;
 
-    private final TreasureGameBoardUI gameBoard;
-
+    /**
+     * Constructs a new TreasureGameActions with a reference to the game board.
+     * 
+     * @param gameBoard The treasure game board that will be controlled
+     * @throws NullPointerException if gameBoard is null
+     */
     public TreasureGameActions(TreasureGameBoardUI gameBoard) {
+        if (gameBoard == null) {
+            throw new NullPointerException("gameBoard cannot be null");
+        }
         this.gameBoard = gameBoard;
     }
 
