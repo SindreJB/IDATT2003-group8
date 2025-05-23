@@ -7,13 +7,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-public class TreasureGameActions implements GameActions {
+public class TreasureGameActions implements GameActions {  
+  
+private final TreasureGameBoardUI gameBoard;
 
-  private final TreasureGameBoardUI gameBoard;
-
-  public TreasureGameActions(TreasureGameBoardUI gameBoard) {
-    this.gameBoard = gameBoard;
-  }
+    /**
+     * Constructs a new TreasureGameActions with a reference to the game board.
+     * 
+     * @param gameBoard The treasure game board that will be controlled
+     * @throws NullPointerException if gameBoard is null
+     */
+    public TreasureGameActions(TreasureGameBoardUI gameBoard) {
+        if (gameBoard == null) {
+            throw new NullPointerException("gameBoard cannot be null");
+        }
+        this.gameBoard = gameBoard;
+    }
 
   @Override
   public void restartGame() {

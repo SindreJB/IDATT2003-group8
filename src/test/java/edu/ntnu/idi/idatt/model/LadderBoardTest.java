@@ -15,7 +15,7 @@ public class LadderBoardTest {
   private LadderBoard standardBoard;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     standardBoard = new LadderBoard(10, 10);
   }
 

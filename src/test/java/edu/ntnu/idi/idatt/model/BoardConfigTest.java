@@ -19,7 +19,7 @@ public class BoardConfigTest {
   private BoardConfig config;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     config = new BoardConfig();
   }
 
