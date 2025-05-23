@@ -26,7 +26,7 @@ class TreasureGameControllerTest {
     private TreasureBoardConfig config;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         // Create a new controller for each test
         controller = new TreasureGameController();
         config = new TreasureBoardConfig();
@@ -89,7 +89,7 @@ class TreasureGameControllerTest {
             
             // Check victory condition
             assertTrue(controller.checkVictory(player1), "Player should win when treasure is found");
-        } catch (Exception e) {
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             fail("Failed to set treasureFound field: " + e.getMessage());
         }
     }
@@ -253,7 +253,7 @@ class TreasureGameControllerTest {
             // Try to get valid position
             int result = controller.getValidPositionInDirection("UP");
             assertEquals(-1, result, "Should return -1 when no moves left");
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
             fail("Failed to set moveCounter field: " + e.getMessage());
         }
     }
