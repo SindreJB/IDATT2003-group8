@@ -59,4 +59,38 @@ class DiceTest {
     assertNotNull(diceList, "Dice list should not be null");
     assertEquals(2, diceList.size(), "Should contain exactly two dice");
   }
+
+  @Test
+  void getDiceCountShouldReturnCorrectCount() {
+    // Test with different numbers of dice
+    Dice dice1 = new Dice(1);
+    assertEquals(1, dice1.getDiceCount(), "getDiceCount should return 1 for a single die");
+    
+    Dice dice2 = new Dice(2);
+    assertEquals(2, dice2.getDiceCount(), "getDiceCount should return 2 for two dice");
+    
+    Dice dice5 = new Dice(5);
+    assertEquals(5, dice5.getDiceCount(), "getDiceCount should return 5 for five dice");
+  }
+  
+  @Test
+  void constructorShouldThrowExceptionForInvalidCount() {
+    Exception exception = org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> new Dice(0),
+        "Constructor should throw IllegalArgumentException for dice count of 0"
+    );
+    
+    assertEquals("Number of dice must be at least 1", exception.getMessage(),
+        "Exception message should match expected message");
+    
+    exception = org.junit.jupiter.api.Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> new Dice(-1),
+        "Constructor should throw IllegalArgumentException for negative dice count"
+    );
+    
+    assertEquals("Number of dice must be at least 1", exception.getMessage(),
+        "Exception message should match expected message");
+  }
 }
