@@ -108,7 +108,7 @@ public class TreasureGameBoardUI implements GameObserver {
     }
 
     // Create scene
-    Scene scene = new Scene(root, 900, 700);
+    Scene scene = new Scene(root);
 
     // Setup keyboard handlers for manual movement
     setupKeyboardHandlers(scene);

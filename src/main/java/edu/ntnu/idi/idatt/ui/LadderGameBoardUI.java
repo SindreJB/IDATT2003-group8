@@ -72,13 +72,6 @@ public class LadderGameBoardUI implements GameObserver {
    * Sets up callbacks from the GameController to update the UI
    */
   private void setupControllerCallbacks() {
-    // Update UI when player turn changes
-    // gameController.setOnTurnChanged(() -> {
-    // Player currentPlayer = gameController.getCurrentPlayer();
-    // if (statusLabel != null) {
-    // statusLabel.setText(currentPlayer.getName() + "'s turn");
-    // }
-    // });
 
     // Handle dice roll results with UI feedback
     gameController.setOnDiceRolled((diceValue, message, oldPosition, newPosition) -> {
@@ -125,7 +118,7 @@ public class LadderGameBoardUI implements GameObserver {
       throws LadderGameException, FileWriteException {
     root = new BorderPane();
     root.setStyle("-fx-background-color: #F0EFEB;");
-    root.setPadding(new Insets(30));
+    root.setPadding(new Insets(20));
 
     // Register this view as an observer before loading board and players
     gameController.registerObserver(this, "PLAYER_MOVED", "TURN_CHANGED", "GAME_WON", "DICE_ROLLED");
@@ -148,12 +141,9 @@ public class LadderGameBoardUI implements GameObserver {
 
     // Create and set up the game board UI
     GridPane boardGrid = createGameBoardUI(gameBoard);
-    StackPane gameBoardPane = new StackPane();
+    GridPane gameBoardPane = new GridPane();
     gameBoardPane.getChildren().add(boardGrid);
-    gameBoardPane.setAlignment(Pos.CENTER);
-    boardGrid.setAlignment(Pos.CENTER);
     drawSnakesAndLadders(gameBoardPane, gameBoard);
-    root.setCenter(gameBoardPane);
 
     // Add padding around the board
     BorderPane.setMargin(boardGrid, new Insets(20));
@@ -182,9 +172,13 @@ public class LadderGameBoardUI implements GameObserver {
     gamePiece.setupPlayerPieces(tilesMap.get(1));
 
     Scene scene = new Scene(root);
+
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
+    gameBoardPane.setAlignment(Pos.CENTER);
+    boardGrid.setAlignment(Pos.CENTER);
+    root.setCenter(gameBoardPane);
 
     return scene;
   }
@@ -403,7 +397,7 @@ public class LadderGameBoardUI implements GameObserver {
   /**
    * Draws snakes and ladders on the grid based on the loaded board configuration
    */
-  private void drawSnakesAndLadders(StackPane gridPane, LadderBoard gameBoard) {
+  private void drawSnakesAndLadders(GridPane gridPane, LadderBoard gameBoard) {
     // Draw ladders and snakes after all tiles are created
     javafx.application.Platform.runLater(() -> {
       for (int i = 1; i <= gameBoard.getRows() * gameBoard.getColumns(); i++) {
@@ -419,7 +413,7 @@ public class LadderGameBoardUI implements GameObserver {
   /**
    * Draws a connection (snake, ladder, or wormhole) between two tiles
    */
-  private void drawConnection(LadderGameTile tile, StackPane pane) {
+  private void drawConnection(LadderGameTile tile, GridPane pane) {
     StackPane startTile = tilesMap.get(tile.getNumber());
     StackPane endTile;
 
