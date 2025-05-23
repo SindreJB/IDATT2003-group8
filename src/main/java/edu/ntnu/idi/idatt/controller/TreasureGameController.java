@@ -271,8 +271,7 @@ public class TreasureGameController extends GameController {
                 
         int newRow = row;
         int newCol = col;
-        
-        switch (direction) {
+          switch (direction) {
             case "UP":
                 newRow = row - 1;
                 break;
@@ -285,6 +284,8 @@ public class TreasureGameController extends GameController {
             case "RIGHT":
                 newCol = col + 1;
                 break;
+            default:
+                return -1; // Invalid direction
         }
         
         int newTileId = config.getTileId(newRow, newCol);
