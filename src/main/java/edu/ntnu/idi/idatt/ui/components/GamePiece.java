@@ -5,7 +5,6 @@ import java.util.List;
 import edu.ntnu.idi.idatt.model.Player;
 import javafx.geometry.Insets;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
@@ -299,26 +298,23 @@ public class GamePiece {
       return null;
     }
   }
-
   /**
-   * Preserves labels in a tile by saving and restoring them
+   * Preserves background and labels in a tile by removing only player pieces
    *
-   * @param tile the tile to preserve labels in
+   * @param tile the tile to clean of player pieces
    */
   private void preserveLabels(StackPane tile) {
-    java.util.List<Label> labels = new java.util.ArrayList<>();
-
-    // Find and save all labels
+    // Remove any StackPane containers (which contain player pieces)
+    // but keep the background rectangle and labels
+    java.util.List<javafx.scene.Node> nodesToRemove = new java.util.ArrayList<>();
+    
     for (javafx.scene.Node node : tile.getChildren()) {
-      if (node instanceof Label) {
-        labels.add((Label) node);
+      if (node instanceof StackPane && node != tile) {
+        nodesToRemove.add(node);
       }
     }
-
-    // Clear tile completely
-    tile.getChildren().clear();
-
-    // Add back labels
-    tile.getChildren().addAll(labels);
+    
+    // Remove only the player containers
+    tile.getChildren().removeAll(nodesToRemove);
   }
 }
