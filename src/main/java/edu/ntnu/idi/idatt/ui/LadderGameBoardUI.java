@@ -143,7 +143,6 @@ public class LadderGameBoardUI implements GameObserver {
     GridPane boardGrid = createGameBoardUI(gameBoard);
     GridPane gameBoardPane = new GridPane();
     gameBoardPane.getChildren().add(boardGrid);
-    drawSnakesAndLadders(gameBoardPane, gameBoard);
 
     // Add padding around the board
     BorderPane.setMargin(boardGrid, new Insets(20));
@@ -176,9 +175,13 @@ public class LadderGameBoardUI implements GameObserver {
     scene.getStylesheets().add(getClass().getResource("/edu/ntnu/idi/idatt/view/styles.css").toExternalForm());
 
     primaryStage.setTitle("Snakes and Ladders - " + gameBoard.getName());
-    gameBoardPane.setAlignment(Pos.CENTER);
-    boardGrid.setAlignment(Pos.CENTER);
-    root.setCenter(gameBoardPane);
+
+    Platform.runLater(() -> {
+      gameBoardPane.setAlignment(Pos.CENTER);
+      boardGrid.setAlignment(Pos.CENTER);
+      root.setCenter(gameBoardPane);
+      drawSnakesAndLadders(gameBoardPane, gameBoard);
+    });
 
     return scene;
   }
