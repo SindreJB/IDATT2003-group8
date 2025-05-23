@@ -25,8 +25,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class TreasureGameBoardUI implements GameObserver {
@@ -186,40 +184,48 @@ private TreasureBoard createCustomBoard() {
         }
 
         return boardGrid;
-    }    private StackPane createTile(int tileId, int tileType) {
+    }    
+    
+    private StackPane createTile(int tileId, int tileType) {
         StackPane tile = new StackPane();
         tile.setPrefSize(TILE_SIZE, TILE_SIZE);
 
-        // For type 0 tiles (void), make them completely invisible
         if (tileType == 0) {
             tile.setVisible(false);
             return tile;
         }
-        
-        // Create different tile appearances based on type
-        Rectangle background = new Rectangle(TILE_SIZE, TILE_SIZE);
 
         switch (tileType) {
-            case 1: // Path - can move here
-                background.setFill(Color.LIGHTGREEN);
+            case 1:
+                tile.setStyle("-fx-background-color:rgba(130, 85, 0, 0.5);" +
+                    "-fx-padding: 5px 8px;"+
+                    " -fx-background-radius: 6px;"+
+                    "-fx-border-radius: 6px;"+
+                    " -fx-alignment: center;");
                 break;
-            case 2: // Treasure location
-                background.setFill(Color.GOLD);
+            case 2:
+                tile.setStyle("-fx-background-color:rgb(212,175,25);" +
+                    "-fx-padding: 10px 16px;"+
+                    " -fx-background-radius: 6px;"+
+                    "-fx-border-radius: 6px;"+
+                    " -fx-alignment: center;");
                 break;
-            case 3: // Start position
-                background.setFill(Color.LIGHTBLUE);
+            case 3:
+                 tile.setStyle("-fx-background-color:rgb(38, 0, 255);" +
+                    "-fx-border-color: rgb(212,175,25);" +
+                    "-fx-padding: 10px 16px;"+
+                    " -fx-background-radius: 6px;"+
+                    "-fx-border-radius: 6px;"+
+                    " -fx-alignment: center;");
                 break;
             default:
-                background.setFill(Color.WHITE);
+                tile.setStyle("-fx-background-color:rgb(255, 255, 255);" +
+                    "-fx-padding: 10px 16px;"+
+                    " -fx-background-radius: 6px;"+
+                    "-fx-border-radius: 6px;"+
+                    " -fx-alignment: center;");
                 break;
         }
-
-        background.setStroke(Color.BLACK);
-        background.setStrokeWidth(1);
-
-        // No tile numbers as per requirement
-        tile.getChildren().add(background);
-
         return tile;
     }
     
