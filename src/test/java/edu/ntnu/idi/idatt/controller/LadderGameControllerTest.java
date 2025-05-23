@@ -26,7 +26,7 @@ class LadderGameControllerTest {
   private Player player2;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     // Create a new controller for each test
     controller = new LadderGameController();
 
